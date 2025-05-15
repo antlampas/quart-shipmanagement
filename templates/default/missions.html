@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<!--
+Licensed under the Open Software License version 3.0
+
+Author:     antlampas
+Created on: 2025-05-15
+-->
+
+
+{% extends "base.html" %}
+
+{% block content %}
+<nav>
+    <a href="/missions/add">Nuova missione</a>
+    <a href="/missions/remove">Rimuovi missione</a>
+    <a href="/missions/edit">Modifica missione</a>
+</nav>
+{% if missions is defined %}
+{% if (missions is iterable) and (missions is not string) and (missions is not mapping) %}
+{% for i in missions %}
+<a href="/missions/mission/{{ i.Name }}">{{ i.Name }}</a><br />
+{% endfor%}
+{% else %}
+<p>{{ missions }}</p>
+{% endif %}
+{% endif %}
+{% endblock%}

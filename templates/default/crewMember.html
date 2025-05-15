@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--
+Licensed under the Open Software License version 3.0
+
+Author:     antlampas
+Created on: 2025-05-15
+-->
+
+
+{% extends "base.html" %}
+
+{% block content %}
+{% if CREWMEMBER is defined %}
+<p><span>First Name:</span> <span>{{ CREWMEMBER.FirstName }}</span></p>
+<p><span>Last Name:</span> <span>{{ CREWMEMBER.LastName }}</span></p>
+<p><span>Nickname:</span> <span>{{ CREWMEMBER.Nickname }}</span></p>
+{% if CREWMEMBER.Serial or CREWMEMBER.Serial != 0%}
+<p><span>Serial:</span> <span>{{ CREWMEMBER.Serial }}</span></p>
+{% endif %}
+{% if CREWMEMBER.Stic or CREWMEMBER.Stic != 0 %}
+<p><span>STIC:</span> <span>{{ CREWMEMBER.Stic }}</span></p>
+{% endif %}
+<p><span>Rank:</span> <span>{{ CREWMEMBER.Rank }}</span></p>
+<p><span>Division:</span> <span>{{ CREWMEMBER.Division }}</span></p>
+<p><span>Duties:</span><br />
+    {% if CREWMEMBER.Duties is iterable %}
+    {% for i in CREWMEMBER.Duties %}
+    <span>{{ i }}</span><br />
+    {% endfor %}
+    {% else %}
+    {{ CREWMEMBER.Duties }}
+    {% endif %}
+</p>
+<a href="/crew/edit/{{ CREWMEMBER.Nickname }}">Modifica membro</a>
+{% endif %}
+{% endblock%}

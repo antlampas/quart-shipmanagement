@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<!--
+Licensed under the Open Software License version 3.0
+
+Author:     antlampas
+Created on: 2025-05-15
+-->
+
+
+{% extends "base.html" %}
+
+{% block content %}
+<FORM method="POST" action="/duties/add">
+    {{ FORM.csrf_token }}
+    {{ FORM.Name.label        }} {{ FORM.Name()        }}<br />
+    {{ FORM.Description.label }} {{ FORM.Description() }}<br />
+    <input type="submit" value="Add">
+</FORM>
+<p>{{ MESSAGE }}</p>
+{% endblock%}

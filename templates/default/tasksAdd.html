@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!--
+Licensed under the Open Software License version 3.0
+
+Author:     antlampas
+Created on: 2025-05-15
+-->
+
+
+{% extends "base.html" %}
+
+{% block content %}
+<FORM method="POST" action="/tasks/add">
+    {{ FORM.csrf_token }}
+    {{ FORM.Name.label             }} {{ FORM.Name()             }}<br />
+    {{ FORM.Description.label      }} {{ FORM.Description()      }}<br />
+    {{ FORM.Objective.label        }} {{ FORM.Objective()        }}<br />
+    {{ FORM.RequiredDuration.label }} {{ FORM.RequiredDuration() }}<br />
+    {{ FORM.StartedAt.label        }} {{ FORM.StartedAt()        }}<br />
+    {{ FORM.EndedAt.label          }} {{ FORM.EndedAt()          }}<br />
+    {{ FORM.Status.label           }} {{ FORM.Status()           }}<br />
+    <input type="submit" value="Add">
+</FORM>
+<p>{{ MESSAGE }}</p>
+{% endblock%}

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<!--
+Licensed under the Open Software License version 3.0
+
+Author:     antlampas
+Created on: 2025-05-15
+-->
+
+
+<a href="/">Home</a>
+<a href="/crew">Crew</a>
+<a href="/missions">Missions</a>
+{% if not SESSION %}
+<a href="/login">Login</a>
+{% endif %}
+{% if SESSION %}
+<a href="/logout">Logout</a>
+{% endif %}

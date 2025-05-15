@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<!--
+Licensed under the Open Software License version 3.0
+
+Author:     antlampas
+Created on: 2025-05-15
+-->
+
+
+{% extends "base.html" %}
+
+{% block content %}
+<nav>
+    <a href="/crew/add">Nuovo membro</a>
+    <a href="/crew/remove">Rimuovi membro</a>
+    <a href="/crew/edit">Modifica membro</a>
+</nav>
+{% if CREW is defined %}
+{% if (CREW is iterable) and (CREW is not string) and (CREW is not mapping) %}
+{% for i in CREW %}
+<a href="/crew/member/{{ i.Nickname }}">{{ i.Nickname }}</a><br />
+{% endfor%}
+{% else %}
+<p>{{ CREW }}</p>
+{% endif %}
+{% endif %}
+{% endblock%}

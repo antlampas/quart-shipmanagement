@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<!--
+Licensed under the Open Software License version 3.0
+
+Author:     antlampas
+Created on: 2025-05-15
+-->
+
+
+{% extends "base.html" %}
+
+{% block content %}
+<form method="POST" action="/crew/remove">
+    {{ FORM.csrf_token }}
+    {{ FORM.Nickname.label }} {{ FORM.Nickname() }}<br />
+    <input type="submit" value="Remove">
+</form>
+<p>{{ MESSAGE }}</p>
+{% endblock%}

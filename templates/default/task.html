@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<!--
+Licensed under the Open Software License version 3.0
+
+Author:     antlampas
+Created on: 2025-05-15
+-->
+
+
+{% extends "base.html" %}
+
+{% block content %}
+{% if task is defined %}
+<p><span>Task:</span> <span>{{ task.Name }}</span></p>
+<p><span>Description:</span> <span>{{ task.Description }}</span></p>
+{% endif %}
+{% endblock%}

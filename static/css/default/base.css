@@ -1,0 +1,30 @@
+#Licensed under the Open Software License version 3.0
+
+#Author:     antlampas
+#Created on: 2025-05-15
+
+.sitewrapper
+{
+    width: 800px;
+    margin: auto;
+    padding: 0;
+    border: 0;
+}
+.shipname
+{
+    text-align: center;
+}
+.sectionname
+{
+    text-align: center;
+}
+.maincontent,
+.title,
+.navigation
+{
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    text-align: center;
+}

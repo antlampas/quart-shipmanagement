@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<!--
+Licensed under the Open Software License version 3.0
+
+Author:     antlampas
+Created on: 2025-05-15
+-->
+
+<html>
+    <head>
+        <link rel="stylesheet" href="/static/css/default/base.css">
+        <title>USS {{ config.SHIPNAME }} NCC-{{ config.REGISTRYNUMBER }} - {{ SECTIONNAME }}</title>
+    </head>
+    <body>
+        <div class="sitewrapper">
+            <div class="title">
+                <h1>USS {{ config.SHIPNAME }} NCC-{{ config.REGISTRYNUMBER }}</h1>
+                <h2>{{ SECTIONNAME }}</h2>
+            </div>
+            <nav class="navigation">
+                {% include 'navigation.html' %}
+            </nav>
+            <div class="maincontent">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<!--
+Licensed under the Open Software License version 3.0
+
+Author:     antlampas
+Created on: 2025-05-15
+-->
+
+
+{% extends "base.html" %}
+
+{% block content %}
+{% if mission is defined %}
+<p><span>Mission:</span> <span>{{ mission.Name }}</span></p>
+<p><span>Description:</span> <span>{{ mission.Description }}</span></p>
+{% endblock%}
