@@ -92,6 +92,9 @@ async def member(member):
 @crew_blueprint.route("/add",methods=["GET","POST"])
 @require_role(CrewPermissions.addMemberRole)
 async def add():
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
+    #TODO: check
+    sectionName = 'Add ' + sectionName
     form   = AddCrewMemberForm()
     if request.method == 'GET':
         ranks     = []
@@ -141,7 +144,10 @@ async def add():
 @crew_blueprint.route("/remove",methods=["GET","POST"])
 @require_role(CrewPermissions.removeMemberRole)
 async def remove():
-    #TODO: Make it work with keycloack too
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
+    #TODO: Make it work with keycloack too, make db managenet code
+    #      more clear and check
+    sectionName = 'Remove ' + sectionName
     form = RemoveCrewMemberForm()
     crew = list()
     if request.method == 'GET':
@@ -175,10 +181,20 @@ async def remove():
     else:
         return await standardReturn("error.html",sectionName,ERROR="Invalid method")
 
+
+@crew_blueprint.route("/edit/",methods=["GET","POST"])
+@require_role(CrewPermissions.editMemberRole)
+async def edit():
+    sectionName = 'Edit ' + sectionName
+    return await standardReturn("error.html",sectionName,ERROR='No member specified')
+
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 @require_role(CrewPermissions.editMemberRole)
-async def edit(member):
-    #TODO: Make it work with keycloack too
+async def editMember(member):
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
+    #TODO: Make it work with keycloack too, make db managenet code
+    #      more clear and check
+    sectionName = 'Edit ' + sectionName
     form         = EditCrewMemberForm()
     ranks        = []
     duties       = []
@@ -191,6 +207,7 @@ async def edit(member):
     crewMemberRank           = CrewMemberRankTable()
     crewMemberDivision       = CrewMemberDivisionTable()
     crewMemberDuties         = []
+    member                   = None
 
     if request.method == 'GET':
         try:
@@ -215,15 +232,22 @@ async def edit(member):
                                                 .filter_by(MemberSerial=memberSerial).all()
         except Exception as e:
             return await standardReturn("error.html",sectionName,ERROR="GET: "+str(e))
-        form.FirstName.data   = personalBaseInformations.FirstName
-        form.LastName.data    = personalBaseInformations.LastName
-        form.Nickname.data    = personalBaseInformations.Nickname
+
+        member = CrewMember(FirstName = personalBaseInformations.FirstName,
+                            LastName  = personalBaseInformations.LastName,
+                            Nickname  = personalBaseInformations.Nickname,
+                            Rank      = crewMemberRank.RankName,
+                            Division  = crewMemberDivision.DivisionName,
+                            Duties    = [ d.DutyName for d in crewMemberDuties ]
+                           )
+        form.FirstName.data   = member.FirstName
+        form.LastName.data    = member.LastName
         form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
-        form.Rank.default     = crewMemberRank.RankName
+        form.Rank.default     = member.RankName
         form.Division.choices = [(d.Name,d.Name) for d in divisions]
-        form.Division.default = crewMemberDivision.DivisionName
+        form.Division.default = member.DivisionName
         form.Duties.choices   = [(d.Name,d.Name) for d in duties]
-        form.Duties.default   = [(d.DutyName,d.DutyName) for d in crewMemberDuties]
+        form.Duties.default   = [(d.DutyName,d.DutyName) for d in member.Duties]
         return await standardReturn("crewMemberEdit.html",sectionName,FORM=form)
     elif request.method == 'POST':
         if form.validate_on_submit():
@@ -234,6 +258,13 @@ async def edit(member):
             division       = (await request.form)['Division']
             selectedDuties = (await request.form).getlist('Duties')
 
+            member = CrewMember(FirstName = firstname,
+                                LastName  = lastname,
+                                Nickname  = nickname,
+                                Rank      = rank,
+                                Division  = division,
+                                Duties    = selectedDuties
+                               )
             dutyAlreadyPresent = False
             dutyRemoved        = False
             dutyIndex          = 0

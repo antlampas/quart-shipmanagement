@@ -29,7 +29,6 @@ class RemoveCrewMemberForm(QuartForm):
 class EditCrewMemberForm(QuartForm):
     FirstName        = StringField('First name')
     LastName         = StringField('Last Name')
-    Nickname         = StringField('Nickname')
     Rank             = SelectField('Rank')
     Division         = SelectField('Division')
     Duties           = SelectMultipleField('Duties')
