@@ -4,9 +4,9 @@
 #Created on: 2025-05-15
 
 class CrewPermissions():
-    addMemberRole    = "Responsabile personale"
-    removeMemberRole = "Responsabile personale"
-    editMemberRole   = "Responsabile personale"
+    addMemberRole    = ""
+    removeMemberRole = ""
+    editMemberRole   = ""
 
 class CrewOnBoardLogPermissions():
     addLogRole    = ""
@@ -14,26 +14,26 @@ class CrewOnBoardLogPermissions():
     editLogRole   = ""
 
 class DivisionsPermissions():
-    addDivisionRole    = "Responsabile divisioni"
-    removeDivisionRole = "Responsabile divisioni"
-    editDivisionRole   = "Responsabile divisioni"
+    addDivisionRole    = ""
+    removeDivisionRole = ""
+    editDivisionRole   = ""
 
 class DutiesPermissions():
-    addDutyRole    = "Responsabile doveri"
-    removeDutyRole = "Responsabile doveri"
-    editDutyRole   = "Responsabile doveri"
+    addDutyRole    = ""
+    removeDutyRole = ""
+    editDutyRole   = ""
 
 class MissionsPermissions():
-    addMissionRole    = "Responsabile missioni"
-    removeMissionRole = "Responsabile missioni"
-    editMissionRole   = "Responsabile missioni"
+    addMissionRole    = ""
+    removeMissionRole = ""
+    editMissionRole   = ""
 
 class RanksPermissions():
-    addRankRole    = "Responsabile personale"
-    removeRankRole = "Responsabile personale"
-    editRankRole   = "Responsabile personale"
+    addRankRole    = ""
+    removeRankRole = ""
+    editRankRole   = ""
 
 class TasksPermissions():
-    addTaskRole    = "Responsabile compiti"
-    removeTaskRole = "Responsabile compiti"
-    editTaskRole   = "Responsabile compiti"
+    addTaskRole    = ""
+    removeTaskRole = ""
+    editTaskRole   = ""
