@@ -164,9 +164,16 @@ class CrewMember(Editable):
 
 class Crew(Addable):
     def __init__(self,source="db",crew=list()):
-        self.Error  = ""
-        self.Source = source
-        self.Crew   = crew
+        self.Error                  = ""
+        self.Source                 = source
+        self.Crew                   = crew
+        self.KeycloakAdminClient    = KeycloakConfig.KEYCLOAK_ADMIN['client_id']
+        self.KeycloakAdminGrantType = KeycloakConfig.KEYCLOAK_ADMIN['grant_type']
+        self.KeycloakAdminUser      = KeycloakConfig.KEYCLOAK_ADMIN['username']
+        self.KeycloakAdminPass      = KeycloakConfig.KEYCLOAK_ADMIN['password']
+        self.KeycloakBaseURL        = KeycloakConfig.KEYCLOAK_URL
+        self.KeycloakRealm          = KeycloakConfig.KEYCLOAK_REALM
+        self.KeycloakAccessToken    = None
         #TODO: Make it work with keycloack too
         if self.Source == "db":
             with db.bind.Session() as s:
@@ -179,31 +186,50 @@ class Crew(Addable):
                         self.Error = "No crew in database"
         if self.Source == "keycloak":
             if not crew:
-                keycloakAdminUser = KeycloakConfig.KEYCLOAK_ADMIN['username']
-                keycloakAdminPass = KeycloakConfig.KEYCLOAK_ADMIN['password']
-                keycloakBaseURL   = KeycloakConfig.KEYCLOAK_URL
-                keycloakRealm     = KeycloakConfig.KEYCLOAK_REALM
-                keycloakAccessRequest    = f'{keycloakBaseURL}/realms/{keycloakRealm}/protocol/openid-connect/token'
-                keycloakUsersListRequest = f'{keycloakBaseURL}/admin/realms/{keycloakRealm}/users'
-                keycloakAccess    = requests.post(keycloakAccessRequest,
-                                                  headers = {
-                                                              'content-type' : 'application/x-www-form-urlencoded'
-                                                            },
-                                                  data    = {
-                                                              'client_id'  : 'admin-cli',
-                                                              'grant_type' : 'password',
-                                                              'username'   :'francesco',
-                                                              'password'   : '0123456789'
-                                                            }
-                                                 )
-                accessToken   = json.loads(keycloakAccess.text)['access_token']
+                keycloakAccessRequest    = f'{self.KeycloakBaseURL}/realms/{self.KeycloakRealm}/protocol/openid-connect/token'
+                keycloakUsersListRequest = f'{self.KeycloakBaseURL}/admin/realms/{self.KeycloakRealm}/users'
+                if not self.KeycloakAccessToken:
+                    keycloakAccess    = requests.post(keycloakAccessRequest,
+                                                      headers = {
+                                                                  'content-type' : 'application/x-www-form-urlencoded'
+                                                                },
+                                                      data    = {
+                                                                  'client_id'  : self.KeycloakAdminClient,
+                                                                  'grant_type' : self.KeycloakAdminGrantType,
+                                                                  'username'   : self.KeycloakAdminUser,
+                                                                  'password'   : self.KeycloakAdminPass
+                                                                }
+                                                     )
+                    self.KeycloakAccessToken   = json.loads(keycloakAccess.text)['access_token']
                 keycloakUsers = requests.get(keycloakUsersListRequest,
                                              headers = {
                                                          'Authorization' : \
-                                                             f'bearer {accessToken}'
+                                                             f'bearer {self.KeycloakAccessToken}'
                                                        }
                                             )
                 usersList = json.loads(keycloakUsers.text)
+                if 'error' in usersList:
+                    if 'HTTP 401 Unauthorized' in userList['error']:
+                        keycloakAccess    = requests.post(keycloakAccessRequest,
+                                                          headers = {
+                                                                      'content-type' : 'application/x-www-form-urlencoded'
+                                                                    },
+                                                          data    = {
+                                                                      'client_id'  : 'admin-cli',
+                                                                      'grant_type' : 'password',
+                                                                      'username'   :'francesco',
+                                                                      'password'   : '0123456789'
+                                                                    }
+                                                         )
+                        keycloakUsers = requests.get(keycloakUsersListRequest,
+                                                     headers = {
+                                                                 'Authorization' : f'bearer {self.KeycloakAccessToken}'
+                                                               }
+                                                    )
+                        self.KeycloakAccessToken   = json.loads(keycloakAccess.text)['access_token']
+                        usersList = json.loads(keycloakUsers.text)
+                    else:
+                        self.Error = userList['error']
                 cm = SimpleNamespace()
                 for user in usersList:
                     if 'groups' in user:
