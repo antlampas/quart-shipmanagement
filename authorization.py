@@ -38,7 +38,7 @@ def require_user(users=[],groups=[]):
         async def wrapper(*args, **kwargs):
             if 'auth_token' in session:
                 token      = jwt.get_unverified_claims(session['auth_token']['access_token'])
-                user       = token['preferred_username']
+                user       = token['username']
                 userGroups = token['groups']
                 isUserInUsers = (user in users)
                 isUserInGroup = False
