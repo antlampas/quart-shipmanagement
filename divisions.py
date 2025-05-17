@@ -35,6 +35,7 @@ divisions_blueprint = Blueprint("divisions",__name__,url_prefix='/divisions',tem
 sectionName = "Divisions"
 
 @divisions_blueprint.route("/",methods=["GET"])
+@refreshToken
 @require_login
 async def divisions():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
@@ -49,6 +50,7 @@ async def divisions():
     #     return await render_template("divisions.html",divisions=str("No divisions found"),sectionName)
 
 @divisions_blueprint.route("/division/<division>",methods=["GET"])
+@refreshToken
 @require_login
 async def division(division):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
@@ -63,6 +65,7 @@ async def division(division):
     # return await render_template("division.html",division=divisionData,sectionName)
 
 @divisions_blueprint.route("/add",methods=["GET","POST"])
+@refreshToken
 @require_role(DivisionsPermissions.addDivisionRole)
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
@@ -89,6 +92,7 @@ async def add():
     #     return await render_template("error.html",ERROR="Invalid method",sectionName)
 
 @divisions_blueprint.route("/remove",methods=["GET","POST"])
+@refreshToken
 @require_role(DivisionsPermissions.removeDivisionRole)
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
@@ -130,6 +134,7 @@ async def remove():
     # return await render_template("implement.html",implement="Implement!",sectionName)
 
 @divisions_blueprint.route("/edit/<division>",methods=["GET","POST"])
+@refreshToken
 @require_role(DivisionsPermissions.editDivisionRole)
 async def edit(division):
     return await standardReturn("implement.html",sectionName,implement="Implement!")

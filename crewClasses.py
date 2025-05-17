@@ -139,28 +139,40 @@ class CrewMember(Editable):
         self.Error = ""
         #TODO: Make it work with keycloack too
         if self.Source == "db":
-            with db.bind.Session() as s:
-                with s.begin():
-                    crewMemberInformations = list()
-                    if Nickname:
-                        crewMemberInformations = s.scalar(selectCrew(Nickname))
-                    elif Serial:
-                        crewMemberInformations = s.scalar(selectCrew(Serial))
-                    else:
-                        self.Error = "Search clause missing"
-                    if not self.Error:
-                        if crewMemberInformations:
-                            self.FirstName = crewMemberInformations.FirstName
-                            self.LastName  = crewMemberInformations.LastName
-                            self.Nickname  = crewMemberInformations.Nickname
-                            self.Serial    = crewMemberInformations.Serial
-                            self.Rank      = s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).first().RankName
-                            self.Division  = s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).first().DivisionName
-                            self.Duties    = [ duty.Dutyname for duty in s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).all() ]
-                            self.Stic      = s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).first().Stic
-                        else:
-                            self.Error = "Crew member not found"
+            crewMemberInformations = self._loadFromDB()
+            if not self.Error:
+                if crewMemberInformations:
+                    self.FirstName = crewMemberInformations.FirstName
+                    self.LastName  = crewMemberInformations.LastName
+                    self.Nickname  = crewMemberInformations.Nickname
+                    self.Serial    = crewMemberInformations.Serial
+                    self.Rank      = crewMemberInformations.RankName
+                    self.Division  = crewMemberInformations.DivisionName
+                    self.Duties    = crewMemberInformations.Duties
+                    self.Stic      = crewMemberInformations.Stic
         return self.Error
+    def _loadFromDB(self,Nickname):
+        self.Error = ""
+        with db.bind.Session() as s:
+            with s.begin():
+                crewMemberInformations = None
+                if Nickname:
+                    crewMemberInformations = s.scalar(selectCrew(Nickname))
+                elif Serial:
+                    crewMemberInformations = s.scalar(selectCrew(Serial))
+                else:
+                    self.Error = "Search clause missing"
+
+                crewMemberInformations.Rank     = s.query(CrewMemberDutyTable).filter_by(MemberSerial=crewMemberInformations.Serial).first().RankName
+                crewMemberInformations.Division = s.query(CrewMemberDutyTable).filter_by(MemberSerial=crewMemberInformations.Serial).first().DivisionName
+                crewMemberInformations.Duties   = [ duty.Dutyname for duty in s.query(CrewMemberDutyTable).filter_by(MemberSerial=crewMemberInformations.Serial).all() ]
+                crewMemberInformations.Stic     = s.query(CrewMemberDutyTable).filter_by(MemberSerial=crewMemberInformations.Serial).first().Stic
+
+                if not self.Error:
+                    return crewMemberInformations
+                else:
+                    self.Error = "Crew member not found"
+        return self.error
 
 class Crew(Addable):
     def __init__(self,source="db",crew=list()):

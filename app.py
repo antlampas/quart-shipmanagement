@@ -3,6 +3,8 @@
 #Author:     antlampas
 #Created on: 2025-05-15
 
+from jose            import jwt
+
 from quart           import Quart
 from quart           import url_for
 from quart           import jsonify
@@ -53,7 +55,8 @@ def create_app(mode='Development'):
 
     @keycloak.after_login()
     async def handle_user_login(auth_token: KeycloakAuthToken):
-        session['auth_token'] = auth_token
+        session['auth_token']   = auth_token
+        session['access_token'] = jwt.get_unverified_claims(session['auth_token'].access_token)
         return redirect(url_for('index.index'))
 
     @app.route("/logout")
@@ -61,8 +64,18 @@ def create_app(mode='Development'):
         logout_url = url_for(keycloak.endpoint_name_logout, redirect_uri=url_for("after_logout", _external=True))
         return redirect(logout_url)
 
+    @app.route("/relogin")
+    async def relogin():
+        relogin_url = url_for(keycloak.endpoint_name_logout, redirect_uri=url_for("after_relogin", _external=True))
+        return redirect(relogin_url)
+
     @app.route("/after_logout")
     async def after_logout():
         session.clear()
         return redirect(url_for('index.index'))
+
+    @app.route("/after_relogin")
+    async def after_relogin():
+        session.clear()
+        return redirect(url_for('login'))
     return app

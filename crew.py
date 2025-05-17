@@ -66,6 +66,7 @@ sectionName = "Crew"
 crewList = None
 
 @crew_blueprint.route("/",methods=["GET"])
+@refreshToken
 @require_login
 async def crew():
     global crewList
@@ -76,6 +77,7 @@ async def crew():
         return await standardReturn("error.html",sectionName,ERROR="No crew member found")
 
 @crew_blueprint.route("/member/<member>",methods=["GET"])
+@refreshToken
 @require_user(groups=['Equipaggio'])
 async def member(member):
     crewMember = None
@@ -90,10 +92,12 @@ async def member(member):
         return await standardReturn("error.html",sectionName,ERROR="Crew member not found")
 
 @crew_blueprint.route("/add",methods=["GET","POST"])
+@refreshToken
 @require_role(CrewPermissions.addMemberRole)
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
-    #TODO: check
+    #TODO: Make it work with keycloack too, make db managenet code
+    #      more clear and check
     sectionName = 'Add ' + sectionName
     form   = AddCrewMemberForm()
     if request.method == 'GET':
@@ -142,6 +146,7 @@ async def add():
         return await standardReturn("error.html",sectionName,ERROR="Invalid method")
 
 @crew_blueprint.route("/remove",methods=["GET","POST"])
+@refreshToken
 @require_role(CrewPermissions.removeMemberRole)
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
@@ -183,12 +188,14 @@ async def remove():
 
 
 @crew_blueprint.route("/edit/",methods=["GET","POST"])
+@refreshToken
 @require_role(CrewPermissions.editMemberRole)
 async def edit():
     sectionName = 'Edit ' + sectionName
     return await standardReturn("error.html",sectionName,ERROR='No member specified')
 
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
+@refreshToken
 @require_role(CrewPermissions.editMemberRole)
 async def editMember(member):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
