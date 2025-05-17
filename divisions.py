@@ -22,6 +22,7 @@ from forms          import EditDivisionForm
 
 from authorization  import require_role
 from authorization  import require_login
+from authorization  import refreshToken
 
 from permissions    import DivisionsPermissions
 

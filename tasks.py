@@ -5,13 +5,14 @@
 
 from quart import current_app,Blueprint
 
-from model import db
-from model import CrewMemberTable
-from model import TaskTable
-from model import MemberTaskLogEntryTable
+from model          import db
+from model          import CrewMemberTable
+from model          import TaskTable
+from model          import MemberTaskLogEntryTable
 
 from authorization  import require_role
 from authorization  import require_login
+from authorization  import refreshToken
 
 from permissions    import TasksPermissions
 

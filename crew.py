@@ -51,6 +51,7 @@ from forms          import EditCrewMemberForm
 from authorization  import require_user
 from authorization  import require_role
 from authorization  import require_login
+from authorization  import refreshToken
 
 from permissions    import CrewPermissions
 

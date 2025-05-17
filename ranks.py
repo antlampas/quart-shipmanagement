@@ -11,16 +11,17 @@ from quart          import render_template
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from model import db
-from model import CrewMemberTable
-from model import RankTable
+from model          import db
+from model          import CrewMemberTable
+from model          import RankTable
 
-from forms import AddRankForm
-from forms import RemoveRankForm
-from forms import EditRankForm
+from forms          import AddRankForm
+from forms          import RemoveRankForm
+from forms          import EditRankForm
 
 from authorization  import require_role
 from authorization  import require_login
+from authorization  import refreshToken
 
 from permissions    import RanksPermissions
 

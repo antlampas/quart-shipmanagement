@@ -10,6 +10,7 @@ from quart import request
 
 from authorization  import require_role
 from authorization  import require_login
+from authorization  import refreshToken
 
 from permissions    import MissionsPermissions
 
