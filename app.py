@@ -18,8 +18,9 @@ from quart_keycloak  import KeycloakAuthToken
 from quart_keycloak  import KeycloakLogoutRequest
 
 def create_app(mode='Development'):
-    from config          import Development
-    from config          import Production
+    from config import Development
+    from config import Production
+    
     app = Quart(__name__)
     app.config.from_object(f"config.{mode}")
 

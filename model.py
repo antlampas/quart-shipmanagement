@@ -179,6 +179,7 @@ class MemberMissionLogEntryTable(db.Model):
 
 db.create_all()
 
+#### Queries ####
 def selectCrew(member=""):
     if member == "":
         return select(PersonalBaseInformationsTable)
@@ -191,7 +192,7 @@ def selectCrew(member=""):
             CrewMemberTable.Serial.label('Serial'),
             STICMembershipTable.SticSerial.label('STIC'),
             CrewMemberRankTable.RankName.label('Rank'),
-            CrewMemberDutyTable.DutyName.label('Duty'),
+            CrewMemberDutyTable.DutyName.label('Duties'),
             CrewMemberDivisionTable.DivisionName.label('Division')
         ).join(
             CrewMemberTable,
@@ -218,7 +219,34 @@ def selectPerson(person=""):
         return select(PersonalBaseInformationsTable).where(text(where_clause))
 
 def selectPeople(attribute="",search=""):
-    pass
+    if not attribute or not search:
+        return None
+    else:
+        return select(
+            PersonalBaseInformationsTable.FirstName.label('FirstName'),
+            PersonalBaseInformationsTable.LastName.label('LastName'),
+            PersonalBaseInformationsTable.Nickname.label('Nickname'),
+            CrewMemberTable.Serial.label('Serial'),
+            STICMembershipTable.SticSerial.label('STIC'),
+            CrewMemberRankTable.RankName.label('Rank'),
+            CrewMemberDutyTable.DutyName.label('Duties'),
+            CrewMemberDivisionTable.DivisionName.label('Division')
+        ).join(
+            CrewMemberTable,
+            PersonalBaseInformationsTable.Id == CrewMemberTable.PersonalBaseInformationsId
+        ).join(
+            CrewMemberRankTable,
+            CrewMemberTable.Serial == CrewMemberRankTable.MemberSerial
+        ).join(
+            CrewMemberDutyTable,
+            CrewMemberTable.Serial == CrewMemberDutyTable.MemberSerial
+        ).join(
+            CrewMemberDivisionTable,
+            CrewMemberTable.Serial == CrewMemberDivisionTable.MemberSerial
+        ).join(
+            STICMembershipTable,
+            CrewMemberTable.Serial == STICMembershipTable.MemberSerial
+        ).where(text(f'{attribute}={search}'))
 
 def selectRank(rank=""):
     if rank == "":
@@ -254,3 +282,8 @@ def selectTask(task=""):
     else:
         where_clause = f"Task.Name='{task}''"
         return select(TaskTable).where(text(where_clause))
+#### End queries ####
+
+#### Helper functions ####
+
+#### End helper functions ####

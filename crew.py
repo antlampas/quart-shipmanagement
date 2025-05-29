@@ -207,37 +207,11 @@ async def editMember(member):
     ranks        = []
     duties       = []
     divisions    = []
-
-    memberSerial             = 0
-    personId                 = 0
-    personalBaseInformations = PersonalBaseInformationsTable()
-    crewMember               = CrewMemberTable()
-    crewMemberRank           = CrewMemberRankTable()
-    crewMemberDivision       = CrewMemberDivisionTable()
-    crewMemberDuties         = []
-    member                   = None
-
+    crewMember   = None
+    crew         = None
     if request.method == 'GET':
         try:
-            with db.bind.Session() as s:
-                with s.begin():
-                    crewMember               = s.execute(selectCrew(member)).all()
-                    ranks                    = s.scalars(selectRank()).all()
-                    duties                   = s.scalars(selectDuty()).all()
-                    divisions                = s.scalars(selectDivision()).all()
-
-                    personId                 = (s.scalar(selectPerson(member))).Id
-                    memberSerial             = (s.execute(selectCrew(member)).first())[3]
-                    personalBaseInformations = s.query(PersonalBaseInformationsTable)\
-                                                .filter_by(Id=personId).first()
-                    crewMember               = s.query(CrewMemberTable)\
-                                                .filter_by(Serial=memberSerial).first()
-                    crewMemberRank           = s.query(CrewMemberRankTable)\
-                                                .filter_by(MemberSerial=memberSerial).first()
-                    crewMemberDivision       = s.query(CrewMemberDivisionTable)\
-                                                .filter_by(MemberSerial=memberSerial).first()
-                    crewMemberDuties         = s.query(CrewMemberDutyTable)\
-                                                .filter_by(MemberSerial=memberSerial).all()
+            crewMember = CrewMember(Nickname=member)
         except Exception as e:
             return await standardReturn("error.html",sectionName,ERROR="GET: "+str(e))
 

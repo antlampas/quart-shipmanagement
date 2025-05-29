@@ -68,32 +68,35 @@ class CrewMember(Editable):
 
         stop_construct = False
         #TODO: Make it work with keycloack too
-        if self.Source == "db" and self.Nickname and not stop_construct:
-            crewMemberInformations = None
-            with db.bind.Session() as s:
-                with s.begin():
-                    crewMemberInformations = s.scalar(selectCrew(self.Nickname))
-            if crewMemberInformations:
-                if not re.match(isNumber,crewMemberInformations.Serial)  and not stop_construct:
-                    self.Error = "Member serial is not a number"
+        if self.Source == "db":
+            if self.Nickname:
+                cmt = self._loadFromDB(Nickname=self.Nickname)
+                if cmt:
+                    if not re.match(isNumber,cmt.Serial)  and not stop_construct:
+                        self.Error = "Member serial is not a number"
+                        stop_construct = True
+                    if not re.match(isNumber,cmt.Stic)  and not stop_construct:
+                        self.Error = "Member STIC membership is not a number"
+                        stop_construct = True
+                    if (self.FirstName or self.LastName or self.Rank or \
+                        self.Division or self.Duties or self.Serial or \
+                        self.Stic) and not stop_construct:
+                        if self._checkDB(cmt) and not stop_construct:
+                               self.Error = "Crew member mismatches with database"
+                               stop_construct = True
+                    else:
+                        self.FirstName = cmt.FirstName
+                        self.LastName  = cmt.LastName
+                        self.Rank      = cmt.Rank
+                        self.Division  = cmt.Division
+                        self.Duties    = cmt.Duties
+                        self.Serial    = cmt.Serial
+                        self.Stic      = cmt.Stic
+                else:
+                    self.Error = "Crew member not in database"
                     stop_construct = True
-                if not re.match(isNumber,crewMemberInformations.Stic)  and not stop_construct:
-                    self.Error = "Member STIC membership is not a number"
-                    stop_construct = True
-                if (self.FirstName != crewMemberInformations.FirstName or \
-                   self.LastName  != crewMemberInformations.LastName  or  \
-                   self.Nickname  != crewMemberInformations.Nickname  or  \
-                   self.Rank      != crewMemberInformations.Rank      or  \
-                   self.Division  != crewMemberInformations.Division  or  \
-                   self.Duties    != crewMemberInformations.Duties    or  \
-                   self.Serial    != crewMemberInformations.Serial    or  \
-                   self.Stic      != crewMemberInformations.Stic)     and \
-                   not stop_construct:
-                       self.Error = "Crew member mismatches with database"
-                       stop_construct = True
             else:
-                self.Error = "Crew member not in database"
-                stop_construct = True
+                self.Error = "No Nickname given"
     def edit(self,attributes=dict()):
         self.Error = ""
         crewMember = None
@@ -139,40 +142,91 @@ class CrewMember(Editable):
         self.Error = ""
         #TODO: Make it work with keycloack too
         if self.Source == "db":
-            crewMemberInformations = self._loadFromDB()
+            cmt = self._loadFromDB()
             if not self.Error:
-                if crewMemberInformations:
-                    self.FirstName = crewMemberInformations.FirstName
-                    self.LastName  = crewMemberInformations.LastName
-                    self.Nickname  = crewMemberInformations.Nickname
-                    self.Serial    = crewMemberInformations.Serial
-                    self.Rank      = crewMemberInformations.RankName
-                    self.Division  = crewMemberInformations.DivisionName
-                    self.Duties    = crewMemberInformations.Duties
-                    self.Stic      = crewMemberInformations.Stic
+                if cmt:
+                    self.FirstName = cmt.FirstName
+                    self.LastName  = cmt.LastName
+                    self.Nickname  = cmt.Nickname
+                    self.Serial    = cmt.Serial
+                    self.Rank      = cmt.RankName
+                    self.Division  = cmt.DivisionName
+                    self.Duties    = cmt.Duties
+                    self.Stic      = cmt.Stic
         return self.Error
     def _loadFromDB(self,Nickname):
         self.Error = ""
         with db.bind.Session() as s:
             with s.begin():
-                crewMemberInformations = None
+                cmt = None
                 if Nickname:
-                    crewMemberInformations = s.scalar(selectCrew(Nickname))
+                    cmt = s.scalar(selectCrew(Nickname))
                 elif Serial:
-                    crewMemberInformations = s.scalar(selectCrew(Serial))
+                    cmt = s.scalar(selectCrew(Serial))
                 else:
                     self.Error = "Search clause missing"
 
-                crewMemberInformations.Rank     = s.query(CrewMemberDutyTable).filter_by(MemberSerial=crewMemberInformations.Serial).first().RankName
-                crewMemberInformations.Division = s.query(CrewMemberDutyTable).filter_by(MemberSerial=crewMemberInformations.Serial).first().DivisionName
-                crewMemberInformations.Duties   = [ duty.Dutyname for duty in s.query(CrewMemberDutyTable).filter_by(MemberSerial=crewMemberInformations.Serial).all() ]
-                crewMemberInformations.Stic     = s.query(CrewMemberDutyTable).filter_by(MemberSerial=crewMemberInformations.Serial).first().Stic
+                if (not self.FirstName or  \
+                    not self.LastName  or  \
+                    not self.Division  or  \
+                    not self.Rank      or  \
+                    not self.Duties    or  \
+                    not self.Serial    or  \
+                    not self.Stic)     and \
+                    not stop_construct:
+                       self.FirstName = cmt.FirstName
+                       self.LastName  = cmt.LastName
+                       self.Nickname  = cmt.Nickname
+                       self.Serial    = cmt.Serial
+                       self.Rank      = cmt.RankName
+                       self.Division  = cmt.DivisionName
+                       self.Duties    = cmt.Duties
+                       self.Stic      = cmt.Stic
 
                 if not self.Error:
-                    return crewMemberInformations
+                    return cmt
                 else:
-                    self.Error = "Crew member not found"
+                    return None
         return self.error
+    def _saveToDB(self):
+        if re.match(isAlpha, self.FirstName) and \
+           re.match(isAlpha, self.LastName)  and \
+           re.match(isAlpha, self.Nickname)  and \
+           re.match(isAlpha, self.Rank)      and \
+           re.match(isAlpha, self.Division):
+            person             = PersonalBaseInformationsTable(FirstName = self.FirstName,
+                                                               LastName  = self.LastName,
+                                                               Nickname  = self.Nickname)
+            crewMember         = CrewMemberTable(PersonalBaseInformationsId = crewMember.Id)
+            crewMemberRank     = CrewMemberRankTable(MemberSerial=self.Serial,
+                                                     RankName=self.rank)
+            crewMemberDivision = CrewMemberDivisionTable(MemberSerial = self.Serial,
+                                                         DivisionName = self.division)
+            crewMemberDuty     = [ CrewMemberDutyTable(MemberSerial = self.Serial,
+                                                       DutyName     = duty.name) for duty in self.Duties ]
+            if crewMember:
+                with db.bind.Session() as s:
+                    with s.begin():
+                        s.commit()
+            else:
+                with db.bind.Session() as s:
+                    with s.begin():
+                        s.add()
+                        s.commit()
+    def _checkDB(self,cmt=None):
+        if cmt:
+            if (self.FirstName != cmt.FirstName or  \
+                self.LastName  != cmt.LastName  or  \
+                self.Rank      != cmt.Rank      or  \
+                self.Division  != cmt.Division  or  \
+                self.Duties    != cmt.Duties    or  \
+                self.Serial    != cmt.Serial    or  \
+                self.Stic      != cmt.Stic):
+                return True
+            else:
+                return False
+        else:
+            return False
 
 class Crew(Addable):
     def __init__(self,source="db",crew=list()):
@@ -190,13 +244,27 @@ class Crew(Addable):
         if self.Source == "db":
             with db.bind.Session() as s:
                 with s.begin():
-                    crewDB = s.scalars(selectCrew()).all()
-                    if crew:
-                        if crew != crewDB:
+                    crewDB     = self._loadFromDB()
+                    crewDBlist = list()
+                    if crewDB:
+                        for member in crewDB:
+                            DBmember = CreMember(FirstName = crewDB.FirstName
+                                                 LastName  = crewDB.LastName
+                                                 Rank      = crewDB.Rank
+                                                 Division  = crewDB.Division
+                                                 Duties    = crewDB.Duties
+                                                 Serial    = crewDB.Serial
+                                                 Stic      = crewDB.Stic
+                                                )
+                            crewDBlist.append(DBmember)
+                        if crew:
+                            if crew != crewDBlist:
                             self.Error = "Given crew list mismatches with database"
+                        else:
+                            self.Crew = crewDBlist
                     else:
                         self.Error = "No crew in database"
-        if self.Source == "keycloak":
+        elif self.Source == "keycloak":
             if not crew:
                 keycloakAccessRequest    = f'{self.KeycloakBaseURL}/realms/{self.KeycloakRealm}/protocol/openid-connect/token'
                 keycloakUsersListRequest = f'{self.KeycloakBaseURL}/admin/realms/{self.KeycloakRealm}/users'
@@ -321,3 +389,10 @@ class Crew(Addable):
         except Exception as e:
             self.Error = e
         return self.Error
+    def _loadFromDB(self):
+        crewDB = s.scalars(selectCrew()).all()
+        return crewDB
+    def _saveToDB(self):
+        pass
+    def checkDB(self,cmt=None):
+        pass
