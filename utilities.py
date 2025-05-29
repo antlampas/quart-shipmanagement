@@ -3,5 +3,8 @@
 #Author:     antlampas
 #Created on: 2025-05-15
 
-isAlpha  = r"^[A-Za-z]+$"
-isNumber = r"^[0-9]+$"
+#### Regular expressions ####
+isAlpha        = r"^[A-Za-z]+$"
+isNumber       = r"^[0-9]+$"
+isAlphanumeric = r"^[A-Za-z][0-9]+$"
+#### End regular expressions ####

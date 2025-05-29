@@ -3,6 +3,8 @@
 #Author:     antlampas
 #Created on: 2025-05-15
 
+import re
+
 from config                     import BaseConfig as Config
 from sqlalchemy                 import ForeignKey
 from sqlalchemy                 import select
@@ -13,6 +15,8 @@ from sqlalchemy.orm             import DeclarativeBase
 from sqlalchemy.orm             import relationship
 from quart_sqlalchemy           import SQLAlchemyConfig
 from quart_sqlalchemy.framework import QuartSQLAlchemy
+
+from utilities                  import isAlpha,isNumber,isAlphanumeric
 
 db = QuartSQLAlchemy(
     config=SQLAlchemyConfig(
@@ -285,5 +289,34 @@ def selectTask(task=""):
 #### End queries ####
 
 #### Helper functions ####
-
+def loadFromDB(what="",pattern=""):
+    if what == "crewMember":
+        crewMember = None
+        if re.match(isAlpha,pattern):
+            with db.bind.Session() as s:
+                with s.begin():
+                    crewMember = s.scalar(selectCrew(pattern))
+        else:
+            return crewMember
+    elif what == "crew":
+        crew = list()
+        with db.bind.Session() as s:
+            with s.begin():
+                crewDB = s.scalars(selectCrew())
+                if crewDB:
+                    for member in crewDB:
+                        DBmember = CreMember(FirstName = crewDB.FirstName
+                                             LastName  = crewDB.LastName
+                                             Rank      = crewDB.Rank
+                                             Division  = crewDB.Division
+                                             Duties    = crewDB.Duties
+                                             Serial    = crewDB.Serial
+                                             Stic      = crewDB.Stic
+                                            )
+                        crew.append(DBmember)
+        return crew
+    else:
+        return None
+def saveToDB():
+    pass
 #### End helper functions ####
