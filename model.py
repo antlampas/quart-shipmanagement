@@ -184,43 +184,51 @@ class MemberMissionLogEntryTable(db.Model):
 db.create_all()
 
 #### Queries ####
-def selectCrew(member=""):
-    if member == "":
+def selectCrew(member=''):
+    if member == '':
         return select(PersonalBaseInformationsTable)
     else:
-        where_clause = f"PersonalBaseInformations.Nickname='{member}'"
-        return select(
-            PersonalBaseInformationsTable.FirstName.label('FirstName'),
-            PersonalBaseInformationsTable.LastName.label('LastName'),
-            PersonalBaseInformationsTable.Nickname.label('Nickname'),
-            CrewMemberTable.Serial.label('Serial'),
-            STICMembershipTable.SticSerial.label('STIC'),
-            CrewMemberRankTable.RankName.label('Rank'),
-            CrewMemberDutyTable.DutyName.label('Duties'),
-            CrewMemberDivisionTable.DivisionName.label('Division')
-        ).join(
-            CrewMemberTable,
-            PersonalBaseInformationsTable.Id == CrewMemberTable.PersonalBaseInformationsId
-        ).join(
-            CrewMemberRankTable,
-            CrewMemberTable.Serial == CrewMemberRankTable.MemberSerial
-        ).join(
-            CrewMemberDutyTable,
-            CrewMemberTable.Serial == CrewMemberDutyTable.MemberSerial
-        ).join(
-            CrewMemberDivisionTable,
-            CrewMemberTable.Serial == CrewMemberDivisionTable.MemberSerial
-        ).join(
-            STICMembershipTable,
-            CrewMemberTable.Serial == STICMembershipTable.MemberSerial
-        ).where(text(where_clause))
+        if re.match(isAlpha,member):
+            where_clause = f"PersonalBaseInformations.Nickname='{member}'"
+            return select(
+                         PersonalBaseInformationsTable.FirstName.label('FirstName'),
+                         PersonalBaseInformationsTable.LastName.label('LastName'),
+                         PersonalBaseInformationsTable.Nickname.label('Nickname'),
+                         CrewMemberTable.Serial.label('Serial'),
+                         STICMembershipTable.SticSerial.label('STIC'),
+                         CrewMemberRankTable.RankName.label('Rank'),
+                         CrewMemberDutyTable.DutyName.label('Duties'),
+                         CrewMemberDivisionTable.DivisionName.label('Division')
+            ).join(
+                CrewMemberTable,
+                PersonalBaseInformationsTable.Id == CrewMemberTable.PersonalBaseInformationsId
+            ).join(
+                CrewMemberRankTable,
+                CrewMemberTable.Serial == CrewMemberRankTable.MemberSerial
+            ).join(
+                CrewMemberDutyTable,
+                CrewMemberTable.Serial == CrewMemberDutyTable.MemberSerial
+            ).join(
+                CrewMemberDivisionTable,
+                CrewMemberTable.Serial == CrewMemberDivisionTable.MemberSerial
+            ).join(
+                STICMembershipTable,
+                CrewMemberTable.Serial == STICMembershipTable.MemberSerial
+            ).where(text(where_clause))
+        else:
+            return None
 
-def selectPerson(person=""):
-    if person == "":
+def selectPerson(person=''):
+    if person == '':
         return None
     else:
-        where_clause = f"PersonalBaseInformations.Nickname='{person}'"
-        return select(PersonalBaseInformationsTable).where(text(where_clause))
+        if re.match(isAlpha,member):
+            where_clause = f"PersonalBaseInformations.Nickname='{person}'"
+            return select(
+                         PersonalBaseInformationsTable).where(text(where_clause)
+                         )
+        else:
+            return None
 
 def selectPeople(attribute="",search=""):
     if not attribute or not search:
@@ -237,7 +245,8 @@ def selectPeople(attribute="",search=""):
             CrewMemberDivisionTable.DivisionName.label('Division')
         ).join(
             CrewMemberTable,
-            PersonalBaseInformationsTable.Id == CrewMemberTable.PersonalBaseInformationsId
+            PersonalBaseInformationsTable.Id == \
+                                      CrewMemberTable.PersonalBaseInformationsId
         ).join(
             CrewMemberRankTable,
             CrewMemberTable.Serial == CrewMemberRankTable.MemberSerial
@@ -256,67 +265,135 @@ def selectRank(rank=""):
     if rank == "":
         return select(RankTable)
     else:
-        where_clause = f"Rank.Name='{rank}'"
-        return select(RankTable).where(text(where_clause))
+        if re.match(isAlpha,rank):
+            where_clause = f"Rank.Name='{rank}'"
+            return select(RankTable).where(text(where_clause))
+        else:
+            return None
 
 def selectDuty(duty=""):
     if duty == "":
         return select(DutyTable)
     else:
-        where_clause = f"Duty.Name='{duty}'"
-        return select(DutyTable).where(text(where_clause))
+        if re.match(isAlpha,duty):
+            where_clause = f"Duty.Name='{duty}'"
+            return select(DutyTable).where(text(where_clause))
+        else:
+            return None
 
 def selectDivision(division=""):
     if division == "":
         return select(DivisionTable)
     else:
-        where_clause = f"Division.Name='{division}''"
-        return select(DivisionTable).where(text(where_clause))
+        if re.match(isAlpha,division):
+            where_clause = f"Division.Name='{division}''"
+            return select(DivisionTable).where(text(where_clause))
+        else:
+            return None
 
 def selectMission(mission=""):
     if mission == "":
         return select(MissionTable)
     else:
-        where_clause = f"Mission.Name='{mission}''"
-        return select(MissionTable).where(text(where_clause))
+        if re.match(isAlpha,mission):
+            where_clause = f"Mission.Name='{mission}''"
+            return select(MissionTable).where(text(where_clause))
+        else:
+            return None
 
 def selectTask(task=""):
     if task == "":
         return select(TaskTable)
     else:
-        where_clause = f"Task.Name='{task}''"
-        return select(TaskTable).where(text(where_clause))
+        if re.match(isAlpha,task):
+            where_clause = f"Task.Name='{task}''"
+            return select(TaskTable).where(text(where_clause))
+        else:
+            return None
 #### End queries ####
 
 #### Helper functions ####
-def loadFromDB(what="",pattern=""):
+def loadFromDB(what='',pattern=''):
     if what == "crewMember":
+        from crew import CrewMember
         crewMember = None
         if re.match(isAlpha,pattern):
             with db.bind.Session() as s:
                 with s.begin():
                     crewMember = s.scalar(selectCrew(pattern))
         else:
-            return crewMember
+            return None
+        if crewMember:
+            return
     elif what == "crew":
-        crew = list()
+        from crew import CrewMember
+        crewList = list()
         with db.bind.Session() as s:
             with s.begin():
                 crewDB = s.scalars(selectCrew())
                 if crewDB:
                     for member in crewDB:
-                        DBmember = CreMember(FirstName = crewDB.FirstName
-                                             LastName  = crewDB.LastName
-                                             Rank      = crewDB.Rank
-                                             Division  = crewDB.Division
-                                             Duties    = crewDB.Duties
-                                             Serial    = crewDB.Serial
-                                             Stic      = crewDB.Stic
-                                            )
-                        crew.append(DBmember)
-        return crew
+                        DBmember = CrewMember(FirstName = crewDB.FirstName
+                                              LastName  = crewDB.LastName
+                                              Rank      = crewDB.Rank
+                                              Division  = crewDB.Division
+                                              Duties    = crewDB.Duties
+                                              Serial    = crewDB.Serial
+                                              Stic      = crewDB.Stic
+                                             )
+                        crewList.append(DBmember)
+        crewMembers = Crew(crewList)
+        return crewMembers
     else:
         return None
-def saveToDB():
-    pass
+def saveToDB(what='',data=dict()):
+    if what == 'crewMember':
+        person = PersonalBaseInformationsTable(FirstName=data['FirstName'],
+                                               LastName=data['LastName'],
+                                               Nickname=data['Nickname'])
+        with db.bind.Session() as s:
+            with s.begin():
+                s.add(person)
+                s.commit()
+        personDB = db.session.scalar(selectPerson(data['Nickname']))
+        crewMember = CrewMemberTable(PersonalBaseInformationsId=personDB.Id,
+                                     Serial=data['Serial'])
+        with db.bind.Session() as s:
+            with s.begin():
+                s.session.add(crewMember)
+                s.session.commit()
+        sticMembership = STICMembershipTable(SticSerial   = data['Stic'],
+                                             MemberSerial = data['Serial']
+                                            )
+        memberRank     = CrewMemberRankTable(RankName     = data['Rank'],
+                                             MemberSerial = ['Serial']
+                                            )
+        memberDuty     = CrewMemberDutyTable(DutyName     = data['Duty'],
+                                             MemberSerial = ['Serial']
+                                            )
+        memberDivision = CrewMemberDivisionTable(
+                                                DivisionName = data['Division'],
+                                                MemberSerial = ['Serial']
+                                                )
+        with db.bind.Session() as s:
+            with s.begin():
+                s.session.add(sticMembership)
+                s.session.add(memberRank)
+                s.session.add(memberDuty)
+                s.session.add(memberDivision)
+                s.session.commit()
+        return True
+    elif what == 'crewMemberEdit':
+        from crew import crewMember
+
+        crewMember = db.session.scalar(selectCrew(data['Nickname']))
+
+        crewMember.FirstName = data['FirstName']
+        crewMember.LastName  = data['LastName']
+        crewMember.Rank      = data['Rank']
+        crewMember.Duties    = data['Duties']
+        crewMember.Division  = data['Division']
+        crewMember.STIC      = data['Stic']
+    else:
+        return False
 #### End helper functions ####

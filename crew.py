@@ -25,24 +25,8 @@ from quart          import session
 from config         import KeycloakConfig
 
 from model          import db
-from model          import PersonalBaseInformationsTable
-from model          import CrewMemberTable
-from model          import DutyTable
-from model          import RankTable
-from model          import DivisionTable
-from model          import CrewMemberRankTable
-from model          import CrewMemberDutyTable
-from model          import CrewMemberDivisionTable
-from model          import MemberOnboardLogEntryTable
-from model          import MemberRankLogEntryTable
-from model          import MemberDivisionLogEntryTable
-from model          import MemberTaskLogEntryTable
-from model          import MemberMissionLogEntryTable
-from model          import selectPerson
-from model          import selectCrew
-from model          import selectRank
-from model          import selectDuty
-from model          import selectDivision
+from model          import loadFromDB
+from model          import saveFromDB
 
 from forms          import AddCrewMemberForm
 from forms          import RemoveCrewMemberForm
@@ -61,18 +45,14 @@ from crewClasses    import Crew
 from standardReturn import standardReturn
 
 crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
-
-sectionName = "Crew"
-
-crewList = None
+sectionName    = "Crew"
 
 @crew_blueprint.route("/",methods=["GET"])
 @refreshToken
 @require_login
 async def crew():
-    global crewList
-    crewList = Crew("keycloak")
-    if crewList.Crew:
+    crew = loadFromDB('crew')
+    if crew.Crew:
         return await standardReturn("crew.html",sectionName,CREW=crewList.Crew)
     else:
         return await standardReturn("error.html",sectionName,ERROR="No crew member found")
@@ -81,7 +61,7 @@ async def crew():
 @refreshToken
 @require_user(groups=['Equipaggio'])
 async def member(member):
-    crewMember = None
+    crewMember = loadFromDB('crewMember',member)
     if crewList:
         for cm in crewList.Crew:
             if cm.Nickname == member:
@@ -127,17 +107,15 @@ async def add():
                                     Duties    = (await request.form)\
                                                                   .getlist('Duties')
                                )
+            # form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
+            # form.Duties.choices   = [(d.Name,d.Name) for d in duties]
+            # form.Division.choices = [(d.Name,d.Name) for d in divisions]
             try:
                 with db.bind.Session() as s:
                     with s.begin():
-                        ranks     = s.scalars(selectRank()).all()
-                        duties    = s.scalars(selectDuty()).all()
-                        divisions = s.scalars(selectDivision()).all()
+                        saveToDB('crewMember',crewMember.__dict__)
             except Exception as e:
                     return await standardReturn("error.html",sectionName,ERROR="2: "+str(e))
-            form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
-            form.Duties.choices   = [(d.Name,d.Name) for d in duties]
-            form.Division.choices = [(d.Name,d.Name) for d in divisions]
             return await standardReturn("crewMemberAdd.html",
                                          sectionName,
                                          FORM=form,
@@ -247,68 +225,7 @@ async def editMember(member):
                                 Division  = division,
                                 Duties    = selectedDuties
                                )
-            dutyAlreadyPresent = False
-            dutyRemoved        = False
-            dutyIndex          = 0
-
-            try:
-                with db.bind.Session() as s:
-                    with s.begin():
-                        crewMember               = s.execute(selectCrew(member)).all()
-                        ranks                    = s.scalars(selectRank()).all()
-                        duties                   = s.scalars(selectDuty()).all()
-                        divisions                = s.scalars(selectDivision()).all()
-
-                        personId                 = (s.scalar(selectPerson(member))).Id
-                        memberSerial             = (s.execute(selectCrew(member)).first())[3]
-                        personalBaseInformations = s.query(PersonalBaseInformationsTable)\
-                                                    .filter_by(Id=personId).update({'FirstName':firstname,'LastName':lastname,'Nickname':nickname})
-                        crewMember               = s.query(CrewMemberTable)\
-                                                    .filter_by(Serial=memberSerial).first()
-                        crewMemberRank           = s.query(CrewMemberRankTable)\
-                                                    .filter_by(MemberSerial=memberSerial).update({'RankName': rank})
-                        crewMemberDivision       = s.query(CrewMemberDivisionTable)\
-                                                    .filter_by(MemberSerial=memberSerial).update({'DivisionName': division})
-                        crewMemberDuties         = s.query(CrewMemberDutyTable)\
-                                                    .filter_by(MemberSerial=memberSerial).all()
-            except Exception as e:
-                return await standardReturn("error.html",sectionName,ERROR="1: "+str(e))
-            if len(selectedDuties):
-                try:
-                    with db.bind.Session() as s:
-                        with s.begin():
-                            for newDuty in selectedDuties:
-                                for oldDuty in crewMemberDuties:
-                                    if newDuty == oldDuty.DutyName:
-                                        dutyAlreadyPresent = True
-                                        break
-                                if not dutyAlreadyPresent:
-                                    newDuty            = CrewMemberDutyTable(MemberSerial=memberSerial,
-                                                                            DutyName=newDuty)
-                                    s.add(newDuty)
-                                dutyAlreadyPresent = False
-                            s.commit()
-                            s.flush()
-                except Exception as e:
-                    return await standardReturn("error.html",sectionName,ERROR="2: "+str(e))
-                try:
-                    with db.bind.Session() as s:
-                        with s.begin():
-                            for oldDuty in crewMemberDuties:
-                                for newDuty in selectedDuties:
-                                    if newDuty == oldDuty.DutyName:
-                                        dutyAlreadyPresent = True
-                                        break
-                                if not dutyAlreadyPresent:
-                                    removeDuty = s.query(CrewMemberDutyTable)\
-                                                .filter(and_(CrewMemberDutyTable.MemberSerial==memberSerial,
-                                                            CrewMemberDutyTable.DutyName==oldDuty.DutyName))\
-                                                .delete()
-                                dutyAlreadyPresent = False
-                            s.commit()
-                            s.flush()
-                except Exception as e:
-                    return await standardReturn("error.html",sectionName,ERROR="3: "+str(e))
+            saveToDB('crewMemberEdit',member.__dict__)
             return redirect(url_for('crew.edit',member=personalBaseInformations.Nickname))
     else:
         return await standardReturn("error.html",sectionName,ERROR="Invalid method")

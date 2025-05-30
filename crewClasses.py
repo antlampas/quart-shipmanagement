@@ -82,13 +82,6 @@ class Crew(Addable):
         self.Error                  = ""
         self.Source                 = source
         self.Crew                   = crew
-        self.KeycloakAdminClient    = KeycloakConfig.KEYCLOAK_ADMIN['client_id']
-        self.KeycloakAdminGrantType = KeycloakConfig.KEYCLOAK_ADMIN['grant_type']
-        self.KeycloakAdminUser      = KeycloakConfig.KEYCLOAK_ADMIN['username']
-        self.KeycloakAdminPass      = KeycloakConfig.KEYCLOAK_ADMIN['password']
-        self.KeycloakBaseURL        = KeycloakConfig.KEYCLOAK_URL
-        self.KeycloakRealm          = KeycloakConfig.KEYCLOAK_REALM
-        self.KeycloakAccessToken    = None
     def add(self,member=CrewMember()):
         self.Error = ""
         if re.match(isAlpha,member.FirstName) and \
