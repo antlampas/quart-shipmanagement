@@ -35,11 +35,21 @@ def addUser(headers,user=dict()):
         response = None
     return response
 
-def editUser(headers,user,attributes):
-    pass
+def editUser(headers,user='',attributes=''):
+    response = None
+    if user and attributes:
+        response = requests.put(f'{current_app.config['KEYCLOAK_URL']}/admin/realms/{current_app.config['KEYCLOAK_REALM']}/users/{user}',headers=headers,data=user)
+    else:
+        response = None
+    return response
 
-def removeUser(headers,user):
-    pass
+def removeUser(headers,user=''):
+    response = None
+    if user and attributes:
+        response = requests.delete(f'{current_app.config['KEYCLOAK_URL']}/admin/realms/{current_app.config['KEYCLOAK_REALM']}/users/{user}',headers=headers)
+    else:
+        response = None
+    return response
 
 def getGroup(headers,group=''):
     pass
