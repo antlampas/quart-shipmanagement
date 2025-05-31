@@ -128,3 +128,17 @@ def authorize_action(action):
         wrapper.__name__ = func.__name__
         return wrapper
     return decorator
+
+def getAdminAccessToken():
+    headers = {
+                'content-type' : 'application/x-www-form-urlencoded'
+              }
+    data = {
+             'client_id'  : current_app.config['KEYCLOAK_ADMIN']['client_id'],
+             'grant_type' : current_app.config['KEYCLOAK_ADMIN']['grant_type'],
+             'username'   : current_app.config['KEYCLOAK_ADMIN']['username'],
+             'password'   : current_app.config['KEYCLOAK_ADMIN']['password']
+           }
+    response = requests.post(current_app.config['KEYCLOAK_ADMIN']['url'],headers=headers,data=data)
+
+    return response.json()['access_token']
