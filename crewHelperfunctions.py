@@ -16,7 +16,7 @@ def isCrewMemberInDB(member=CrewMember()):
     Checks if the crew member is in the database
     """
     if member.Nickname:
-        memberDB = loadFromDB('crewMember',member.Nickname)
+        memberDB = loadFromDB('crew',member.Nickname)
         if memberDB: return True
         else:        return False
     else:

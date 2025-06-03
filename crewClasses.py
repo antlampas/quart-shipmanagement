@@ -45,7 +45,6 @@ from config         import KeycloakConfig
 
 class CrewMember(Editable):
     def __init__(self,
-                 source    = "db",
                  FirstName = "",
                  LastName  = "",
                  Nickname  = "",
@@ -56,7 +55,6 @@ class CrewMember(Editable):
                  Stic      = 0
                 ):
         self.Error     = ""
-        self.Source    = source
         self.FirstName = FirstName
         self.LastName  = LastName
         self.Nickname  = Nickname
@@ -76,12 +74,47 @@ class CrewMember(Editable):
                 except Exception as e:
                     self.Error = e
         return self.Error
+    def serialize(self):
+        self.Error = ''
+        member = {
+                    "FirstName" : self.FirstName,
+                    "LastName"  : self.LastName,
+                    "Nickname"  : self.Nickname,
+                    "Rank"      : self.Rank,
+                    "Division"  : self.Division,
+                    "Duties"    : self.Duties,
+                    "Serial"    : self.Serial,
+                    "Stic"      : self.Stic
+                 }
+        return member
+    def deserilize(self,crewMember=dict()):
+        self.Error = ''
+        for key,value in crewMember:
+            if key == 'FirstName':
+                self.FirstName = value
+            elif key == 'LastName':
+                self.LastName = value
+            elif key == 'Nickname':
+                self.Nickname = value
+            elif key == 'Rank':
+                self.Rank = value
+            elif key == 'Division':
+                self.Division = value
+            elif key == 'Duties':
+                self.Duties = value
+            elif key == 'Serial':
+                self.Serial = value
+            elif key = 'Stic':
+                self.Stic = value
+            else:
+                self.Error = "Attribute not valid"
+                break
+        return self.Error
 
 class Crew(Addable):
-    def __init__(self,source="db",crew=list()):
-        self.Error                  = ""
-        self.Source                 = source
-        self.Crew                   = crew
+    def __init__(self,crew=list()):
+        self.Error = ""
+        self.Crew  = crew
     def add(self,member=CrewMember()):
         self.Error = ""
         if re.match(isAlpha,member.FirstName) and \
@@ -103,3 +136,11 @@ class Crew(Addable):
         except Exception as e:
             self.Error = e
         return self.Error
+    def serialize(self):
+        self.Error = ''
+        crew = dict()
+        for member in self.Crew:
+            crew[member.Nickname] = member.serilize()
+        return crew
+    def deserilize(self,crew=dict()):
+        self.Error = ''

@@ -61,7 +61,7 @@ async def crew():
 @refreshToken
 @require_user(groups=['Equipaggio'])
 async def member(member):
-    crewMember = loadFromDB('crewMember',member)
+    crewMember = loadFromDB('crew',member)
     if crewList:
         for cm in crewList.Crew:
             if cm.Nickname == member:
