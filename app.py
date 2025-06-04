@@ -32,14 +32,14 @@ def create_app(mode='Development'):
     db.init_app(app)
     db.create_all()
 
-    from index          import index_blueprint
-    from crew           import crew_blueprint
-    from divisions      import divisions_blueprint
-    from ranks          import ranks_blueprint
-    from duties         import duties_blueprint
-    from tasks          import tasks_blueprint
-    from missions       import missions_blueprint
-    from crewOnboardLog import crewOnboardLog_blueprint
+    from indexView          import index_blueprint
+    from crewView           import crew_blueprint
+    from divisionsView      import divisions_blueprint
+    from ranksView          import ranks_blueprint
+    from dutiesView         import duties_blueprint
+    from tasksView          import tasks_blueprint
+    from missionsView       import missions_blueprint
+    from crewOnboardLogView import crewOnboardLog_blueprint
 
     app.register_blueprint(index_blueprint)
     app.register_blueprint(crew_blueprint)

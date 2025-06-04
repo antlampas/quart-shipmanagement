@@ -37,11 +37,11 @@ db = QuartSQLAlchemy(
 
 class PersonalBaseInformationsTable(db.Model):
     __tablename__ = "PersonalBaseInformations"
-    Member:     Mapped["CrewMemberTable"] = relationship(cascade='all,delete',back_populates='PersonalBaseInformations')
-    Id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
-    Nickname:   Mapped[str]               = mapped_column(unique=True)
-    FirstName:  Mapped[int]
-    LastName:   Mapped[str]
+    Member:    Mapped["STICMembershipTable"] = relationship(cascade='all,delete',back_populates='PersonalBaseInformations')
+    Id:        Mapped[int]                   = mapped_column(primary_key=True,autoincrement=True)
+    Nickname:  Mapped[str]                   = mapped_column(unique=True)
+    FirstName: Mapped[int]
+    LastName:  Mapped[str]
 
 class CrewMemberTable(db.Model):
     __tablename__ = "CrewMember"
@@ -56,7 +56,7 @@ class CrewMemberTable(db.Model):
 class DutyTable(db.Model):
     __tablename__ = "Duty"
     CrewMemberDuty: Mapped["CrewMemberDutyTable"] = relationship(cascade='all,delete',back_populates='Duty')
-    Name:           Mapped[str] = mapped_column(primary_key=True)
+    Name:           Mapped[str]                   = mapped_column(primary_key=True)
     Description:    Mapped[str]
 
 class RankTable(db.Model):
@@ -67,15 +67,15 @@ class RankTable(db.Model):
 
 class DivisionTable(db.Model):
     __tablename__ = "Division"
-    CrewMemberDivision:          Mapped["CrewMemberDivisionTable"] = relationship(cascade='all,delete',back_populates='Division')
-    Name:                        Mapped[str]                       = mapped_column(primary_key=True)
-    Description:                 Mapped[str]
+    CrewMemberDivision: Mapped["CrewMemberDivisionTable"] = relationship(cascade='all,delete',back_populates='Division')
+    Name:               Mapped[str]                       = mapped_column(primary_key=True)
+    Description:        Mapped[str]
 
 class STICMembershipTable(db.Model):
     __tablename__ = "STICMembership"
-    Member:       Mapped["PersonalBaseInformationsTable"] = relationship(cascade='all,delete',back_populates='SticMembership')
-    MemberId:     Mapped[int]                             = mapped_column(ForeignKey("PersonalBaseInformationsTable.Id"))
-    SticSerial:   Mapped[int]                             = mapped_column(primary_key=True)
+    Member:     Mapped["PersonalBaseInformationsTable"] = relationship(cascade='all,delete',back_populates='SticMembership')
+    MemberId:   Mapped[int]                             = mapped_column(ForeignKey("PersonalBaseInformations.Id"))
+    SticSerial: Mapped[int]                             = mapped_column(primary_key=True)
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CrewMemberRank"
@@ -125,10 +125,10 @@ class MissionBaseInformationsTable(db.Model):
 class MissionTable(db.Model):
     __tablename__ = "Mission"
     MissionBaseInformations: Mapped["MissionBaseInformationsTable"] = relationship(cascade='all,delete',back_populates='Mission')
-    Tasks:    Mapped[list["TaskTable"]] = relationship(cascade='all,delete',back_populates='Mission')
-    Id:       Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
-    Name:     Mapped[str] = mapped_column(ForeignKey("MissionBaseInformations.Name"))
-    TaskName: Mapped[str] = mapped_column(ForeignKey("Task.Name"))
+    Tasks:                   Mapped[list["TaskTable"]]              = relationship(cascade='all,delete',back_populates='Mission')
+    Id:                      Mapped[int]                            = mapped_column(primary_key=True,autoincrement=True)
+    Name:                    Mapped[str]                            = mapped_column(ForeignKey("MissionBaseInformations.Name"))
+    TaskName:                Mapped[str]                            = mapped_column(ForeignKey("Task.Name"))
 
 class MemberDutyLogEntryTable(db.Model):
     __tablename__ = "MemberDutyLogEntry"
@@ -195,8 +195,8 @@ def selectPerson(person=''):
                          STICMembershipTable.SticSerial.label('STIC')
                          ).join(
                              STICMembershipTable,
-                             CrewMemberTable.Serial == STICMembershipTable.MemberSerial
-                         ).where(text(where_clause)
+                             PersonalBaseInformationsTable.Id == STICMembershipTable.MemberId
+                         ).where(text(where_clause))
         else:
             return None
 
@@ -211,7 +211,7 @@ def selectPeople(attribute='',search=''):
                      STICMembershipTable.SticSerial.label('STIC')
                      ).join(
                          STICMembershipTable,
-                         CrewMemberTable.Serial == STICMembershipTable.MemberSerial
+                         PersonalBaseInformationsTable.Id == STICMembershipTable.MemberId
                      )
     else:
         where_clause = f"PersonalBaseInformations.{attribute}='{person}'"
@@ -222,7 +222,7 @@ def selectPeople(attribute='',search=''):
                      STICMembershipTable.SticSerial.label('STIC')
                      ).join(
                          STICMembershipTable,
-                         CrewMemberTable.Serial == STICMembershipTable.MemberSerial
+                         PersonalBaseInformationsTable.Id == STICMembershipTable.MemberId
                      ).where(text(where_clause))
 
 def selectCrew(member=''):
@@ -540,6 +540,7 @@ def loadFromDB(what='',pattern=''):
     else:
         return None
 def saveToDB(what='',data=dict()):
+    #TODO: Check and complete this
     if what == 'crewMember':
         person = PersonalBaseInformationsTable(FirstName=data['FirstName'],
                                                LastName=data['LastName'],
@@ -577,8 +578,6 @@ def saveToDB(what='',data=dict()):
                 s.session.commit()
         return True
     elif what == 'crewMemberEdit':
-        from crew import crewMember
-
         crewMember = db.session.scalar(selectCrew(data['Nickname']))
 
         crewMember.FirstName = data['FirstName']

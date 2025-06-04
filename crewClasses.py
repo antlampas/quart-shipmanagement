@@ -104,7 +104,7 @@ class CrewMember(Editable):
                 self.Duties = value
             elif key == 'Serial':
                 self.Serial = value
-            elif key = 'Stic':
+            elif key == 'Stic':
                 self.Stic = value
             else:
                 self.Error = "Attribute not valid"

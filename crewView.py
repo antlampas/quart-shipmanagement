@@ -26,7 +26,7 @@ from config         import KeycloakConfig
 
 from model          import db
 from model          import loadFromDB
-from model          import saveFromDB
+from model          import saveToDB
 
 from forms          import AddCrewMemberForm
 from forms          import RemoveCrewMemberForm
