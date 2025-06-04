@@ -4,36 +4,36 @@
 #Created on: 2025-05-15
 
 class CrewPermissions():
-    addMemberRole    = ""
-    removeMemberRole = ""
-    editMemberRole   = ""
+    addMemberRole    = ''
+    removeMemberRole = ''
+    editMemberRole   = ''
 
 class CrewOnBoardLogPermissions():
-    addLogRole    = ""
-    removeLogRole = ""
-    editLogRole   = ""
+    addLogRole    = ''
+    removeLogRole = ''
+    editLogRole   = ''
 
 class DivisionsPermissions():
-    addDivisionRole    = ""
-    removeDivisionRole = ""
-    editDivisionRole   = ""
+    addDivisionRole    = ''
+    removeDivisionRole = ''
+    editDivisionRole   = ''
 
 class DutiesPermissions():
-    addDutyRole    = ""
-    removeDutyRole = ""
-    editDutyRole   = ""
+    addDutyRole    = ''
+    removeDutyRole = ''
+    editDutyRole   = ''
 
 class MissionsPermissions():
-    addMissionRole    = ""
-    removeMissionRole = ""
-    editMissionRole   = ""
+    addMissionRole    = ''
+    removeMissionRole = ''
+    editMissionRole   = ''
 
 class RanksPermissions():
-    addRankRole    = ""
-    removeRankRole = ""
-    editRankRole   = ""
+    addRankRole    = ''
+    removeRankRole = ''
+    editRankRole   = ''
 
 class TasksPermissions():
-    addTaskRole    = ""
-    removeTaskRole = ""
-    editTaskRole   = ""
+    addTaskRole    = ''
+    removeTaskRole = ''
+    editTaskRole   = ''
