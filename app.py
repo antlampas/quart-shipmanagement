@@ -20,7 +20,7 @@ from quart_keycloak  import KeycloakLogoutRequest
 def create_app(mode='Development'):
     from config import Development
     from config import Production
-    
+
     app = Quart(__name__)
     app.config.from_object(f"config.{mode}")
 
@@ -30,6 +30,7 @@ def create_app(mode='Development'):
     from authorization import require_role
     from model         import db
     db.init_app(app)
+    db.create_all()
 
     from index          import index_blueprint
     from crew           import crew_blueprint

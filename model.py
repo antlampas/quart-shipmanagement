@@ -37,9 +37,9 @@ db = QuartSQLAlchemy(
 
 class PersonalBaseInformationsTable(db.Model):
     __tablename__ = "PersonalBaseInformations"
-    Member: Mapped["CrewMemberTable"] = relationship(cascade='all,delete',back_populates='PersonalBaseInformations')
-    Id:         Mapped[int]           = mapped_column(primary_key=True,autoincrement=True)
-    Nickname:   Mapped[str]           = mapped_column(unique=True)
+    Member:     Mapped["CrewMemberTable"] = relationship(cascade='all,delete',back_populates='PersonalBaseInformations')
+    Id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
+    Nickname:   Mapped[str]               = mapped_column(unique=True)
     FirstName:  Mapped[int]
     LastName:   Mapped[str]
 
@@ -73,9 +73,9 @@ class DivisionTable(db.Model):
 
 class STICMembershipTable(db.Model):
     __tablename__ = "STICMembership"
-    Member:       Mapped["CrewMemberTable"] = relationship(cascade='all,delete',back_populates='SticMembership')
-    MemberSerial: Mapped[int]               = mapped_column(ForeignKey("CrewMember.Serial"))
-    SticSerial:   Mapped[int]               = mapped_column(primary_key=True)
+    Member:       Mapped["PersonalBaseInformationsTable"] = relationship(cascade='all,delete',back_populates='SticMembership')
+    MemberId:     Mapped[int]                             = mapped_column(ForeignKey("PersonalBaseInformationsTable.Id"))
+    SticSerial:   Mapped[int]                             = mapped_column(primary_key=True)
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CrewMemberRank"
@@ -181,8 +181,6 @@ class MemberMissionLogEntryTable(db.Model):
     Status:     Mapped[str]
     Grade:      Mapped[str]
 
-db.create_all()
-
 #### Queries ####
 def selectPerson(person=''):
     if not person:
@@ -191,8 +189,14 @@ def selectPerson(person=''):
         if re.match(isAlpha,member):
             where_clause = f"PersonalBaseInformations.Nickname='{person}'"
             return select(
-                         PersonalBaseInformationsTable).where(text(where_clause)
-                         )
+                         PersonalBaseInformationsTable.FirstName.label('FirstName'),
+                         PersonalBaseInformationsTable.LastName.label('LastName'),
+                         PersonalBaseInformationsTable.Nickname.label('Nickname'),
+                         STICMembershipTable.SticSerial.label('STIC')
+                         ).join(
+                             STICMembershipTable,
+                             CrewMemberTable.Serial == STICMembershipTable.MemberSerial
+                         ).where(text(where_clause)
         else:
             return None
 
@@ -200,10 +204,26 @@ def selectPeople(attribute='',search=''):
     if attribute and search and not re.match(isAlpha,attribute) and not re.match(isAlpha,search):
         return None
     elif not attribute or not search:
-        return select(PersonalBaseInformationsTable)
+        return select(
+                     PersonalBaseInformationsTable.FirstName.label('FirstName'),
+                     PersonalBaseInformationsTable.LastName.label('LastName'),
+                     PersonalBaseInformationsTable.Nickname.label('Nickname'),
+                     STICMembershipTable.SticSerial.label('STIC')
+                     ).join(
+                         STICMembershipTable,
+                         CrewMemberTable.Serial == STICMembershipTable.MemberSerial
+                     )
     else:
         where_clause = f"PersonalBaseInformations.{attribute}='{person}'"
-        return select(PersonalBaseInformationsTable).where(text(where_clause))
+        return select(
+                     PersonalBaseInformationsTable.FirstName.label('FirstName'),
+                     PersonalBaseInformationsTable.LastName.label('LastName'),
+                     PersonalBaseInformationsTable.Nickname.label('Nickname'),
+                     STICMembershipTable.SticSerial.label('STIC')
+                     ).join(
+                         STICMembershipTable,
+                         CrewMemberTable.Serial == STICMembershipTable.MemberSerial
+                     ).where(text(where_clause))
 
 def selectCrew(member=''):
     if not member:
@@ -234,7 +254,7 @@ def selectCrew(member=''):
                 CrewMemberTable.Serial == CrewMemberDivisionTable.MemberSerial
             ).join(
                 STICMembershipTable,
-                CrewMemberTable.Serial == STICMembershipTable.MemberSerial
+                PersonalBaseInformationsTable.Id == STICMembershipTable.MemberId
             ).where(text(where_clause))
         else:
             return None
@@ -535,18 +555,18 @@ def saveToDB(what='',data=dict()):
             with s.begin():
                 s.session.add(crewMember)
                 s.session.commit()
-        sticMembership = STICMembershipTable(SticSerial   = data['Stic'],
-                                             MemberSerial = data['Serial']
+        sticMembership = STICMembershipTable(MemberSerial = data['Serial'],
+                                             SticSerial   = data['Stic']
                                             )
-        memberRank     = CrewMemberRankTable(RankName     = data['Rank'],
-                                             MemberSerial = ['Serial']
+        memberRank     = CrewMemberRankTable(MemberSerial = ['Serial'],
+                                             RankName     = data['Rank']
                                             )
-        memberDuty     = CrewMemberDutyTable(DutyName     = data['Duty'],
-                                             MemberSerial = ['Serial']
+        memberDuty     = CrewMemberDutyTable(MemberSerial = ['Serial'],
+                                             DutyName     = data['Duty']
                                             )
         memberDivision = CrewMemberDivisionTable(
-                                                DivisionName = data['Division'],
-                                                MemberSerial = ['Serial']
+                                                MemberSerial = ['Serial'],
+                                                DivisionName = data['Division']
                                                 )
         with db.bind.Session() as s:
             with s.begin():

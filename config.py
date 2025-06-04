@@ -4,12 +4,12 @@
 #Created on: 2025-05-15
 
 class BaseConfig:
-    DATABASEURL                 = ""
-    SESSION_TYPE                = ""
+    DATABASEURL                 = ''
+    SESSION_TYPE                = ''
 
 class KeycloakConfig:
-    KEYCLOAK_URL                = ""
-    KEYCLOAK_REALM              = ""
+    KEYCLOAK_URL                = ''
+    KEYCLOAK_REALM              = ''
     OPENID_KEYCLOAK_CONFIG      = {
                                     'client_id':     '',
                                     'client_secret': '',
@@ -17,6 +17,7 @@ class KeycloakConfig:
                                     'check_nonce':   False
                                   }
     KEYCLOAK_ADMIN              = {
+                                    'url'        : f'{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token',
                                     'client_id'  : '',
                                     'grant_type' : '',
                                     'username'   : '',
