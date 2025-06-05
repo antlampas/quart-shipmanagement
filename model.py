@@ -182,12 +182,29 @@ class MemberMissionLogEntryTable(db.Model):
     Grade:      Mapped[str]
 
 #### Queries ####
-def selectPerson(person=''):
-    if not person:
+def selectPerson(attribute='',search='',stic=False):
+    if attribute and search and not re.match(isAlpha,attribute) and not re.match(isAlpha,search):
         return None
+    elif not attribute or not search:
+        if stic:
+            return select(
+                         PersonalBaseInformationsTable.FirstName.label('FirstName'),
+                         PersonalBaseInformationsTable.LastName.label('LastName'),
+                         PersonalBaseInformationsTable.Nickname.label('Nickname'),
+                         STICMembershipTable.SticSerial.label('STIC')
+                         ).join(
+                             STICMembershipTable,
+                             PersonalBaseInformationsTable.Id == STICMembershipTable.MemberId
+                         )
+        else:
+            return select(
+                         PersonalBaseInformationsTable.FirstName.label('FirstName'),
+                         PersonalBaseInformationsTable.LastName.label('LastName'),
+                         PersonalBaseInformationsTable.Nickname.label('Nickname')
+                         )
     else:
-        if re.match(isAlpha,member):
-            where_clause = f"PersonalBaseInformations.Nickname='{person}'"
+        where_clause = f"PersonalBaseInformations.{attribute}='{person}'"
+        if stic:
             return select(
                          PersonalBaseInformationsTable.FirstName.label('FirstName'),
                          PersonalBaseInformationsTable.LastName.label('LastName'),
@@ -198,80 +215,51 @@ def selectPerson(person=''):
                              PersonalBaseInformationsTable.Id == STICMembershipTable.MemberId
                          ).where(text(where_clause))
         else:
-            return None
+            return select(
+                         PersonalBaseInformationsTable.FirstName.label('FirstName'),
+                         PersonalBaseInformationsTable.LastName.label('LastName'),
+                         PersonalBaseInformationsTable.Nickname.label('Nickname')
+                         ).where(text(where_clause))
 
-def selectPeople(attribute='',search=''):
-    if attribute and search and not re.match(isAlpha,attribute) and not re.match(isAlpha,search):
-        return None
-    elif not attribute or not search:
-        return select(
-                     PersonalBaseInformationsTable.FirstName.label('FirstName'),
-                     PersonalBaseInformationsTable.LastName.label('LastName'),
-                     PersonalBaseInformationsTable.Nickname.label('Nickname'),
-                     STICMembershipTable.SticSerial.label('STIC')
-                     ).join(
-                         STICMembershipTable,
-                         PersonalBaseInformationsTable.Id == STICMembershipTable.MemberId
-                     )
-    else:
-        where_clause = f"PersonalBaseInformations.{attribute}='{person}'"
-        return select(
-                     PersonalBaseInformationsTable.FirstName.label('FirstName'),
-                     PersonalBaseInformationsTable.LastName.label('LastName'),
-                     PersonalBaseInformationsTable.Nickname.label('Nickname'),
-                     STICMembershipTable.SticSerial.label('STIC')
-                     ).join(
-                         STICMembershipTable,
-                         PersonalBaseInformationsTable.Id == STICMembershipTable.MemberId
-                     ).where(text(where_clause))
-
-def selectCrew(member=''):
+def selectCrew(member='',stic=False):
     if not member:
         return select(PersonalBaseInformationsTable)
     else:
         if re.match(isAlpha,member):
             where_clause = f"PersonalBaseInformations.Nickname='{member}'"
-            return select(
-                     PersonalBaseInformationsTable.FirstName.label('FirstName'),
-                     PersonalBaseInformationsTable.LastName.label('LastName'),
-                     PersonalBaseInformationsTable.Nickname.label('Nickname'),
-                     CrewMemberTable.Serial.label('Serial'),
-                     STICMembershipTable.SticSerial.label('STIC'),
-                     CrewMemberRankTable.RankName.label('Rank'),
-                     CrewMemberDutyTable.DutyName.label('Duties'),
-                     CrewMemberDivisionTable.DivisionName.label('Division')
-                     ).select_from(PersonalBaseInformationsTable). \
-                     join(PersonalBaseInformationsTable.CrewMember). \
-                     join(PersonalBaseInformationsTable.SticMember). \
-                     join(CrewMemberTable.Rank). \
-                     join(CrewMemberTable.Duties). \
-                     join(CrewMemberTable.Division). \
-                     where(where_clause)
-            # return select(
-            #              PersonalBaseInformationsTable.FirstName.label('FirstName'),
-            #              PersonalBaseInformationsTable.LastName.label('LastName'),
-            #              PersonalBaseInformationsTable.Nickname.label('Nickname'),
-            #              CrewMemberTable.Serial.label('Serial'),
-            #              STICMembershipTable.SticSerial.label('STIC'),
-            #              CrewMemberRankTable.RankName.label('Rank'),
-            #              CrewMemberDutyTable.DutyName.label('Duties'),
-            #              CrewMemberDivisionTable.DivisionName.label('Division')
-            # ).join(
-            #     STICMembershipTable,
-            #     PersonalBaseInformationsTable.Id == STICMembershipTable.MemberId
-            # ).join(
-            #     CrewMemberTable,
-            #     PersonalBaseInformationsTable.Id == CrewMemberTable.PersonalBaseInformationsId
-            # ).join(
-            #     CrewMemberRankTable,
-            #     CrewMemberTable.Serial == CrewMemberRankTable.MemberSerial
-            # ).join(
-            #     CrewMemberDutyTable,
-            #     CrewMemberTable.Serial == CrewMemberDutyTable.MemberSerial
-            # ).join(
-            #     CrewMemberDivisionTable,
-            #     CrewMemberTable.Serial == CrewMemberDivisionTable.MemberSerial
-            # ).where(text(where_clause))
+            if stic:
+                return select(
+                         PersonalBaseInformationsTable.FirstName.label('FirstName'),
+                         PersonalBaseInformationsTable.LastName.label('LastName'),
+                         PersonalBaseInformationsTable.Nickname.label('Nickname'),
+                         CrewMemberTable.Serial.label('Serial'),
+                         STICMembershipTable.SticSerial.label('STIC'),
+                         CrewMemberRankTable.RankName.label('Rank'),
+                         CrewMemberDutyTable.DutyName.label('Duties'),
+                         CrewMemberDivisionTable.DivisionName.label('Division')
+                         ).select_from(PersonalBaseInformationsTable). \
+                         join(PersonalBaseInformationsTable.CrewMember). \
+                         join(PersonalBaseInformationsTable.SticMember). \
+                         join(CrewMemberTable.Rank). \
+                         join(CrewMemberTable.Duties). \
+                         join(CrewMemberTable.Division). \
+                         where(where_clause)
+            else:
+                return select(
+                         PersonalBaseInformationsTable.FirstName.label('FirstName'),
+                         PersonalBaseInformationsTable.LastName.label('LastName'),
+                         PersonalBaseInformationsTable.Nickname.label('Nickname'),
+                         CrewMemberTable.Serial.label('Serial'),
+                         CrewMemberRankTable.RankName.label('Rank'),
+                         CrewMemberDutyTable.DutyName.label('Duties'),
+                         CrewMemberDivisionTable.DivisionName.label('Division')
+                         ).select_from(PersonalBaseInformationsTable). \
+                         join(PersonalBaseInformationsTable.CrewMember). \
+                         join(PersonalBaseInformationsTable.SticMember). \
+                         join(CrewMemberTable.Rank). \
+                         join(CrewMemberTable.Duties). \
+                         join(CrewMemberTable.Division). \
+                         where(where_clause)
         else:
             return None
 
@@ -377,7 +365,7 @@ def loadFromDB(what='',pattern=''):
             if re.match(isAlpha,pattern):
                 with db.bind.Session() as s:
                     with s.begin():
-                        person = s.scalar(selectPerson(pattern))
+                        person = s.scalar(selectPerson(attribute='nickname',search=pattern))
                 personDictionary['FirstName'] = person.FirstName
                 personDictionary['LastName']  = person.LastName
                 personDictionary['Nickname']  = person.Nickname
@@ -390,7 +378,7 @@ def loadFromDB(what='',pattern=''):
             peopleDictionary = dict()
             with db.bind.Session() as s:
                 with s.begin():
-                    people = s.scalars(selectPeople()).all()
+                    people = s.scalars(selectPerson()).all()
             if people:
                 for person in people:
                     peopleDictionary[person.Nickname] = {

@@ -146,11 +146,12 @@ async def remove():
     elif request.method == 'POST':
         members = (await request.form).getlist('Nickname')
         if form.validate_on_submit():
+            #TODO: move this to the "database management" code
             try:
                 with db.bind.Session() as s:
                     with s.begin():
                         for member in members:
-                            personId     = (s.scalar(selectPerson(member))).Id
+                            personId     = (s.scalar(selectPerson(attribute='nickname',search=member))).Id
                             memberSerial = (s.execute(selectCrew(member)).first())[3]
                             s.query(CrewMemberDivisionTable).filter_by(MemberSerial=memberSerial).delete()
                             s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).delete()
@@ -161,6 +162,7 @@ async def remove():
                         s.flush()
             except Exception as e:
                 return await standardReturn("error.html",sectionName,ERROR="1: "+str(e))
+            #TODO: End move
         return redirect(url_for('crew.remove'))
     else:
         return await standardReturn("error.html",sectionName,ERROR="Invalid method")
