@@ -47,19 +47,19 @@ from standardReturn import standardReturn
 crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
 sectionName    = "Crew"
 
-@crew_blueprint.route("/",methods=["GET"])
-@refreshToken
 @require_login
+@refreshToken
+@crew_blueprint.route("/",methods=["GET"])
 async def crew():
-    crew = loadFromDB('crew')
-    if crew.Crew:
+    crewDB = loadFromDB('crew')
+    if crewDB:
         return await standardReturn("crew.html",sectionName,CREW=crewList.Crew)
     else:
         return await standardReturn("error.html",sectionName,ERROR="No crew member found")
 
-@crew_blueprint.route("/member/<member>",methods=["GET"])
-@refreshToken
 @require_user(groups=['Equipaggio'])
+@refreshToken
+@crew_blueprint.route("/member/<member>",methods=["GET"])
 async def member(member):
     crewMember = loadFromDB('crew',member)
     if crewList:
@@ -72,9 +72,9 @@ async def member(member):
     else:
         return await standardReturn("error.html",sectionName,ERROR="Crew member not found")
 
-@crew_blueprint.route("/add",methods=["GET","POST"])
-@refreshToken
 @require_role(CrewPermissions.addMemberRole)
+@refreshToken
+@crew_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack too, make db managenet code
@@ -124,9 +124,9 @@ async def add():
     else:
         return await standardReturn("error.html",sectionName,ERROR="Invalid method")
 
-@crew_blueprint.route("/remove",methods=["GET","POST"])
-@refreshToken
 @require_role(CrewPermissions.removeMemberRole)
+@refreshToken
+@crew_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack too, make db managenet code
@@ -166,16 +166,16 @@ async def remove():
         return await standardReturn("error.html",sectionName,ERROR="Invalid method")
 
 
-@crew_blueprint.route("/edit/",methods=["GET","POST"])
-@refreshToken
 @require_role(CrewPermissions.editMemberRole)
+@refreshToken
+@crew_blueprint.route("/edit/",methods=["GET","POST"])
 async def edit():
     sectionName = 'Edit ' + sectionName
     return await standardReturn("error.html",sectionName,ERROR='No member specified')
 
-@crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
-@refreshToken
 @require_role(CrewPermissions.editMemberRole)
+@refreshToken
+@crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 async def editMember(member):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack too, make db managenet code

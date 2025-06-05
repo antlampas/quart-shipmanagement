@@ -5,8 +5,9 @@
 
 import requests
 
-from datetime import datetime
-from jose     import jwt
+from functools import wraps
+from datetime  import datetime
+from jose      import jwt
 
 from quart    import current_app
 from quart    import request
@@ -28,6 +29,7 @@ def isTokenExpired():
 
 def refreshToken(identityProvider="keycloak"):
     def decorator(func):
+        @wraps(func)
         async def wrapper(*args, **kwargs):
             if 'auth_token' in session:
                 if isTokenExpired():
@@ -53,27 +55,28 @@ def refreshToken(identityProvider="keycloak"):
                         elif token.status_code == 404:
                             return await standardReturn("error.html",sectionName="Error",ERROR="Identity provider not found")
                         elif token.status_code == 400:
-                            return redirect(request.scheme+"://"+request.host+'/relogin?redirect_url='+request.path)
+                            return await redirect(request.scheme+"://"+request.host+'/relogin?redirect_url='+request.path)
                     else:
-                        pass
+                        return await func(*args, **kwargs)
                 else:
                     return await func(*args, **kwargs)
             else:
                 return await func(*args, **kwargs)
-        wrapper.__name__ = func.__name__
         return wrapper
+    return decorator
 
 def require_login(func):
+    @wraps(func)
     async def wrapper(*args, **kwargs):
         if 'auth_token' in session:
             return await func(*args, **kwargs)
         else:
             return await standardReturn("error.html",sectionName="Error",ERROR="Unauthenticated")
-    wrapper.__name__ = func.__name__
     return wrapper
 
 def require_role(*requiredRoles):
     def decorator(func):
+        @wraps(func)
         async def wrapper(*args, **kwargs):
             if 'auth_token' in session:
                 userRoles             = session['access_token']['groups']
@@ -89,12 +92,12 @@ def require_role(*requiredRoles):
                     return await standardReturn("error.html",sectionName="Error",ERROR="Unauthorized")
             else:
                 return await standardReturn("error.html",sectionName="Error",ERROR="Unauthenticated")
-        wrapper.__name__ = func.__name__
         return wrapper
     return decorator
 
 def require_user(users=[],groups=[]):
     def decorator(func):
+        @wraps(func)
         async def wrapper(*args, **kwargs):
             if 'auth_token' in session:
                 user       = session['access_token']['username']
@@ -111,12 +114,12 @@ def require_user(users=[],groups=[]):
                     return await standardReturn("error.html",sectionName="Error",ERROR="Unauthorized")
             else:
                 return await standardReturn("error.html",sectionName="Error",ERROR="Unauthenticated")
-        wrapper.__name__ = func.__name__
         return wrapper
     return decorator
 
 def authorize_action(action):
     def decorator(func):
+        @wraps(func)
         async def wrapper(*args,**kwargs):
             if 'auth_token' in session:
                 #TODO: implement jwt encoding for the request
@@ -125,7 +128,6 @@ def authorize_action(action):
                 pass
             else:
                 return await standardReturn("error.html",sectionName="Error",ERROR="Unauthenticated")
-        wrapper.__name__ = func.__name__
         return wrapper
     return decorator
 

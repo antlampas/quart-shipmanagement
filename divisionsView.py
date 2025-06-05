@@ -35,9 +35,9 @@ divisions_blueprint = Blueprint("divisions",__name__,url_prefix='/divisions',tem
 
 sectionName = "Divisions"
 
-@divisions_blueprint.route("/",methods=["GET"])
 @refreshToken
 @require_login
+@divisions_blueprint.route("/",methods=["GET"])
 async def divisions():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
@@ -50,9 +50,9 @@ async def divisions():
     # else:
     #     return await render_template("divisions.html",divisions=str("No divisions found"),sectionName)
 
-@divisions_blueprint.route("/division/<division>",methods=["GET"])
 @refreshToken
 @require_login
+@divisions_blueprint.route("/division/<division>",methods=["GET"])
 async def division(division):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
@@ -65,9 +65,9 @@ async def division(division):
     #     return await render_template("division.html",division=str("No division found with that name"),sectionName)
     # return await render_template("division.html",division=divisionData,sectionName)
 
-@divisions_blueprint.route("/add",methods=["GET","POST"])
 @refreshToken
 @require_role(DivisionsPermissions.addDivisionRole)
+@divisions_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
@@ -92,9 +92,9 @@ async def add():
     # else:
     #     return await render_template("error.html",ERROR="Invalid method",sectionName)
 
-@divisions_blueprint.route("/remove",methods=["GET","POST"])
 @refreshToken
 @require_role(DivisionsPermissions.removeDivisionRole)
+@divisions_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
@@ -134,9 +134,9 @@ async def remove():
     #         return await render_template("divisionsRemove.html",FORM=form,sectionName,MESSAGE="Success")
     # return await render_template("implement.html",implement="Implement!",sectionName)
 
-@divisions_blueprint.route("/edit/<division>",methods=["GET","POST"])
 @refreshToken
 @require_role(DivisionsPermissions.editDivisionRole)
+@divisions_blueprint.route("/edit/<division>",methods=["GET","POST"])
 async def edit(division):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack

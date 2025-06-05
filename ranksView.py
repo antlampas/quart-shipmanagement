@@ -34,16 +34,16 @@ ranks_blueprint = Blueprint("ranks",__name__,url_prefix='/ranks',template_folder
 
 sectionName = "Ranks"
 
-@ranks_blueprint.route("/rank/<rank>",methods=["GET"])
 @refreshToken
 @require_login
+@ranks_blueprint.route("/rank/<rank>",methods=["GET"])
 async def rank(rank):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
 
-@ranks_blueprint.route("/add",methods=["GET","POST"])
 @refreshToken
 @require_role(RanksPermissions.addRankRole)
+@ranks_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
@@ -66,16 +66,16 @@ async def add():
     # else:
     #     return await render_template("error.html",ERROR="Invalid method",sectionName)
 
-@ranks_blueprint.route("/remove",methods=["GET","POST"])
 @refreshToken
 @require_role(RanksPermissions.removeRankRole)
+@ranks_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
 
-@ranks_blueprint.route("/edit",methods=["GET","POST"])
 @refreshToken
 @require_role(RanksPermissions.editRankRole)
+@ranks_blueprint.route("/edit",methods=["GET","POST"])
 async def edit():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack

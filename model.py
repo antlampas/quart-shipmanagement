@@ -37,19 +37,25 @@ db = QuartSQLAlchemy(
 
 class PersonalBaseInformationsTable(db.Model):
     __tablename__ = "PersonalBaseInformations"
-    Member:    Mapped["STICMembershipTable"] = relationship(cascade='all,delete',back_populates='PersonalBaseInformations')
-    Id:        Mapped[int]                   = mapped_column(primary_key=True,autoincrement=True)
-    Nickname:  Mapped[str]                   = mapped_column(unique=True)
-    FirstName: Mapped[int]
-    LastName:  Mapped[str]
+    SticMember:    Mapped["STICMembershipTable"] = relationship(cascade='all,delete',back_populates='Member')
+    CrewMember:    Mapped["CrewMemberTable"]     = relationship(cascade='all,delete',back_populates='Member')
+    Id:            Mapped[int]                   = mapped_column(primary_key=True,autoincrement=True)
+    Nickname:      Mapped[str]                   = mapped_column(unique=True)
+    FirstName:     Mapped[int]
+    LastName:      Mapped[str]
+
+class STICMembershipTable(db.Model):
+    __tablename__ = "STICMembership"
+    Member:     Mapped["PersonalBaseInformationsTable"] = relationship(cascade='all,delete',back_populates='SticMember')
+    MemberId:   Mapped[int]                             = mapped_column(ForeignKey("PersonalBaseInformations.Id"))
+    SticSerial: Mapped[int]                             = mapped_column(primary_key=True)
 
 class CrewMemberTable(db.Model):
     __tablename__ = "CrewMember"
-    PersonalBaseInformations:   Mapped["PersonalBaseInformationsTable"] = relationship(cascade='all,delete',back_populates='Member')
+    Member:                     Mapped["PersonalBaseInformationsTable"] = relationship(cascade='all,delete',back_populates='CrewMember')
     Rank:                       Mapped["CrewMemberRankTable"]           = relationship(cascade='all,delete',back_populates='Member')
     Division:                   Mapped["CrewMemberDivisionTable"]       = relationship(cascade='all,delete',back_populates='Member')
     Duties:                     Mapped[list["CrewMemberDutyTable"]]     = relationship(cascade='all,delete',back_populates='Member')
-    SticMembership:             Mapped["STICMembershipTable"]           = relationship(cascade='all,delete',back_populates='Member')
     PersonalBaseInformationsId: Mapped[int]                             = mapped_column(ForeignKey("PersonalBaseInformations.Id"))
     Serial:                     Mapped[int]                             = mapped_column(primary_key=True,autoincrement=True)
 
@@ -70,12 +76,6 @@ class DivisionTable(db.Model):
     CrewMemberDivision: Mapped["CrewMemberDivisionTable"] = relationship(cascade='all,delete',back_populates='Division')
     Name:               Mapped[str]                       = mapped_column(primary_key=True)
     Description:        Mapped[str]
-
-class STICMembershipTable(db.Model):
-    __tablename__ = "STICMembership"
-    Member:     Mapped["PersonalBaseInformationsTable"] = relationship(cascade='all,delete',back_populates='SticMembership')
-    MemberId:   Mapped[int]                             = mapped_column(ForeignKey("PersonalBaseInformations.Id"))
-    SticSerial: Mapped[int]                             = mapped_column(primary_key=True)
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CrewMemberRank"
@@ -232,30 +232,46 @@ def selectCrew(member=''):
         if re.match(isAlpha,member):
             where_clause = f"PersonalBaseInformations.Nickname='{member}'"
             return select(
-                         PersonalBaseInformationsTable.FirstName.label('FirstName'),
-                         PersonalBaseInformationsTable.LastName.label('LastName'),
-                         PersonalBaseInformationsTable.Nickname.label('Nickname'),
-                         CrewMemberTable.Serial.label('Serial'),
-                         STICMembershipTable.SticSerial.label('STIC'),
-                         CrewMemberRankTable.RankName.label('Rank'),
-                         CrewMemberDutyTable.DutyName.label('Duties'),
-                         CrewMemberDivisionTable.DivisionName.label('Division')
-            ).join(
-                CrewMemberTable,
-                PersonalBaseInformationsTable.Id == CrewMemberTable.PersonalBaseInformationsId
-            ).join(
-                CrewMemberRankTable,
-                CrewMemberTable.Serial == CrewMemberRankTable.MemberSerial
-            ).join(
-                CrewMemberDutyTable,
-                CrewMemberTable.Serial == CrewMemberDutyTable.MemberSerial
-            ).join(
-                CrewMemberDivisionTable,
-                CrewMemberTable.Serial == CrewMemberDivisionTable.MemberSerial
-            ).join(
-                STICMembershipTable,
-                PersonalBaseInformationsTable.Id == STICMembershipTable.MemberId
-            ).where(text(where_clause))
+                     PersonalBaseInformationsTable.FirstName.label('FirstName'),
+                     PersonalBaseInformationsTable.LastName.label('LastName'),
+                     PersonalBaseInformationsTable.Nickname.label('Nickname'),
+                     CrewMemberTable.Serial.label('Serial'),
+                     STICMembershipTable.SticSerial.label('STIC'),
+                     CrewMemberRankTable.RankName.label('Rank'),
+                     CrewMemberDutyTable.DutyName.label('Duties'),
+                     CrewMemberDivisionTable.DivisionName.label('Division')
+                     ).select_from(PersonalBaseInformationsTable). \
+                     join(PersonalBaseInformationsTable.CrewMember). \
+                     join(PersonalBaseInformationsTable.SticMember). \
+                     join(CrewMemberTable.Rank). \
+                     join(CrewMemberTable.Duties). \
+                     join(CrewMemberTable.Division). \
+                     where(where_clause)
+            # return select(
+            #              PersonalBaseInformationsTable.FirstName.label('FirstName'),
+            #              PersonalBaseInformationsTable.LastName.label('LastName'),
+            #              PersonalBaseInformationsTable.Nickname.label('Nickname'),
+            #              CrewMemberTable.Serial.label('Serial'),
+            #              STICMembershipTable.SticSerial.label('STIC'),
+            #              CrewMemberRankTable.RankName.label('Rank'),
+            #              CrewMemberDutyTable.DutyName.label('Duties'),
+            #              CrewMemberDivisionTable.DivisionName.label('Division')
+            # ).join(
+            #     STICMembershipTable,
+            #     PersonalBaseInformationsTable.Id == STICMembershipTable.MemberId
+            # ).join(
+            #     CrewMemberTable,
+            #     PersonalBaseInformationsTable.Id == CrewMemberTable.PersonalBaseInformationsId
+            # ).join(
+            #     CrewMemberRankTable,
+            #     CrewMemberTable.Serial == CrewMemberRankTable.MemberSerial
+            # ).join(
+            #     CrewMemberDutyTable,
+            #     CrewMemberTable.Serial == CrewMemberDutyTable.MemberSerial
+            # ).join(
+            #     CrewMemberDivisionTable,
+            #     CrewMemberTable.Serial == CrewMemberDivisionTable.MemberSerial
+            # ).where(text(where_clause))
         else:
             return None
 

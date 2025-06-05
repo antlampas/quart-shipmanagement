@@ -23,31 +23,31 @@ missions_blueprint = Blueprint("missions",__name__,url_prefix='/missions',templa
 
 sectionName = "Missions"
 
-@missions_blueprint.route("/",methods=["GET"])
 @refreshToken
+@missions_blueprint.route("/",methods=["GET"])
 async def missions():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@missions_blueprint.route("/mission/<mission>",methods=["GET"])
 @refreshToken
 @require_login
+@missions_blueprint.route("/mission/<mission>",methods=["GET"])
 async def view(mission):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@missions_blueprint.route("/add",methods=["GET","POST"])
 @refreshToken
 @require_role(MissionsPermissions.addMissionRole)
+@missions_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@missions_blueprint.route("/remove",methods=["GET","POST"])
 @refreshToken
 @require_role(MissionsPermissions.removeMissionRole)
+@missions_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@missions_blueprint.route("/edit",methods=["GET","POST"])
 @refreshToken
 @require_role(MissionsPermissions.editMissionRole)
+@missions_blueprint.route("/edit",methods=["GET","POST"])
 async def edit():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
