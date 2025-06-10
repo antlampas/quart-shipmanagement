@@ -77,8 +77,7 @@ async def member(member):
 @crew_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
-    #TODO: Make it work with keycloack too, make db managenet code
-    #      more clear and check
+    #TODO: Make it work with keycloack too
     sectionName = 'Add ' + sectionName
     form   = AddCrewMemberForm()
     if request.method == 'GET':

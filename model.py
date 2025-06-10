@@ -599,8 +599,17 @@ def saveToDB(what='',data=dict()):
     else:
         return False
 def editDB(what='',pattern=dict()):
-    if what what == 'crewMemberEdit':
-        crewMember = db.session.scalar(selectCrew(data['Nickname']))
+    if what == 'person':
+        person = db.session.scalar(selectPerson(pattern['Nickname']))
+        if person:
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.commit()
+                return True
+        else:
+            return False
+    elif what == 'crewMember':
+        crewMember = db.session.scalar(selectCrew(pattern['Nickname']))
         if crewMember:
             crewMember.FirstName = data['FirstName']
             crewMember.LastName  = data['LastName']
