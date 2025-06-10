@@ -61,7 +61,7 @@ async def crew():
 @refreshToken
 @crew_blueprint.route("/member/<member>",methods=["GET"])
 async def member(member):
-    crewMember = loadFromDB('crew',member)
+    crewMember = loadFromDB('crewMember',member)
     if crewList:
         for cm in crewList.Crew:
             if cm.Nickname == member:
@@ -87,9 +87,9 @@ async def add():
         try:
             with db.bind.Session() as s:
                 with s.begin():
-                    ranks     = loadFromDB('rank')
-                    duties    = loadFromDB('duty')
-                    divisions = loadFromDB('division')
+                    ranks     = loadFromDB('ranks')
+                    duties    = loadFromDB('duties')
+                    divisions = loadFromDB('divisions')
         except Exception as e:
                 return await standardReturn("error.html",sectionName,ERROR=str(e))
         form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
@@ -142,7 +142,6 @@ async def remove():
         return redirect(url_for('crew.remove'))
     else:
         return await standardReturn("error.html",sectionName,ERROR="Invalid method")
-
 
 @require_role(CrewPermissions.editMemberRole)
 @refreshToken
