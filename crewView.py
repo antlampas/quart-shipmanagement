@@ -88,9 +88,9 @@ async def add():
         try:
             with db.bind.Session() as s:
                 with s.begin():
-                    ranks     = s.scalars(selectRank()).all()
-                    duties    = s.scalars(selectDuty()).all()
-                    divisions = s.scalars(selectDivision()).all()
+                    ranks     = loadFromDB('rank')
+                    duties    = loadFromDB('duty')
+                    divisions = loadFromDB('division')
         except Exception as e:
                 return await standardReturn("error.html",sectionName,ERROR=str(e))
         form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
@@ -110,12 +110,9 @@ async def add():
             # form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
             # form.Duties.choices   = [(d.Name,d.Name) for d in duties]
             # form.Division.choices = [(d.Name,d.Name) for d in divisions]
-            try:
-                with db.bind.Session() as s:
-                    with s.begin():
-                        saveToDB('crewMember',crewMember.__dict__)
-            except Exception as e:
-                    return await standardReturn("error.html",sectionName,ERROR="2: "+str(e))
+
+            if not saveToDB('crewMember',crewMember.__dict__):
+                return await standardReturn("error.html",sectionName,ERROR="Unable to save crew member data")
             return await standardReturn("crewMemberAdd.html",
                                          sectionName,
                                          FORM=form,
@@ -129,40 +126,20 @@ async def add():
 @crew_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
-    #TODO: Make it work with keycloack too, make db managenet code
-    #      more clear and check
+    #TODO: Make it work with keycloack too
     sectionName = 'Remove ' + sectionName
     form = RemoveCrewMemberForm()
     crew = list()
     if request.method == 'GET':
-        try:
-            with db.bind.Session() as s:
-                with s.begin():
-                    crew = s.scalars(selectCrew()).all()
-        except Exception as e:
-            return await standardReturn("error.html",sectionName,ERROR="GET: "+str(e))
-        form.Nickname.choices = [(c.Nickname,c.Nickname) for c in crew]
+        crew = loadFromDB('crew')
+        if crew:
+            form.Nickname.choices = [(c.Nickname,c.Nickname) for c in crew]
         return await standardReturn("crewMemberRemove.html",sectionName,FORM=form)
     elif request.method == 'POST':
         members = (await request.form).getlist('Nickname')
         if form.validate_on_submit():
-            #TODO: move this to the "database management" code
-            try:
-                with db.bind.Session() as s:
-                    with s.begin():
-                        for member in members:
-                            personId     = (s.scalar(selectPerson(attribute='nickname',search=member))).Id
-                            memberSerial = (s.execute(selectCrew(member)).first())[3]
-                            s.query(CrewMemberDivisionTable).filter_by(MemberSerial=memberSerial).delete()
-                            s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).delete()
-                            s.query(CrewMemberRankTable).filter_by(MemberSerial=memberSerial).delete()
-                            s.query(CrewMemberTable).filter_by(PersonalBaseInformationsId=personId).delete()
-                            s.query(PersonalBaseInformationsTable).filter_by(Nickname=member).delete()
-                        s.commit()
-                        s.flush()
-            except Exception as e:
-                return await standardReturn("error.html",sectionName,ERROR="1: "+str(e))
-            #TODO: End move
+            for member in members:
+                removeFromDB('person',{'nickname':member})
         return redirect(url_for('crew.remove'))
     else:
         return await standardReturn("error.html",sectionName,ERROR="Invalid method")
@@ -227,7 +204,7 @@ async def editMember(member):
                                 Division  = division,
                                 Duties    = selectedDuties
                                )
-            saveToDB('crewMemberEdit',member.__dict__)
+            editDB('crewMember',member.__dict__)
             return redirect(url_for('crew.edit',member=personalBaseInformations.Nickname))
     else:
         return await standardReturn("error.html",sectionName,ERROR="Invalid method")

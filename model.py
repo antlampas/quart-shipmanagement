@@ -316,7 +316,40 @@ def selectTask(task=''):
 
 #### Helper functions ####
 def loadFromDB(what='',pattern=''):
-    if what == 'crew':
+    if what == 'person':
+        if pattern:
+            person           = None
+            personDictionary = dict()
+            if re.match(isAlpha,pattern):
+                with db.bind.Session() as s:
+                    with s.begin():
+                        person = s.scalar(selectPerson(attribute='nickname',search=pattern))
+                personDictionary['FirstName'] = person.FirstName
+                personDictionary['LastName']  = person.LastName
+                personDictionary['Nickname']  = person.Nickname
+
+                return personDictionary
+            else:
+                return None
+        else:
+            return None
+    elif what == 'people':
+        people           = None
+        peopleDictionary = dict()
+        with db.bind.Session() as s:
+            with s.begin():
+                people = s.scalars(selectPerson()).all()
+        if people:
+            for person in people:
+                peopleDictionary[person.Nickname] = {
+                                             'FirstName' : person.FirstName,
+                                             'LastName'  : person.LastName,
+                                             'Nickname'  : person.Nickname
+                                              }
+            return people
+        else:
+            return None
+    elif what == 'crewMember':
         if pattern:
             crewMember           = None
             crewMemberDictionary = dict()
@@ -338,57 +371,28 @@ def loadFromDB(what='',pattern=''):
             else:
                 return None
         else:
-            crewList       = None
-            crewDictionary = dict()
-            with db.bind.Session() as s:
-                with s.begin():
-                    crewList = s.scalars(selectCrew()).all()
-            if crewList:
-                for member in crewList:
-                    crewDictionary[member.Nickname] = {
-                                                 "FirstName" : member.FirstName,
-                                                 "LastName"  : member.LastName,
-                                                 "Nickname"  : member.Nickname,
-                                                 "Rank"      : member.Rank,
-                                                 "Division"  : member.Division,
-                                                 "Duties"    : member.Duties,
-                                                 "Serial"    : member.Serial,
-                                                 "Stic"      : member.Stic,
-                                                  }
-                return crewDictionary
-            else:
-                return None
-    elif what == 'person':
-        if pattern:
-            person           = None
-            personDictionary = dict()
-            if re.match(isAlpha,pattern):
-                with db.bind.Session() as s:
-                    with s.begin():
-                        person = s.scalar(selectPerson(attribute='nickname',search=pattern))
-                personDictionary['FirstName'] = person.FirstName
-                personDictionary['LastName']  = person.LastName
-                personDictionary['Nickname']  = person.Nickname
-
-                return personDictionary
-            else:
-                return None
+            return None
+    elif what = 'crew':
+        crewList       = None
+        crewDictionary = dict()
+        with db.bind.Session() as s:
+            with s.begin():
+                crewList = s.scalars(selectCrew()).all()
+        if crewList:
+            for member in crewList:
+                crewDictionary[member.Nickname] = {
+                                             "FirstName" : member.FirstName,
+                                             "LastName"  : member.LastName,
+                                             "Nickname"  : member.Nickname,
+                                             "Rank"      : member.Rank,
+                                             "Division"  : member.Division,
+                                             "Duties"    : member.Duties,
+                                             "Serial"    : member.Serial,
+                                             "Stic"      : member.Stic,
+                                              }
+            return crewDictionary
         else:
-            people           = None
-            peopleDictionary = dict()
-            with db.bind.Session() as s:
-                with s.begin():
-                    people = s.scalars(selectPerson()).all()
-            if people:
-                for person in people:
-                    peopleDictionary[person.Nickname] = {
-                                                 'FirstName' : person.FirstName,
-                                                 'LastName'  : person.LastName,
-                                                 'Nickname'  : person.Nickname
-                                                  }
-                return people
-            else:
-                return None
+            return None
     elif what == 'rank':
         if pattern:
             rank           = None
@@ -405,20 +409,22 @@ def loadFromDB(what='',pattern=''):
             else:
                 return None
         else:
-            ranks           = None
-            ranksDictionary = dict()
-            with db.bind.Session() as s:
-                with s.begin():
-                    ranks = s.scalars(selectRank()).all()
-            if ranks:
-                for rank in ranks:
-                    ranksDictionary[rank.Name] = {
-                                                'Name'        : rank.Name,
-                                                'Description' : rank.Description
-                                                 }
-                return ranksDictionary
-            else:
-                return None
+            return None
+    elif what == 'ranks':
+        ranks           = None
+        ranksDictionary = dict()
+        with db.bind.Session() as s:
+            with s.begin():
+                ranks = s.scalars(selectRank()).all()
+        if ranks:
+            for rank in ranks:
+                ranksDictionary[rank.Name] = {
+                                            'Name'        : rank.Name,
+                                            'Description' : rank.Description
+                                             }
+            return ranksDictionary
+        else:
+            return None
     elif what == 'division':
         if pattern:
             division           = None
@@ -435,21 +441,22 @@ def loadFromDB(what='',pattern=''):
             else:
                 return None
         else:
-            divisions           = None
-            divisionsDictionary = dict()
-            with db.bind.Session() as s:
-                with s.begin():
-                    divisions = s.scalasr(selectDivision()).all()
-            if divisions:
-                for division in divisions:
-                    divisionsDictionary[division.Name] = {
-                                                  'Name'        : division.Name,
-                                                  'Description' : division.Name
-                                                   }
-                return divisions
-            else:
-                return None
-
+            return None
+    elif what == 'divisions':
+        divisions           = None
+        divisionsDictionary = dict()
+        with db.bind.Session() as s:
+            with s.begin():
+                divisions = s.scalasr(selectDivision()).all()
+        if divisions:
+            for division in divisions:
+                divisionsDictionary[division.Name] = {
+                                              'Name'        : division.Name,
+                                              'Description' : division.Name
+                                               }
+            return divisions
+        else:
+            return None
     elif what == 'task':
         if pattern:
             task           = None
@@ -466,20 +473,22 @@ def loadFromDB(what='',pattern=''):
             else:
                 return None
         else:
-            tasks           = None
-            tasksDictionary = dict()
-            with db.bind.Session() as s:
-                with s.begin():
-                    tasks = s.scalars(selectTask()).all()
-            if tasks:
-                for task in tasks:
-                    tasksDictionary[task.Name] = {
-                                                      'Name'        : task.Name,
-                                                      'Description' : task.Name
-                                                 }
-                return tasksDictionary
-            else:
-                return None
+            return None
+    elif what == 'tasks':
+        tasks           = None
+        tasksDictionary = dict()
+        with db.bind.Session() as s:
+            with s.begin():
+                tasks = s.scalars(selectTask()).all()
+        if tasks:
+            for task in tasks:
+                tasksDictionary[task.Name] = {
+                                                  'Name'        : task.Name,
+                                                  'Description' : task.Name
+                                             }
+            return tasksDictionary
+        else:
+            return None
     elif what == 'duty':
         if pattern:
             duty           = None
@@ -496,21 +505,23 @@ def loadFromDB(what='',pattern=''):
             else:
                 return None
         else:
-            duties           = None
-            dutiesDictionary = dict()
-            if re.match(isAlpha,pattern):
-                with db.bind.Session() as s:
-                    with s.begin():
-                        duties = s.scalars(selectDuty()).all()
-            if duties:
-                for duty in duties:
-                    dutiesDictionary['Name'] = {
-                                                'Name'        : duty.Name,
-                                                'Description' : duty.Description
-                                               }
-                return dutiesDictionary
-            else:
-                return None
+            return None
+    elif what == 'duties':
+        duties           = None
+        dutiesDictionary = dict()
+        if re.match(isAlpha,pattern):
+            with db.bind.Session() as s:
+                with s.begin():
+                    duties = s.scalars(selectDuty()).all()
+        if duties:
+            for duty in duties:
+                dutiesDictionary['Name'] = {
+                                            'Name'        : duty.Name,
+                                            'Description' : duty.Description
+                                           }
+            return dutiesDictionary
+        else:
+            return None
     elif what == 'mission':
         if pattern:
             mission           = None
@@ -527,39 +538,43 @@ def loadFromDB(what='',pattern=''):
             else:
                 return None
         else:
-            missions           = None
-            missionsDictionary = dict()
-            with db.bind.Session() as s:
-                with s.begin():
-                    missions = s.scalars(selectMission()).all()
-            if missions:
-                for mission in missions:
-                    missionsDictionary[mission.Name] = {
-                                             'Name'        : mission.Name,
-                                             'Description' : mission.Description
-                                             }
-                return missionsDictionary
-            else:
-                return None
+            return None
+    elif what == 'missions':
+        missions           = None
+        missionsDictionary = dict()
+        with db.bind.Session() as s:
+            with s.begin():
+                missions = s.scalars(selectMission()).all()
+        if missions:
+            for mission in missions:
+                missionsDictionary[mission.Name] = {
+                                         'Name'        : mission.Name,
+                                         'Description' : mission.Description
+                                         }
+            return missionsDictionary
+        else:
+            return None
     else:
         return None
 def saveToDB(what='',data=dict()):
     #TODO: Check and complete this
     if what == 'crewMember':
-        person = PersonalBaseInformationsTable(FirstName=data['FirstName'],
-                                               LastName=data['LastName'],
-                                               Nickname=data['Nickname'])
+        personDB = loadFromDB()
+        person   = PersonalBaseInformationsTable(FirstName=data['FirstName'],
+                                                 LastName=data['LastName'],
+                                                 Nickname=data['Nickname']
+                                                )
         with db.bind.Session() as s:
             with s.begin():
                 s.add(person)
                 s.commit()
-        personDB = db.session.scalar(selectPerson(data['Nickname']))
+        personDB   = db.session.scalar(selectPerson(data['Nickname']))
         crewMember = CrewMemberTable(PersonalBaseInformationsId=personDB.Id,
                                      Serial=data['Serial'])
         with db.bind.Session() as s:
             with s.begin():
-                s.session.add(crewMember)
-                s.session.commit()
+                s.add(crewMember)
+                s.commit()
         sticMembership = STICMembershipTable(MemberSerial = data['Serial'],
                                              SticSerial   = data['Stic']
                                             )
@@ -575,21 +590,89 @@ def saveToDB(what='',data=dict()):
                                                 )
         with db.bind.Session() as s:
             with s.begin():
-                s.session.add(sticMembership)
-                s.session.add(memberRank)
-                s.session.add(memberDuty)
-                s.session.add(memberDivision)
-                s.session.commit()
+                s.add(sticMembership)
+                s.add(memberRank)
+                s.add(memberDuty)
+                s.add(memberDivision)
+                s.commit()
         return True
-    elif what == 'crewMemberEdit':
-        crewMember = db.session.scalar(selectCrew(data['Nickname']))
-
-        crewMember.FirstName = data['FirstName']
-        crewMember.LastName  = data['LastName']
-        crewMember.Rank      = data['Rank']
-        crewMember.Duties    = data['Duties']
-        crewMember.Division  = data['Division']
-        crewMember.STIC      = data['Stic']
     else:
         return False
+def editDB(what='',pattern=dict()):
+    if what what == 'crewMemberEdit':
+        crewMember = db.session.scalar(selectCrew(data['Nickname']))
+        if crewMember:
+            crewMember.FirstName = data['FirstName']
+            crewMember.LastName  = data['LastName']
+            crewMember.Rank      = data['Rank']
+            crewMember.Duties    = data['Duties']
+            crewMember.Division  = data['Division']
+            crewMember.STIC      = data['Stic']
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.commit()
+            return True
+        else:
+            return False
+def removeFromDB(what='',pattern=dict()):
+    if what == 'person':
+        if 'nickname' in pattern:
+            personDB = db.session.scalar(selectPerson(pattern['nickname']))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(personDB)
+                    s.commit()
+            return True
+        else:
+            return False
+    elif what == 'crewMember':
+        if 'nickname' in pattern:
+            crewMemberDB = db.session.scalar(selectCrew(pattern['nickname']))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(crewMemberDB)
+                    s.commit()
+            return True
+        else:
+            return False
+    elif what == 'task':
+        if 'name' in pattern:
+            taskDB = db.session.scalar(selectTask(pattern['name']))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(taskDB)
+                    s.commit()
+            return True
+        else:
+            return False
+    elif what == 'duty':
+        if 'name' in pattern:
+            dutyDB = db.session.scalar(selectDuty(pattern['name']))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(dutyDB)
+                    s.commit()
+            return True
+        else:
+            return False
+    elif what == 'rank':
+        if 'name' in pattern:
+            rankDB = db.session.scalar(selectRank(pattern['name']))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(rankDB)
+                    s.commit()
+            return True
+        else:
+            return False
+    elif what == 'division':
+        if 'name' in pattern:
+            divisionDB = db.session.scalar(selectDivision(pattern['name']))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(divisionDB)
+                    s.commit()
+            return True
+        else:
+            return False
 #### End helper functions ####
