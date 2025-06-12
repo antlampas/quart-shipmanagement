@@ -11,16 +11,29 @@ def adminAction(token,action,params=dict()):
         else:
             response = getUser()
     elif action == 'addUser':
-        if 'username' in params and 'firstName' in params and 'lastName' in params:
+        if 'username'  in params and \
+           'firstName' in params and \
+           'lastName'  in params:
             response = addUser(headers,params)
     return response
 
 def getUser(headers,user=''):
     response = None
     if user:
-        response = requests.get(f'{current_app.config['KEYCLOAK_URL']}/admin/realms/{current_app.config['KEYCLOAK_REALM']}/users',headers=headers,params={'username' : user})
+        response = requests.get(f'{current_app.config['KEYCLOAK_URL']}' + \
+                                f'/admin/realms/' + \
+                                f'{current_app.config['KEYCLOAK_REALM']}' + \
+                                f'/users',
+                                headers=headers,
+                                params={'username' : user}
+                               )
     else:
-        response = requests.get(f'{current_app.config['KEYCLOAK_URL']}/admin/realms/{current_app.config['KEYCLOAK_REALM']}/users',headers=headers)
+        response = requests.get(f'{current_app.config['KEYCLOAK_URL']}' + \
+                                f'/admin/realms/' + \
+                                f'{current_app.config['KEYCLOAK_REALM']}' + \
+                                f'/users',
+                                headers=headers
+                               )
     if response:
         if response.code == 200:
             return response.content.json()
@@ -30,7 +43,13 @@ def getUser(headers,user=''):
 def addUser(headers,user=dict()):
     response = None
     if user:
-        response = requests.get(f'{current_app.config['KEYCLOAK_URL']}/admin/realms/{current_app.config['KEYCLOAK_REALM']}/users',headers=headers,data=user)
+        response = requests.get(f'{current_app.config['KEYCLOAK_URL']}' + \
+                                f'/admin/realms/' + \
+                                f'{current_app.config['KEYCLOAK_REALM']}' + \
+                                f'/users',
+                                headers=headers,
+                                data=user
+                               )
     else:
         response = None
     return response
@@ -38,7 +57,13 @@ def addUser(headers,user=dict()):
 def editUser(headers,user='',attributes=''):
     response = None
     if user and attributes:
-        response = requests.put(f'{current_app.config['KEYCLOAK_URL']}/admin/realms/{current_app.config['KEYCLOAK_REALM']}/users/{user}',headers=headers,data=user)
+        response = requests.put(f'{current_app.config['KEYCLOAK_URL']}' + \
+                                f'/admin/realms/' + \
+                                f'{current_app.config['KEYCLOAK_REALM']}' + \
+                                f'/users/{user}',
+                                headers=headers,
+                                data=user
+                               )
     else:
         response = None
     return response
@@ -46,7 +71,12 @@ def editUser(headers,user='',attributes=''):
 def removeUser(headers,user=''):
     response = None
     if user and attributes:
-        response = requests.delete(f'{current_app.config['KEYCLOAK_URL']}/admin/realms/{current_app.config['KEYCLOAK_REALM']}/users/{user}',headers=headers)
+        response = requests.delete(f'{current_app.config['KEYCLOAK_URL']}' + \
+                                   f'/admin/realms/' + \
+                                   f'{current_app.config['KEYCLOAK_REALM']}' + \
+                                   f'/users/{user}',
+                                   headers=headers
+                                  )
     else:
         response = None
     return response
