@@ -17,7 +17,10 @@ class KeycloakConfig:
                                     'check_nonce':   False
                                   }
     KEYCLOAK_ADMIN              = {
-                                    'url'        : f'{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token',
+                                    'url'        : f'{KEYCLOAK_URL}/realms/' + \
+                                                   f'{KEYCLOAK_REALM}' + \
+                                                   '/protocol/' + \
+                                                   'openid-connect/token',
                                     'client_id'  : '',
                                     'grant_type' : '',
                                     'username'   : '',
