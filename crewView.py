@@ -102,26 +102,18 @@ async def add():
     global sectionName
     form   = AddCrewMemberForm()
     if request.method == 'GET':
-        ranks     = []
-        duties    = []
-        divisions = []
-        try:
-            with db.bind.Session() as s:
-                with s.begin():
-                    ranks     = loadFromDB('ranks')
-                    duties    = loadFromDB('duties')
-                    divisions = loadFromDB('divisions')
-        except Exception as e:
-                return await standardReturn("error.html",
-                                            'Add' + sectionName,
-                                            ERROR=str(e)
-                                           )
-        form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
-        form.Duties.choices   = [(d.Name,d.Name) for d in duties]
-        form.Division.choices = [(d.Name,d.Name) for d in divisions]
+        ranks     = loadFromDB('ranks')
+        duties    = loadFromDB('duties')
+        divisions = loadFromDB('divisions')
+        if ranks:
+            form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
+        if duties:
+            form.Duties.choices   = [(d.Name,d.Name) for d in duties]
+        if divisions:
+            form.Division.choices = [(d.Name,d.Name) for d in divisions]
         return await standardReturn("crewMemberAdd.html",sectionName,FORM=form)
     elif request.method == 'POST':
-        if form.validate_on_submit():
+        if await form.validate_on_submit():
             crewMember = CrewMember(
                                   FirstName = (await request.form)['FirstName'],
                                   LastName  = (await request.form)['LastName'],
