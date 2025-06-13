@@ -97,7 +97,7 @@ def addGroup(headers,group=dict()):
         response = None
     return response
 
-def editGroup(headers,group=dict(),attributes):
+def editGroup(headers,group='',attributes=dict()):
     global command_prefix
     response = None
     if user and attributes:
