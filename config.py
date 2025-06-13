@@ -23,15 +23,17 @@ class KeycloakConfig:
                                     'username'   : '',
                                     'password'   : ''
                                   }
+class IdentityProvider:
+    SOURCE = ''
 
 class ShipConfig:
     SHIPNAME       = ''
     REGISTRYNUMBER = ''
 
-class Development(BaseConfig,KeycloakConfig,ShipConfig):
+class Development(BaseConfig,KeycloakConfig,ShipConfig,IdentityProvider):
     DEBUG                       = True
     SECRET_KEY                  = ''
 
-class Production(BaseConfig,KeycloakConfig,ShipConfig):
+class Production(BaseConfig,KeycloakConfig,ShipConfig,IdentityProvider):
     DEBUG                       = False
     SECRET_KEY                  = ''
