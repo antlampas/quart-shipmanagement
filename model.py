@@ -343,7 +343,7 @@ def selectCrew(member='',stic=False):
                          join(CrewMemberTable.Rank). \
                          join(CrewMemberTable.Duties). \
                          join(CrewMemberTable.Division). \
-                         where(where_clause)
+                         where(text(where_clause))
         else:
             return None
 
@@ -459,7 +459,7 @@ def loadFromDB(what='',pattern=''):
                 return None
         else:
             return None
-    elif what = 'crew':
+    elif what == 'crew':
         crewList       = None
         crewDictionary = dict()
         with db.bind.Session() as s:
@@ -534,7 +534,7 @@ def loadFromDB(what='',pattern=''):
         divisionsDictionary = dict()
         with db.bind.Session() as s:
             with s.begin():
-                divisions = s.scalasr(selectDivision()).all()
+                divisions = s.scalars(selectDivision()).all()
         if divisions:
             for division in divisions:
                 divisionsDictionary[division.Name] = {

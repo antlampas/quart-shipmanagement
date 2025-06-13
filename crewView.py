@@ -55,11 +55,12 @@ sectionName    = "Crew"
 @refreshToken
 @crew_blueprint.route("/",methods=["GET"])
 async def crew():
+    global sectionName
     crewDB = loadFromDB('crew')
     if crewDB:
         return await standardReturn("crew.html",
                                     sectionName,
-                                    CREW=crewList.Crew
+                                    CREW=crewDB.Crew
                                    )
     else:
         return await standardReturn("error.html",
@@ -71,9 +72,10 @@ async def crew():
 @refreshToken
 @crew_blueprint.route("/member/<member>",methods=["GET"])
 async def member(member):
+    global sectionName
     crewMember = loadFromDB('crewMember',member)
-    if crewList:
-        for cm in crewList.Crew:
+    if crewMember:
+        for cm in crewMember.Crew:
             if cm.Nickname == member:
                 crewMember = cm
                 break
@@ -92,12 +94,12 @@ async def member(member):
 @refreshToken
 @crew_blueprint.route("/add",methods=["GET","POST"])
 async def add():
-    return await standardReturn("implement.html",
-                                sectionName,
-                                implement="Implement!"
-                               )
+    # return await standardReturn("implement.html",
+    #                             sectionName,
+    #                             implement="Implement!"
+    #                            )
     #TODO: Make it work with keycloack too
-    sectionName = 'Add ' + sectionName
+    global sectionName
     form   = AddCrewMemberForm()
     if request.method == 'GET':
         ranks     = []
@@ -111,7 +113,7 @@ async def add():
                     divisions = loadFromDB('divisions')
         except Exception as e:
                 return await standardReturn("error.html",
-                                            sectionName,
+                                            'Add' + sectionName,
                                             ERROR=str(e)
                                            )
         form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
@@ -154,6 +156,7 @@ async def add():
 @refreshToken
 @crew_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
+    global sectionName
     return await standardReturn("implement.html",
                                 sectionName,
                                 implement="Implement!"
@@ -186,9 +189,9 @@ async def remove():
 @refreshToken
 @crew_blueprint.route("/edit/",methods=["GET","POST"])
 async def edit():
-    sectionName = 'Edit ' + sectionName
+    global sectionName
     return await standardReturn("error.html",
-                                sectionName,
+                                'Edit' + sectionName,
                                 ERROR='No member specified'
                                )
 
@@ -196,6 +199,7 @@ async def edit():
 @refreshToken
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 async def editMember(member):
+    global sectionName
     return await standardReturn("implement.html",
                                 sectionName,
                                 implement="Implement!"
