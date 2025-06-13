@@ -31,18 +31,25 @@ def refreshToken(identityProvider="keycloak"):
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
+            cId = current_app.config['OPENID_KEYCLOAK_CONFIG']['client_id']
+            cs = current_app.config['OPENID_KEYCLOAK_CONFIG']['client_secret']
             if 'auth_token' in session:
+                accessToken = session['auth_token']['access_token']
+                refreshToken = session['auth_token']['refresh_token']
                 if isTokenExpired():
                     if identityProvider == 'keycloak':
-                        url = f'{current_app.config["KEYCLOAK_URL"]}/auth/realms/{current_app.config["KEYCLOAK_REALM"]}/protocol/openid-connect/token'
+                        url = f'{current_app.config['KEYCLOAK_URL']}' + \
+                        '/auth/realms/' + \
+                        f'{current_app.config["KEYCLOAK_REALM"]}' + \
+                        '/protocol/openid-connect/token'
                         h = {
-                                'Authorization' : session['auth_token']['access_token'],
+                                'Authorization' : accessToken,
                                 'Body type'     : 'x-www-form-urlencoded'
                             }
                         d = {
-                                'client_id'     : current_app.config['OPENID_KEYCLOAK_CONFIG']['client_id'],
-                                'client_secret' : current_app.config['OPENID_KEYCLOAK_CONFIG']['client_secret'],
-                                'refresh_token' : session['auth_token']['refresh_token'],
+                                'client_id'     : cId,
+                                'client_secret' : cs,
+                                'refresh_token' : refreshToken,
                                 'grant_type'    : 'refresh_token'
                             }
 
@@ -50,12 +57,21 @@ def refreshToken(identityProvider="keycloak"):
                         token = requests.post(url,data=d)
 
                         if token.status_code == 200:
-                            session['access_token'] = token.json()['access_token']
+                            session['access_token'] = \
+                                                    token.json()['access_token']
                             return await func(*args, **kwargs)
                         elif token.status_code == 404:
-                            return await standardReturn("error.html",sectionName="Error",ERROR="Identity provider not found")
+                            return await standardReturn('error.html',
+                                                        sectionName='Error',
+                                                        ERROR='Identity ' + \
+                                                        'provider not found'
+                                                       )
                         elif token.status_code == 400:
-                            return await redirect(request.scheme+"://"+request.host+'/relogin?redirect_url='+request.path)
+                            return await redirect(request.scheme + \
+                                                  '://' + request.host + \
+                                                  '/relogin?redirect_url=' + \
+                                                  request.path
+                                                 )
                     else:
                         return await func(*args, **kwargs)
                 else:
@@ -71,7 +87,10 @@ def require_login(func):
         if 'auth_token' in session:
             return await func(*args, **kwargs)
         else:
-            return await standardReturn("error.html",sectionName="Error",ERROR="Unauthenticated")
+            return await standardReturn("error.html",
+                                        sectionName="Error",
+                                        ERROR="Unauthenticated"
+                                       )
     return wrapper
 
 def require_role(*requiredRoles):
@@ -89,9 +108,15 @@ def require_role(*requiredRoles):
                 if rolesMatched == numberOfRequiredRoles:
                     return await func(*args, **kwargs)
                 else:
-                    return await standardReturn("error.html",sectionName="Error",ERROR="Unauthorized")
+                    return await standardReturn("error.html",
+                                                sectionName="Error",
+                                                ERROR="Unauthorized"
+                                               )
             else:
-                return await standardReturn("error.html",sectionName="Error",ERROR="Unauthenticated")
+                return await standardReturn("error.html",
+                                            sectionName="Error",
+                                            ERROR="Unauthenticated"
+                                           )
         return wrapper
     return decorator
 
@@ -111,9 +136,15 @@ def require_user(users=[],groups=[]):
                 if isUserInUsers or isUserInGroup:
                     return await func(*args, **kwargs)
                 else:
-                    return await standardReturn("error.html",sectionName="Error",ERROR="Unauthorized")
+                    return await standardReturn("error.html",
+                                                sectionName="Error",
+                                                ERROR="Unauthorized"
+                                               )
             else:
-                return await standardReturn("error.html",sectionName="Error",ERROR="Unauthenticated")
+                return await standardReturn("error.html",
+                                            sectionName="Error",
+                                            ERROR="Unauthenticated"
+                                           )
         return wrapper
     return decorator
 
@@ -127,7 +158,10 @@ def authorize_action(action):
                 #TODO: implement response wait and decode
                 pass
             else:
-                return await standardReturn("error.html",sectionName="Error",ERROR="Unauthenticated")
+                return await standardReturn("error.html",
+                                            sectionName="Error",
+                                            ERROR="Unauthenticated"
+                                           )
         return wrapper
     return decorator
 
@@ -141,6 +175,9 @@ def getAdminAccessToken():
              'username'   : current_app.config['KEYCLOAK_ADMIN']['username'],
              'password'   : current_app.config['KEYCLOAK_ADMIN']['password']
            }
-    response = requests.post(current_app.config['KEYCLOAK_ADMIN']['url'],headers=headers,data=data)
+    response = requests.post(current_app.config['KEYCLOAK_ADMIN']['url'],
+                             headers=headers,
+                             data=data
+                            )
 
     return response.json()['access_token']
