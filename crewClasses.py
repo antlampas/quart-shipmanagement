@@ -115,19 +115,22 @@ class Crew(Addable):
     def __init__(self,crew=list()):
         self.Error = ""
         self.Crew  = crew
-    def add(self,member=CrewMember()):
+    def add(self,member=None):
         self.Error = ""
-        if re.match(isAlpha,member.FirstName) and \
-           re.match(isAlpha,member.LastName)  and \
-           re.match(isAlpha,member.Nickname)  and \
-           re.match(isAlpha,member.Rank)      and \
-           re.match(isAlpha,member.Division)  and \
-           re.match(isAlpha,member.Duties)    and \
-           re.match(isNumber,member.Serial)   and \
-           re.match(isNumber,member.Stic):
-           self.Crew.append(member)
+        if member is CrewMember:
+            if re.match(isAlpha,member.FirstName) and \
+               re.match(isAlpha,member.LastName)  and \
+               re.match(isAlpha,member.Nickname)  and \
+               re.match(isAlpha,member.Rank)      and \
+               re.match(isAlpha,member.Division)  and \
+               re.match(isAlpha,member.Duties)    and \
+               re.match(isNumber,member.Serial)   and \
+               re.match(isNumber,member.Stic):
+               self.Crew.append(member)
+            else:
+                self.Error = "Invalid member data"
         else:
-            self.Error = "Invalid member data"
+            self.Error = "Incorrect type"
         return self.Error
     def remove(self,source="db",member=CrewMember()):
         self.Error = ""
