@@ -51,7 +51,7 @@ def create_app(mode='Development'):
     app.register_blueprint(crewOnboardLog_blueprint)
 
     @app.before_request
-    def before_request_callback():
+    async def before_request_callback():
         if isTokenExpired():
             return redirect(url_for('relogin'))
 
