@@ -85,3 +85,4 @@ class Divisions(Addable):
         if division is Division:
             if re.match(isAlpha,division.Name) and \
                re.match(isAlphanumeric,division.Description):
+                   self.Divisions.append(division)
