@@ -27,7 +27,7 @@ def create_app(mode='Development'):
     Session(app)
     keycloak = Keycloak(app, **(app.config["OPENID_KEYCLOAK_CONFIG"]))
 
-    from authorization import require_role
+    from authorization import require_role,isTokenExpired
     from model         import db
     db.init_app(app)
     db.create_all()
@@ -49,6 +49,11 @@ def create_app(mode='Development'):
     app.register_blueprint(tasks_blueprint)
     app.register_blueprint(missions_blueprint)
     app.register_blueprint(crewOnboardLog_blueprint)
+
+    @app.before_request
+    def before_request_callback():
+        if isTokenExpired():
+            return redirect(url_for('relogin'))
 
     @app.route("/login")
     async def login():
