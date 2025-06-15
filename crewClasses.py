@@ -45,24 +45,59 @@ from config         import KeycloakConfig
 
 class CrewMember(Editable):
     def __init__(self,
-                 FirstName = "",
-                 LastName  = "",
-                 Nickname  = "",
-                 Rank      = "",
-                 Division  = "",
+                 FirstName = '',
+                 LastName  = '',
+                 Nickname  = '',
+                 Rank      = '',
+                 Division  = '',
                  Duties    = list(),
                  Serial    = 0,
                  Stic      = 0
                 ):
-        self.Error     = ""
-        self.FirstName = FirstName
-        self.LastName  = LastName
-        self.Nickname  = Nickname
-        self.Serial    = Serial
-        self.Stic      = Stic
-        self.Rank      = Rank
-        self.Division  = Division
-        self.Duties    = Duties
+        self.Error     = ''
+        self.FirstName = ''
+        self.LastName  = ''
+        self.Nickname  = ''
+        self.Serial    = 0
+        self.Stic      = 0
+        self.Rank      = ''
+        self.Division  = ''
+        self.Duties    = list()
+        if re.match(isAlpha,FirstName):
+            self.FirstName = FirstName
+            if re.match(isAlpha,LastName):
+                self.LastName  = LastName
+                if re.match(isAlpha,Nickname):
+                    self.Nickname  = Nickname
+                    if re.match(isNumber,Serial):
+                        self.Serial    = Serial
+                        if re.match(isNumber,Stic):
+                            self.Stic      = Stic
+                            if re.match(isAlpha,Rank):
+                                self.Rank      = Rank
+                                if re.match(isAlpha,Division):
+                                    self.Division  = Division
+                                    for Duty in Duties:
+                                        if re.match(isAlpha,Duty.Name) and re.match(isText,Duty.Description):
+                                            self.Duties.append(Duty)
+                                        else:
+                                            self.Error = "Invalid duties"
+                                            self.Duties = list()
+                                            break
+                                else:
+                                    self.Error = 'Invalid division'
+                            else:
+                                self.Error = 'Invalid Rank'
+                        else:
+                            self.Error = 'Invalid STIC number'
+                    else:
+                        self.Error = 'Invalid serial number'
+                else:
+                    self.Error = 'Invalid Nickname'
+            else:
+                self.Error = 'Invalid last name'
+        else:
+            self.Error = 'Invalid first name'
     def edit(self,attributes=dict()):
         self.Error = ""
         crewMember = None
@@ -132,10 +167,14 @@ class Crew(Addable):
         else:
             self.Error = "Incorrect type"
         return self.Error
-    def remove(self,source="db",member=CrewMember()):
+    def remove(self,member=CrewMember()):
         self.Error = ""
         try:
-            self.Crew.remove(member)
+            if member is CrewMember():
+                i = self.Crew.index(member)
+                self.Crew.remove(i)
+            else:
+                self.Error = "Member not valid"
         except Exception as e:
             self.Error = e
         return self.Error
@@ -147,3 +186,44 @@ class Crew(Addable):
         return crew
     def deserilize(self,crew=dict()):
         self.Error = ''
+        if crew:
+            for key,member in crew:
+                if re.match(isAlpha,key):
+                    if member is dict():
+                        if 'FirstName' in member and re.match(isAlpha,member['FirstName']):
+                            if 'LastName' in member and re.match(isAlpha,member['LastName']):
+                                if 'Nickname' in member and re.match(isAlpha,member['Nickname']):
+                                    if 'Rank' in member and re.match(isAlpha,member['Rank']):
+                                        if 'Division' in member and re.match(isAlpha,member['Division']):
+                                            if 'Serial' in member and re.match(isNumber,member['Serial']):
+                                                if 'Stic' in member and re.match(isNumber,member['Stic']):
+                                                    duties = list()
+                                                    for duty in member['Duties']:
+                                                        if re.match(isAlpha,duty['Name']) and re.match(isText,duty['Description']):
+                                                            d = Duty()
+                                                            duties.append(Duty(duty['Name'],duty['Description']))
+                                                        else:
+                                                            duties = list()
+                                                            self.Error = 'Invalid duty'
+                                                            break
+                                                    if duties:
+                                                        self.Crew.append(CrewMember(member['FirstName'],member['LastName'],member['Nickname'],member['Rank'],member['Division'],member['Serial'],member['Stic'],duties))
+                                                else:
+                                                    self.Error = 'Invalid stic number'
+                                            else:
+                                                self.Error = 'Invalid serial member'
+                                        else:
+                                            self.Error = 'Invalid division'
+                                    else:
+                                        self.Error = 'Invalid rank'
+                                else:
+                                    self.Error = 'Invalid nickname'
+                            else:
+                                self.Error = "Invalid last name"
+                        else:
+                            self.Error = "Invalid first name"
+                    else:
+                        self.Error = "Invalid crew member"
+        else:
+            self.Error = "No crew given"
+        return self.Error

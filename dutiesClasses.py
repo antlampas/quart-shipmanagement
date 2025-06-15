@@ -13,85 +13,140 @@ from model          import selectDuty
 
 from utilities      import isAlpha
 from utilities      import isNumber
+from utilities      import isAlphanumeric
+from utilities      import isText
 
 from baseClasses    import Editable
 from baseClasses    import Addable
 
 class Duty(Editable):
-    def __init__(self,source="db",name="",description=""):
+    def __init__(self,name='',description=''):
         self.Error       = ""
-        self.Source      = source
-        self.Name        = name
-        self.Description = description
+        if re.match(isAlpha,name):
+            self.Name        = name
+        else:
+            self.Error = "Name is not alpha"
+            self.Name  = None
+        if re.match(isText,description):
+            self.Description = description
+        else:
+            self.Error        = "Description is not text"
+            self.Description  = None
     def edit(self,attributes=dict()):
         self.Error = ""
         duty       = None
-        if self.source == "db":
-            with db.bind.Session() as s:
-                with s.begin():
-                    duty = s.scalar(selectDuty(self.Name))
-        for key,value in attributes:
-            try:
-                attribute = getattr(self,key)
-                attribute = value
-            except Exception as e:
-                self.Error = e
-        if re.match(isAlpha,self.Name):
-            self.Error = "Duty name not valid"
-        if self.Error:
-            return self.Error
-        #TODO: Make it work with keycloack too
-        if self.Source == "db":
-            if duty:
-                duty.Name        = self.Name
-                duty.Description = self.Description
-                with db.bind.Session() as s:
-                    with s.begin():
-                        s.commit()
-            else:
-                duty = DutyTable(Name=self.Name,Description=self.Description)
-                with db.bind.Session() as s:
-                    with s.begin():
-                        s.add(duty)
-                        s.commit()
+        if attributes:
+            for key,value in attributes:
+                if key == 'Name' and re.match(isAlpha,key):
+                    try:
+                        attribute = getattr(self,key)
+                        attribute = value
+                    except Exception as e:
+                        self.Error = e
+                else:
+                    self.Error = 'Invalid name'
+                if key == 'Description' and re.match(isText,key):
+                    try:
+                        attribute = getattr(self,key)
+                        attribute = value
+                    except Exception as e:
+                        self.Error = e
+                else:
+                    self.Error = 'Invalid description'
         return self.Error
-    def load(self):
-        pass
-
+    def serialize(self):
+        self.Error = ''
+        duty = {
+                        "Name"        : self.Name,
+                        "Description" : self.Description
+                   }
+        return duty
+    def deserilize(self,division=dict()):
+        self.Error = ''
+        if attribute:
+            for key,value in division:
+                if key == "Name":
+                    self.Name = value
+                elif key == "Description":
+                    self.Description = value
+                else:
+                    self.Error = "Attribute not valid"
+                    break
+            return self.Error
 class Duties(Addable):
-    def __init__(self,source="db",duties=list()):
+    def __init__(self,duties=list()):
         self.Error  = ""
-        self.Source = source
         self.Duties = duties
-        dutiesDB = list()
-        #TODO: Make it work with keycloack too
-        if self.Source == "db":
-            with db.bind.Session() as s:
-                with s.begin():
-                    dutiesDB = s.scalars(selectCrew()).all()
-            if dutiesDB:
-                for duty in dutiesDB:
-                    if re.match(isAlpha,duty.Name):
-                        self.duties.append(DutyTable(duty.Name,duty.Description))
+        for duty in duties:
+            if duty is Duty:
+                if re.match(isAlpha,duty.Name):
+                    if re.match(isAlphanumeric,duty.Description):
+                        self.Divisions.append(duty)
                     else:
-                        self.Error = "Duty name not valid"
-                        return self.Error
+                        self.Error = "Description not text"
+                        break
+                else:
+                    self.Error = "Name not alpha"
+                    break
             else:
-                self.Error = "No duties found"
+                self.Error = "Duty not valid"
+                break
     def add(self,duty=""):
         self.Error  = ""
         if duty:
-            if re.match(isAlpha,duty.Name):
-                self.duties.append(duty)
+            if duty is Duties:
+                if re.match(isAlpha,duty.Name):
+                    if re.match(isAlphanumeric,duty.Description):
+                       self.Divisions.append(duty)
+                    else:
+                        self.Error = "Description not text"
+                        break
+                else:
+                    self.Error = "Name not alpha"
+                    break
             else:
-                self.Error = "Duty name is not valid"
+                self.Error = "Duty not valid"
+        else:
+            self.Error = "No duty provided"
         return self.Error
-    def remove(self,duty=""):
+    def remove(self,duty=None):
         self.Error = ""
-        try:
-            self.duties.remove(duty)
-        except Exception as e:
-            self.Error = e
+        if duty:
+            try:
+                if duty is Duty:
+                    i = self.Divisions.index(duty)
+                    self.Divisions.remove(i)
+                else:
+                    self.Error = "Duty not valid"
+            except Exception as e:
+                self.Error = e
+        else:
+            self.Error = "No duty provided"
         return self.Error
-    def load(self):
-        pass
+    def serialize(self):
+        self.Error = ''
+        divisions = dict()
+        for duty in self.Duties:
+            duties[duty.Name] = duty.serilize()
+        return duties
+    def deserilize(self,duties=dict()):
+        self.Error = ''
+        if duties:
+            for key,duty in duties:
+                if re.match(isAlpha,key):
+                    if duty is dict():
+                        if 'Name' in duty and re.match(isAlpha,duty['Name']):
+                            if 'Description' in duty and re.match(isAlpha,duty['Description']):
+                                self.Duties.append(Duty(duty['Name'],duty['Description']))
+                            else:
+                                self.Error = "Invalid description"
+                                break
+                        else:
+                            self.Error = "Invalid Name"
+                            break
+                    else:
+                        self.Error = "Invalid duty"
+                        break
+        else:
+            self.Error = "No duties given"
+        return self.Error

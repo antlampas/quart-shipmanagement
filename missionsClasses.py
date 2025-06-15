@@ -24,39 +24,52 @@ from baseClasses    import Addable
 
 class Mission(Editable):
     def __init__(self,
-                 source           = "db",
-                 Name             = "",
-                 Description      = "",
-                 RequiredDuration = "",
-                 StartedAt        = "",
-                 EndedAt          = "",
-                 Status           = "",
-                 Tasks            = list()
+                 name             = '',
+                 description      = '',
+                 requiredDuration = '',
+                 startedAt        = '',
+                 endedAt          = '',
+                 status           = '',
+                 tasks            = list()
                 ):
-        self.Error            = ""
-        self.Source           = Source
-        self.Name             = Name
-        self.Description      = Description
-        self.RequiredDuration = RequiredDuration
-        self.StartAt          = StartAt
-        self.EndedAt          = EndedAt
-        self.Status           = Status
-        self.Tasks            = Tasks
-        #TODO: Make it work with keycloack too
-        if self.Source == "db":
-            with db.bind.Session() as s:
-                with s.begin():
-                    #TODO: check database
-                    pass
+        self.Error            = ''
+        self.Name             = ''
+        self.Description      = ''
+        self.RequiredDuration = ''
+        self.StartAt          = ''
+        self.EndedAt          = ''
+        self.Status           = ''
+        self.Tasks            = ''
+
+        if re.match(isAlpha,name):
+            self.Name             = name
+        if re.match(isAlpha,description):
+            self.Description      = description
+        if re.match(isNumber,requiredDuration):
+            self.RequiredDuration = requiredDuration
+        if re.match(isNumber,startAt):
+            self.StartAt          = startAt
+        if re.match(isNumber,endedAt):
+            self.EndedAt          = endedAt
+        if re.match(isAlpha,status):
+            self.Status           = status
+        self.Tasks            = tasks
+
     def edit(self,mission:MissionTable):
         pass
-    def load(self,mission:MissionTable):
+    def serilize(self):
+        pass
+    def deserilize(self,division=dict()):
         pass
 
 class Missions(Addable):
-    def __init__(self,source="db",missions=list()):
+    def __init__(self,missions=list()):
         pass
-    def add(self,mission:Mission):
+    def add(self,mission=None):
         pass
-    def remove(self,mission:Mission):
+    def remove(self,mission=None):
+        pass
+    def serilize(self):
+        pass
+    def deserilize(self,division=dict()):
         pass

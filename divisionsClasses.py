@@ -37,11 +37,22 @@ class Division(Editable):
         division   = None
         if attributes:
             for key,value in attributes:
-                try:
-                    attribute = getattr(self,key)
-                    attribute = value
-                except Exception as e:
-                    self.Error = e
+                if key == 'Name' and re.match(isAlpha,key):
+                    try:
+                        attribute = getattr(self,key)
+                        attribute = value
+                    except Exception as e:
+                        self.Error = e
+                else:
+                    self.Error = 'Invalid name'
+                if key == 'Description' and re.match(isText,key):
+                    try:
+                        attribute = getattr(self,key)
+                        attribute = value
+                    except Exception as e:
+                        self.Error = e
+                else:
+                    self.Error = 'Invalid description'
         return self.Error
     def serialize(self):
         self.Error = ''
@@ -49,6 +60,7 @@ class Division(Editable):
                         "Name"        : self.Name,
                         "Description" : self.Description
                    }
+        return division
     def deserilize(self,division=dict()):
         self.Error = ''
         if attribute:
@@ -66,23 +78,79 @@ class Divisions(Addable):
     def __init__(self,divisions=list()):
         self.Error     = ""
         self.Divisions = list()
-        for division in divisions:
+        if divisions:
+            for division in divisions:
+                if division is Division:
+                    if re.match(isAlpha,division.Name):
+                        if re.match(isAlphanumeric,division.Description):
+                            self.Divisions.append(division)
+                        else:
+                            self.Error = "Description not text"
+                            break
+                    else:
+                        self.Error = "Name not alpha"
+                        break
+                else:
+                    self.Error = "Division not valid"
+                    break
+        else:
+            self.Error = 'No divisions provided'
+    def add(self,division=None):
+        self.Error = ""
+        if division:
             if division is Division:
                 if re.match(isAlpha,division.Name):
                     if re.match(isAlphanumeric,division.Description):
-                        self.Divisions.append(division)
+                       self.Divisions.append(division)
                     else:
-                        self.Error = "Division description not text"
+                        self.Error = "Description not text"
                         break
                 else:
-                    self.Error = "Division name not alpha"
+                    self.Error = "Name not alpha"
                     break
             else:
-                self.Error("Division not valid")
-                break
-    def add(self,division=None):
+                self.Error = "Division not valid"
+        else:
+            self.Error = "No division provided"
+        return self.Error
+    def remove(self,division=None):
         self.Error = ""
-        if division is Division:
-            if re.match(isAlpha,division.Name) and \
-               re.match(isAlphanumeric,division.Description):
-                   self.Divisions.append(division)
+        if division:
+            try:
+                if division is Division:
+                    i = self.Divisions.index(division)
+                    self.Divisions.remove(i)
+                else:
+                    self.Error = "Division not valid"
+            except Exception as e:
+                self.Error = e
+        else:
+            self.Error = "No division provided"
+        return self.Error
+    def serialize(self):
+        self.Error = ''
+        divisions = dict()
+        for division in self.Divisions:
+            divisions[division.Name] = division.serilize()
+        return divisions
+    def deserilize(self,divisions=dict()):
+        self.Error = ''
+        if divisions:
+            for key,division in divisions:
+                if re.match(isAlpha,key):
+                    if division is dict():
+                        if 'Name' in division and re.match(isAlpha,division['Name']):
+                            if 'Description' in division and re.match(isAlpha,division['Description']):
+                                self.Divisions.append(Division(division['Name'],division['Description']))
+                            else:
+                                self.Error = "Invalid description"
+                                break
+                        else:
+                            self.Error = "Invalid Name"
+                            break
+                    else:
+                        self.Error = "Division not valid"
+                        break
+        else:
+            self.Error = "No divisions given"
+        return self.Error
