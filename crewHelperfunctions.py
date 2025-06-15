@@ -3,9 +3,6 @@
 #Author:     antlampas
 #Created on: 2025-05-29
 
-import collections
-import requests
-
 from crewClasses import CrewMember
 from crewClasses import Crew
 from model       import loadFromDB
