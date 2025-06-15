@@ -47,7 +47,6 @@ class PersonalBaseInformationsTable(db.Model):
                     = mapped_column(unique=True)
     FirstName:     Mapped[str]
     LastName:      Mapped[str]
-
 class STICMembershipTable(db.Model):
     __tablename__ = "STICMembership"
     Member:     Mapped["PersonalBaseInformationsTable"] \
@@ -56,7 +55,6 @@ class STICMembershipTable(db.Model):
                 = mapped_column(ForeignKey("PersonalBaseInformations.Id"))
     SticSerial: Mapped[int] \
                 = mapped_column(primary_key=True)
-
 class CrewMemberTable(db.Model):
     __tablename__ = "CrewMember"
     Member:                     Mapped["PersonalBaseInformationsTable"] \
@@ -71,7 +69,6 @@ class CrewMemberTable(db.Model):
                 = mapped_column(ForeignKey("PersonalBaseInformations.Id"))
     Serial:                     Mapped[int] \
                 = mapped_column(primary_key=True,autoincrement=True)
-
 class DutyTable(db.Model):
     __tablename__ = "Duty"
     CrewMemberDuty: Mapped["CrewMemberDutyTable"] \
@@ -79,7 +76,6 @@ class DutyTable(db.Model):
     Name:           Mapped[str] \
                       = mapped_column(primary_key=True)
     Description:    Mapped[str]
-
 class RankTable(db.Model):
     __tablename__ = "Rank"
     CrewMemberRank: Mapped["CrewMemberRankTable"] \
@@ -87,7 +83,6 @@ class RankTable(db.Model):
     Name:           Mapped[str] \
                       = mapped_column(primary_key=True)
     Description:    Mapped[str]
-
 class DivisionTable(db.Model):
     __tablename__ = "Division"
     CrewMemberDivision: Mapped["CrewMemberDivisionTable"] \
@@ -95,7 +90,6 @@ class DivisionTable(db.Model):
     Name:               Mapped[str] \
                   = mapped_column(primary_key=True)
     Description:        Mapped[str]
-
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CrewMemberRank"
     Member:       Mapped["CrewMemberTable"] \
@@ -108,7 +102,6 @@ class CrewMemberRankTable(db.Model):
             = mapped_column(ForeignKey("Rank.Name"))
     MemberSerial: Mapped[int] \
             = mapped_column(ForeignKey("CrewMember.Serial"))
-
 class CrewMemberDutyTable(db.Model):
     __tablename__ = "CrewMemberDuty"
     Member:       Mapped["CrewMemberTable"] \
@@ -121,7 +114,6 @@ class CrewMemberDutyTable(db.Model):
             = mapped_column(ForeignKey("Duty.Name"))
     MemberSerial: Mapped[int] \
             = mapped_column(ForeignKey("CrewMember.Serial"))
-
 class CrewMemberDivisionTable(db.Model):
     __tablename__ = "CrewMemberDivision"
     Division:     Mapped["DivisionTable"] \
@@ -134,7 +126,6 @@ class CrewMemberDivisionTable(db.Model):
         = mapped_column(ForeignKey("Division.Name"))
     MemberSerial: Mapped[int] \
         = mapped_column(ForeignKey("CrewMember.Serial"))
-
 class TaskTable(db.Model):
     __tablename__    = "Task"
     Mission:          Mapped["MissionTable"] \
@@ -147,7 +138,6 @@ class TaskTable(db.Model):
     StartedAt:        Mapped[int]
     EndedAt:          Mapped[int]
     Status:           Mapped[str]
-
 class MissionBaseInformationsTable(db.Model):
     __tablename__ = "MissionBaseInformations"
     Mission:          Mapped["MissionTable"] \
@@ -159,7 +149,6 @@ class MissionBaseInformationsTable(db.Model):
     StartedAt:        Mapped[int]
     EndedAt:          Mapped[int]
     Status:           Mapped[str]
-
 class MissionTable(db.Model):
     __tablename__ = "Mission"
     MissionBaseInformations: Mapped["MissionBaseInformationsTable"] \
@@ -172,7 +161,6 @@ class MissionTable(db.Model):
                    = mapped_column(ForeignKey("MissionBaseInformations.Name"))
     TaskName:                Mapped[str] \
                    = mapped_column(ForeignKey("Task.Name"))
-
 class MemberDutyLogEntryTable(db.Model):
     __tablename__ = "MemberDutyLogEntry"
     Id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
@@ -181,13 +169,11 @@ class MemberDutyLogEntryTable(db.Model):
     Period:     Mapped[int]
     Status:     Mapped[str]
     Grade:      Mapped[str]
-
 class MemberOnboardLogEntryTable(db.Model):
     __tablename__ = "MemberOnboardLogEntry"
     Id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[int] = mapped_column(ForeignKey("CrewMember.Serial"))
     Period:     Mapped[int]
-
 class MemberRankLogEntryTable(db.Model):
     __tablename__ = "MemberRankLogEntry"
     Id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
@@ -196,7 +182,6 @@ class MemberRankLogEntryTable(db.Model):
     Period:     Mapped[int]
     Status:     Mapped[str]
     Grade:      Mapped[str]
-
 class MemberDivisionLogEntryTable(db.Model):
     __tablename__ = "MemberDivisionLogEntry"
     Id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
@@ -205,7 +190,6 @@ class MemberDivisionLogEntryTable(db.Model):
     Period:     Mapped[int]
     Status:     Mapped[str]
     Grade:      Mapped[str]
-
 class MemberTaskLogEntryTable(db.Model):
     __tablename__ = "MemberTaskLogEntry"
     Id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
@@ -214,7 +198,6 @@ class MemberTaskLogEntryTable(db.Model):
     Period:     Mapped[int]
     Status:     Mapped[str]
     Grade:      Mapped[str]
-
 class MemberMissionLogEntryTable(db.Model):
     __tablename__ = "MemberMissionLogEntry"
     Id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
@@ -292,7 +275,6 @@ def selectPerson(attribute='',search='',stic=False):
                                                                       'Nickname'
                                                                      )
                          ).where(text(where_clause))
-
 def selectCrew(member='',stic=False):
     if not member:
         return select(PersonalBaseInformationsTable)
@@ -346,7 +328,6 @@ def selectCrew(member='',stic=False):
                          where(text(where_clause))
         else:
             return None
-
 def selectRank(rank=''):
     if not rank:
         return select(RankTable)
@@ -356,7 +337,6 @@ def selectRank(rank=''):
             return select(RankTable).where(text(where_clause))
         else:
             return None
-
 def selectDuty(duty=''):
     if not duty:
         return select(DutyTable)
@@ -366,7 +346,6 @@ def selectDuty(duty=''):
             return select(DutyTable).where(text(where_clause))
         else:
             return None
-
 def selectDivision(division=''):
     if not division:
         return select(DivisionTable)
@@ -376,7 +355,6 @@ def selectDivision(division=''):
             return select(DivisionTable).where(text(where_clause))
         else:
             return None
-
 def selectMission(mission=''):
     if not mission:
         return select(MissionTable)
@@ -386,7 +364,6 @@ def selectMission(mission=''):
             return select(MissionTable).where(text(where_clause))
         else:
             return None
-
 def selectTask(task=''):
     if not task:
         return select(TaskTable)

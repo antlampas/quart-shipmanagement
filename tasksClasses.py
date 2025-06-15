@@ -29,7 +29,6 @@ class Task(Editable):
             self.Description  = None
     def edit(self,attributes=dict()):
         self.Error = ""
-        task   = None
         if attributes:
             for key,value in attributes:
                 if key == 'Name' and re.match(isAlpha,key):
@@ -68,7 +67,6 @@ class Task(Editable):
                     self.Error = "Attribute not valid"
                     break
             return self.Error
-
 class Tasks(Addable):
     def __init__(self,tasks=list()):
         self.Error  = ""

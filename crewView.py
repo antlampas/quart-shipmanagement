@@ -4,23 +4,12 @@
 #Created on: 2025-05-15
 
 import re
-import requests
-import json
-
-from types          import SimpleNamespace
-from time           import sleep
-from jose           import jwt
-
-from sqlalchemy     import select
-from sqlalchemy.orm import Session
-from sqlalchemy.sql import and_
 
 from quart          import Blueprint
 from quart          import current_app
 from quart          import request
 from quart          import redirect
 from quart          import url_for
-from quart          import session
 
 from config         import KeycloakConfig
 
