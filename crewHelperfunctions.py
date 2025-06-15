@@ -29,7 +29,7 @@ def CrewMatchesDB(crew=Crew()):
     crewDB = loadFromDB('crew')
     if crewDB:
         crewList = Crew(crewDB)
-        if crew === crewList:
+        if crew == crewList:
             return True
         else:
             return False
