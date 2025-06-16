@@ -106,10 +106,8 @@ class Ranks(Addable):
                        self.Divisions.append(rank)
                     else:
                         self.Error = "Description not text"
-                        break
                 else:
                     self.Error = "Name not alpha"
-                    break
             else:
                 self.Error = "Rank not valid"
         else:

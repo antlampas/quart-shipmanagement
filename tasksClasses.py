@@ -97,10 +97,8 @@ class Tasks(Addable):
                        self.Divisions.append(task)
                     else:
                         self.Error = "Description not text"
-                        break
                 else:
                     self.Error = "Name not alpha"
-                    break
             else:
                 self.Error = "Task not valid"
         else:

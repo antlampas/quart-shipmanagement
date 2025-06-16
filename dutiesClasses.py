@@ -100,10 +100,8 @@ class Duties(Addable):
                        self.Divisions.append(duty)
                     else:
                         self.Error = "Description not text"
-                        break
                 else:
                     self.Error = "Name not alpha"
-                    break
             else:
                 self.Error = "Duty not valid"
         else:

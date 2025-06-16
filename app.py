@@ -17,6 +17,10 @@ from quart_keycloak  import Keycloak
 from quart_keycloak  import KeycloakAuthToken
 from quart_keycloak  import KeycloakLogoutRequest
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 def create_app(mode='Development'):
     from config import Development
     from config import Production

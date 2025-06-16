@@ -3,16 +3,16 @@
 #Author:     antlampas
 #Created on: 2025-05-15
 
-from os import getenv
-
+from os     import getenv
+from json   import loads
 class BaseConfig:
     DATABASEURL                 = getenv("SQLALCHEMY_DATABASE_URI")
     SESSION_TYPE                = "redis"
 class KeycloakConfig:
     KEYCLOAK_URL                = getenv("KEYCLOAK_URL")
     KEYCLOAK_REALM              = getenv("KEYCLOAK_REALM")
-    OPENID_KEYCLOAK_CONFIG      = getenv("OPENID_KEYCLOAK_CONFIG")
-    KEYCLOAK_ADMIN              = getenv("KEYCLOAK_ADMIN")
+    OPENID_KEYCLOAK_CONFIG      = loads(getenv("OPENID_KEYCLOAK_CONFIG"))
+    KEYCLOAK_ADMIN              = loads(getenv("KEYCLOAK_ADMIN"))
 class Providers:
     Identity       = {}
     Authentication = {}
