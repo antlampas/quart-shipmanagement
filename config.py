@@ -22,6 +22,7 @@ class Providers:
     Identity       = []
     Authentication = []
     Authorization  = []
+    People         = []
     Crew           = []
     Ranks          = []
     Divisions      = []

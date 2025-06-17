@@ -1,3 +1,8 @@
+#Licensed under the Open Software License version 3.0
+
+#Author:     antlampas
+#Created on: 2025-05-31
+
 import requests
 
 command_prefix = f'{current_app.config['KEYCLOAK_URL']}' + \
@@ -42,14 +47,123 @@ def adminAction(action,params=dict()):
     requests.get(command_prefix + '/protocol/openid−connect/logout')
     return responseContent
 
+#TODO:implement
 def loadFromKeycloak(what='',pattern=''):
-    pass
+    if what == 'person':
+        pass
+    elif what == 'people':
+        pass
+    elif what == 'crewMember':
+        pass
+    elif what == 'crew':
+        pass
+    elif what == 'rank':
+        pass
+    elif what == 'ranks':
+        pass
+    elif what == 'division':
+        pass
+    elif what == 'divisions':
+        pass
+    elif what == 'duty':
+        pass
+    elif what == 'duties':
+        pass
+    elif what == 'task':
+        pass
+    elif what == 'tasks':
+        pass
+    elif what == 'mission':
+        pass
+    elif what == 'missions':
+        pass
 def removeFromKeycloak(what='',pattern=''):
-    pass
+    if what == 'person':
+        pass
+    elif what == 'people':
+        pass
+    elif what == 'crewMember':
+        pass
+    elif what == 'crew':
+        pass
+    elif what == 'rank':
+        pass
+    elif what == 'ranks':
+        pass
+    elif what == 'division':
+        pass
+    elif what == 'divisions':
+        pass
+    elif what == 'duty':
+        pass
+    elif what == 'duties':
+        pass
+    elif what == 'task':
+        pass
+    elif what == 'tasks':
+        pass
+    elif what == 'mission':
+        pass
+    elif what == 'missions':
+        pass
 def saveToKeycloak(what='',data=dict()):
-    pass
+    if what == 'person':
+        pass
+    elif what == 'people':
+        pass
+    elif what == 'crewMember':
+        pass
+    elif what == 'crew':
+        pass
+    elif what == 'rank':
+        pass
+    elif what == 'ranks':
+        pass
+    elif what == 'division':
+        pass
+    elif what == 'divisions':
+        pass
+    elif what == 'duty':
+        pass
+    elif what == 'duties':
+        pass
+    elif what == 'task':
+        pass
+    elif what == 'tasks':
+        pass
+    elif what == 'mission':
+        pass
+    elif what == 'missions':
+        pass
 def editKeycloak(what='',pattern=dict()):
-    pass
+    if what == 'person':
+        pass
+    elif what == 'people':
+        pass
+    elif what == 'crewMember':
+        pass
+    elif what == 'crew':
+        pass
+    elif what == 'rank':
+        pass
+    elif what == 'ranks':
+        pass
+    elif what == 'division':
+        pass
+    elif what == 'divisions':
+        pass
+    elif what == 'duty':
+        pass
+    elif what == 'duties':
+        pass
+    elif what == 'task':
+        pass
+    elif what == 'tasks':
+        pass
+    elif what == 'mission':
+        pass
+    elif what == 'missions':
+        pass
 
 
 def getUser(headers,user=''):
@@ -96,7 +210,7 @@ def editUser(headers,user='',attributes=dict()):
         response = None
     return response
 
-#TODO: continua da qui
+#TODO: check these functions
 def getGroup(headers,group=''):
     global command_prefix
     response = None
