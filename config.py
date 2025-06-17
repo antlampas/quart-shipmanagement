@@ -5,30 +5,32 @@
 
 from os     import getenv
 from json   import loads
+
 class BaseConfig:
-    DATABASEURL                 = getenv("SQLALCHEMY_DATABASE_URI")
     SESSION_TYPE                = "redis"
+class ShipConfig:
+    SHIPNAME                    = 'Picenum'
+    REGISTRYNUMBER              = '2025'
+class DbConfig:
+    DATABASEURL                 = getenv("SQLALCHEMY_DATABASE_URI")
 class KeycloakConfig:
     KEYCLOAK_URL                = getenv("KEYCLOAK_URL")
     KEYCLOAK_REALM              = getenv("KEYCLOAK_REALM")
     OPENID_KEYCLOAK_CONFIG      = loads(getenv("OPENID_KEYCLOAK_CONFIG"))
     KEYCLOAK_ADMIN              = loads(getenv("KEYCLOAK_ADMIN"))
 class Providers:
-    Identity       = {}
-    Authentication = {}
-    Authorization  = {}
-    Crew           = {}
-    Ranks          = {}
-    Divisions      = {}
-    Duties         = {}
-    Tasks          = {}
-    Missions       = {}
-class ShipConfig:
-    SHIPNAME       = 'Picenum'
-    REGISTRYNUMBER = '2025'
-class Development(BaseConfig,KeycloakConfig,ShipConfig,Providers):
+    Identity       = []
+    Authentication = []
+    Authorization  = []
+    Crew           = []
+    Ranks          = []
+    Divisions      = []
+    Duties         = []
+    Tasks          = []
+    Missions       = []
+class Development(BaseConfig,DbConfig,KeycloakConfig,ShipConfig,Providers):
     DEBUG                       = True
     SECRET_KEY                  = getenv("SECRET_KEY_DEVELOPMENT")
-class Production(BaseConfig,KeycloakConfig,ShipConfig,Providers):
+class Production(BaseConfig,DbConfig,KeycloakConfig,ShipConfig,Providers):
     DEBUG                       = False
     SECRET_KEY                  = getenv("SECRET_KEY_PRODUCTION")

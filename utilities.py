@@ -10,3 +10,12 @@ isAlphanumeric = r"^[A-Za-z][0-9]+$"
 isText         = r"^[A-Za-z][0-9][,;.:-_!/(/)àèéìòù]+$"
 isPath         = r"\/[A-Za-z0-9]+"
 #### End regular expressions ####
+
+def load(what='',pattern=''):
+    pass
+def remove(what='',pattern=''):
+    pass
+def save(what='',data=dict()):
+    pass
+def edit(what='',data=dict()):
+    pass

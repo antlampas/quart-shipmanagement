@@ -622,6 +622,67 @@ def loadFromDB(what='',pattern=''):
             return None
     else:
         return None
+def removeFromDB(what='',pattern=''):
+    if what == 'person':
+        if 'nickname' in pattern:
+            personDB = db.session.scalar(selectPerson(pattern))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(personDB)
+                    s.commit()
+            return True
+        else:
+            return False
+    elif what == 'crewMember':
+        if 'nickname' in pattern:
+            crewMemberDB = db.session.scalar(selectCrew(pattern))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(crewMemberDB)
+                    s.commit()
+            return True
+        else:
+            return False
+    elif what == 'task':
+        if 'name' in pattern:
+            taskDB = db.session.scalar(selectTask(pattern))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(taskDB)
+                    s.commit()
+            return True
+        else:
+            return False
+    elif what == 'duty':
+        if 'name' in pattern:
+            dutyDB = db.session.scalar(selectDuty(pattern))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(dutyDB)
+                    s.commit()
+            return True
+        else:
+            return False
+    elif what == 'rank':
+        if 'name' in pattern:
+            rankDB = db.session.scalar(selectRank(pattern))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(rankDB)
+                    s.commit()
+            return True
+        else:
+            return False
+    elif what == 'division':
+        if 'name' in pattern:
+            divisionDB = db.session.scalar(selectDivision(pattern))
+            with db.bind.Session() as s:
+                with s.begin():
+                    s.delete(divisionDB)
+                    s.commit()
+            return True
+        else:
+            return False
 def saveToDB(what='',data=dict()):
     #TODO: Check and complete this
     if what == 'crewMember':
@@ -747,65 +808,4 @@ def editDB(what='',pattern=dict()):
     elif what == 'task':
         if pattern and 'Name' in pattern:
             pass
-def removeFromDB(what='',pattern=dict()):
-    if what == 'person':
-        if 'nickname' in pattern:
-            personDB = db.session.scalar(selectPerson(pattern['nickname']))
-            with db.bind.Session() as s:
-                with s.begin():
-                    s.delete(personDB)
-                    s.commit()
-            return True
-        else:
-            return False
-    elif what == 'crewMember':
-        if 'nickname' in pattern:
-            crewMemberDB = db.session.scalar(selectCrew(pattern['nickname']))
-            with db.bind.Session() as s:
-                with s.begin():
-                    s.delete(crewMemberDB)
-                    s.commit()
-            return True
-        else:
-            return False
-    elif what == 'task':
-        if 'name' in pattern:
-            taskDB = db.session.scalar(selectTask(pattern['name']))
-            with db.bind.Session() as s:
-                with s.begin():
-                    s.delete(taskDB)
-                    s.commit()
-            return True
-        else:
-            return False
-    elif what == 'duty':
-        if 'name' in pattern:
-            dutyDB = db.session.scalar(selectDuty(pattern['name']))
-            with db.bind.Session() as s:
-                with s.begin():
-                    s.delete(dutyDB)
-                    s.commit()
-            return True
-        else:
-            return False
-    elif what == 'rank':
-        if 'name' in pattern:
-            rankDB = db.session.scalar(selectRank(pattern['name']))
-            with db.bind.Session() as s:
-                with s.begin():
-                    s.delete(rankDB)
-                    s.commit()
-            return True
-        else:
-            return False
-    elif what == 'division':
-        if 'name' in pattern:
-            divisionDB = db.session.scalar(selectDivision(pattern['name']))
-            with db.bind.Session() as s:
-                with s.begin():
-                    s.delete(divisionDB)
-                    s.commit()
-            return True
-        else:
-            return False
 #### End helper functions ####

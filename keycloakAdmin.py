@@ -42,6 +42,16 @@ def adminAction(action,params=dict()):
     requests.get(command_prefix + '/protocol/openid−connect/logout')
     return responseContent
 
+def loadFromKeycloak(what='',pattern=''):
+    pass
+def removeFromKeycloak(what='',pattern=''):
+    pass
+def saveToKeycloak(what='',data=dict()):
+    pass
+def editKeycloak(what='',pattern=dict()):
+    pass
+
+
 def getUser(headers,user=''):
     global command_prefix
     response = None
@@ -53,7 +63,16 @@ def getUser(headers,user=''):
     else:
         response = requests.get(command_prefix + '/users',headers=headers)
     return response
-
+def removeUser(headers,user=''):
+    global command_prefix
+    response = None
+    if user:
+        response = requests.delete(command_prefix + f'/users/{user}',
+                                   headers=headers
+                                  )
+    else:
+        response = None
+    return response
 def addUser(headers,user=dict()):
     global command_prefix
     response = None
@@ -65,7 +84,6 @@ def addUser(headers,user=dict()):
     else:
         response = None
     return response
-
 def editUser(headers,user='',attributes=dict()):
     global command_prefix
     response = None
@@ -74,17 +92,6 @@ def editUser(headers,user='',attributes=dict()):
                                 headers=headers,
                                 data=attributes
                                )
-    else:
-        response = None
-    return response
-
-def removeUser(headers,user=''):
-    global command_prefix
-    response = None
-    if user:
-        response = requests.delete(command_prefix + f'/users/{user}',
-                                   headers=headers
-                                  )
     else:
         response = None
     return response
@@ -101,7 +108,16 @@ def getGroup(headers,group=''):
     else:
         response = requests.get(command_prefix + '/users',headers=headers)
     return response
-
+def removeGroup(headers,group=''):
+    global command_prefix
+    response = None
+    if user:
+        response = requests.delete(command_prefix + f'/groups/{group}',
+                                   headers=headers
+                                  )
+    else:
+        response = None
+    return response
 def addGroup(headers,group=dict()):
     global command_prefix
     response = None
@@ -113,7 +129,6 @@ def addGroup(headers,group=dict()):
     else:
         response = None
     return response
-
 def editGroup(headers,group='',attributes=dict()):
     global command_prefix
     response = None
@@ -122,17 +137,6 @@ def editGroup(headers,group='',attributes=dict()):
                                 headers=headers,
                                 data=attributes
                                )
-    else:
-        response = None
-    return response
-
-def removeGroup(headers,group=''):
-    global command_prefix
-    response = None
-    if user:
-        response = requests.delete(command_prefix + f'/groups/{group}',
-                                   headers=headers
-                                  )
     else:
         response = None
     return response

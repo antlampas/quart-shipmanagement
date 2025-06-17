@@ -83,11 +83,6 @@ async def member(member):
 @refreshToken
 @crew_blueprint.route("/add",methods=["GET","POST"])
 async def add():
-    # return await standardReturn("implement.html",
-    #                             sectionName,
-    #                             implement="Implement!"
-    #                            )
-    #TODO: Make it work with keycloack too
     global sectionName
     form   = AddCrewMemberForm()
     if request.method == 'GET':
@@ -100,7 +95,7 @@ async def add():
             form.Duties.choices   = [(d.Name,d.Name) for d in duties]
         if divisions:
             form.Division.choices = [(d.Name,d.Name) for d in divisions]
-        return await standardReturn("crewMemberAdd.html",sectionName,FORM=form)
+        return await standardReturn("crewMemberAdd.html",f'Add {sectionName}',FORM=form)
     elif request.method == 'POST':
         if await form.validate_on_submit():
             crewMember = CrewMember(
@@ -112,9 +107,9 @@ async def add():
                                   Duties    = (await request.form)\
                                                               .getlist('Duties')
                                    )
-            # form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
-            # form.Duties.choices   = [(d.Name,d.Name) for d in duties]
-            # form.Division.choices = [(d.Name,d.Name) for d in divisions]
+            form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
+            form.Duties.choices   = [(d.Name,d.Name) for d in duties]
+            form.Division.choices = [(d.Name,d.Name) for d in divisions]
 
             if not saveToDB('crewMember',crewMember.__dict__):
                 return await standardReturn(
@@ -138,12 +133,6 @@ async def add():
 @crew_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     global sectionName
-    return await standardReturn("implement.html",
-                                sectionName,
-                                implement="Implement!"
-                               )
-    #TODO: Make it work with keycloack too
-    sectionName = 'Remove ' + sectionName
     form = RemoveCrewMemberForm()
     crew = list()
     if request.method == 'GET':
@@ -151,7 +140,7 @@ async def remove():
         if crew:
             form.Nickname.choices = [(c.Nickname,c.Nickname) for c in crew]
         return await standardReturn("crewMemberRemove.html",
-                                    sectionName,
+                                    f'Remove {sectionName}',
                                     FORM=form
                                    )
     elif request.method == 'POST':
@@ -172,7 +161,7 @@ async def remove():
 async def edit():
     global sectionName
     return await standardReturn("error.html",
-                                'Edit' + sectionName,
+                                f'Edit {sectionName}',
                                 ERROR='No member specified'
                                )
 
@@ -181,10 +170,6 @@ async def edit():
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 async def editMember(member):
     global sectionName
-    return await standardReturn("implement.html",
-                                sectionName,
-                                implement="Implement!"
-                               )
     #TODO: Make it work with keycloack too, make db managenet code
     #      more clear and check
     sectionName = 'Edit ' + sectionName
