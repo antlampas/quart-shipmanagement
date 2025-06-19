@@ -5,7 +5,7 @@
 
 import requests
 
-command_prefix = f'{current_app.config['KEYCLOAK_URL']}' + \
+command_prefix = f'{current_app.config["KEYCLOAK_URL"]}' + \
                  f'/admin/realms/' + \
                  f'{current_app.config['KEYCLOAK_REALM']}'
 
@@ -50,9 +50,11 @@ def adminAction(action,params=dict()):
 #TODO:implement
 def loadFromKeycloak(what='',pattern=''):
     if what == 'person':
-        pass
+        if pattern:
+            pass
     elif what == 'people':
-        pass
+        if not pattern:
+            pass
     elif what == 'crewMember':
         pass
     elif what == 'crew':

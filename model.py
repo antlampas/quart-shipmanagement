@@ -400,19 +400,22 @@ def loadFromDB(what='',pattern=''):
     elif what == 'people':
         people           = None
         peopleDictionary = dict()
-        with db.bind.Session() as s:
-            with s.begin():
-                people = s.scalars(selectPerson()).all()
-        if people:
-            for person in people:
-                peopleDictionary[person.Nickname] = {
-                                             'FirstName' : person.FirstName,
-                                             'LastName'  : person.LastName,
-                                             'Nickname'  : person.Nickname
-                                              }
-            return people
+        if not pattern:
+            with db.bind.Session() as s:
+                with s.begin():
+                    people = s.scalars(selectPerson()).all()
+            if people:
+                for person in people:
+                    peopleDictionary[person.Nickname] = {
+                                                 'FirstName' : person.FirstName,
+                                                 'LastName'  : person.LastName,
+                                                 'Nickname'  : person.Nickname
+                                                  }
+                return people
+            else:
+                return None
         else:
-            return None
+            pass
     elif what == 'crewMember':
         if pattern:
             crewMember           = None
@@ -439,24 +442,27 @@ def loadFromDB(what='',pattern=''):
     elif what == 'crew':
         crewList       = None
         crewDictionary = dict()
-        with db.bind.Session() as s:
-            with s.begin():
-                crewList = s.scalars(selectCrew()).all()
-        if crewList:
-            for member in crewList:
-                crewDictionary[member.Nickname] = {
-                                             "FirstName" : member.FirstName,
-                                             "LastName"  : member.LastName,
-                                             "Nickname"  : member.Nickname,
-                                             "Rank"      : member.Rank,
-                                             "Division"  : member.Division,
-                                             "Duties"    : member.Duties,
-                                             "Serial"    : member.Serial,
-                                             "Stic"      : member.Stic,
-                                              }
-            return crewDictionary
+        if not pattern:
+            with db.bind.Session() as s:
+                with s.begin():
+                    crewList = s.scalars(selectCrew()).all()
+            if crewList:
+                for member in crewList:
+                    crewDictionary[member.Nickname] = {
+                                                 "FirstName" : member.FirstName,
+                                                 "LastName"  : member.LastName,
+                                                 "Nickname"  : member.Nickname,
+                                                 "Rank"      : member.Rank,
+                                                 "Division"  : member.Division,
+                                                 "Duties"    : member.Duties,
+                                                 "Serial"    : member.Serial,
+                                                 "Stic"      : member.Stic,
+                                                  }
+                return crewDictionary
+            else:
+                return None
         else:
-            return None
+            pass
     elif what == 'rank':
         if pattern:
             rank           = None
@@ -477,18 +483,21 @@ def loadFromDB(what='',pattern=''):
     elif what == 'ranks':
         ranks           = None
         ranksDictionary = dict()
-        with db.bind.Session() as s:
-            with s.begin():
-                ranks = s.scalars(selectRank()).all()
-        if ranks:
-            for rank in ranks:
-                ranksDictionary[rank.Name] = {
-                                            'Name'        : rank.Name,
-                                            'Description' : rank.Description
-                                             }
-            return ranksDictionary
+        if not pattern:
+            with db.bind.Session() as s:
+                with s.begin():
+                    ranks = s.scalars(selectRank()).all()
+            if ranks:
+                for rank in ranks:
+                    ranksDictionary[rank.Name] = {
+                                                'Name'        : rank.Name,
+                                                'Description' : rank.Description
+                                                }
+                return ranksDictionary
+            else:
+                return None
         else:
-            return None
+            pass
     elif what == 'division':
         if pattern:
             division           = None

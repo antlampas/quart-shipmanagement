@@ -38,7 +38,7 @@ def refreshToken(identityProvider="keycloak"):
                 refreshToken = session['auth_token']['refresh_token']
                 if isTokenExpired():
                     if identityProvider == 'keycloak':
-                        url = f'{current_app.config['KEYCLOAK_URL']}' + \
+                        url = f'{current_app.config["KEYCLOAK_URL"]}' + \
                         '/auth/realms/' + \
                         f'{current_app.config["KEYCLOAK_REALM"]}' + \
                         '/protocol/openid-connect/token'
