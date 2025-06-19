@@ -7,7 +7,7 @@ import requests
 
 command_prefix = f'{current_app.config["KEYCLOAK_URL"]}' + \
                  f'/admin/realms/' + \
-                 f'{current_app.config['KEYCLOAK_REALM']}'
+                 f'{current_app.config["KEYCLOAK_REALM"]}'
 
 def getAdminAccessToken():
     headers = {
