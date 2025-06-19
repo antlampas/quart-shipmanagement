@@ -61,7 +61,7 @@ class Duty(Editable):
                         "Description" : self.Description
                    }
         return duty
-    def deserilize(self,division=dict()):
+    def deserialize(self,division=dict()):
         self.Error = ''
         if attribute:
             for key,value in division:
@@ -127,7 +127,7 @@ class Duties(Addable):
         for duty in self.Duties:
             duties[duty.Name] = duty.serilize()
         return duties
-    def deserilize(self,duties=dict()):
+    def deserialize(self,duties=dict()):
         self.Error = ''
         if duties:
             for key,duty in duties:

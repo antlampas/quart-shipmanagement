@@ -26,7 +26,7 @@ class MemberOnboardLog:
     def serialize(self):
         self.Error = ''
         pass
-    def deserilize(self,memberLog=dict()):
+    def deserialize(self,memberLog=dict()):
         self.Error = ''
         pass
 
@@ -42,6 +42,6 @@ class OnboardLog:
     def remove(self,task=None):
         self.Error = ""
         pass
-    def deserilize(self,memberLogs=dict()):
+    def deserialize(self,memberLogs=dict()):
         self.Error = ''
         pass

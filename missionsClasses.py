@@ -59,7 +59,7 @@ class Mission(Editable):
         pass
     def serialize(self):
         pass
-    def deserilize(self,division=dict()):
+    def deserialize(self,division=dict()):
         pass
 
 class Missions(Addable):
@@ -71,5 +71,5 @@ class Missions(Addable):
         pass
     def serialize(self):
         pass
-    def deserilize(self,division=dict()):
+    def deserialize(self,division=dict()):
         pass

@@ -60,7 +60,7 @@ class Rank(Editable):
                         "Description" : self.Description
                    }
         return rank
-    def deserilize(self,rank=dict()):
+    def deserialize(self,rank=dict()):
         self.Error = ''
         if attribute:
             for key,value in rank:
@@ -133,7 +133,7 @@ class Ranks(Addable):
         for rank in self.Ranks:
             ranks[rank.Name] = rank.serilize()
         return ranks
-    def deserilize(self,ranks=dict()):
+    def deserialize(self,ranks=dict()):
         self.Error = ''
         if ranks:
             for key,rank in ranks:

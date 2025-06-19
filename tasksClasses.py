@@ -55,7 +55,7 @@ class Task(Editable):
                         "Description" : self.Description
                    }
         return task
-    def deserilize(self,task=dict()):
+    def deserialize(self,task=dict()):
         self.Error = ''
         if attribute:
             for key,value in task:
@@ -124,7 +124,7 @@ class Tasks(Addable):
         for task in self.Tasks:
             tasks[tasks.Name] = task.serilize()
         return tasks
-    def deserilize(self,tasks=dict()):
+    def deserialize(self,tasks=dict()):
         self.Error = ''
         if tasks:
             for key,task in tasks:

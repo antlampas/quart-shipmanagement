@@ -90,7 +90,7 @@ class CrewMember(Editable):
                     "Stic"      : self.Stic
                  }
         return member
-    def deserilize(self,crewMember=dict()):
+    def deserialize(self,crewMember=dict()):
         self.Error = ''
         for key,value in crewMember:
             if key == 'FirstName':
@@ -152,7 +152,7 @@ class Crew(Addable):
         for member in self.Crew:
             crew[member.Nickname] = member.serilize()
         return crew
-    def deserilize(self,crew=dict()):
+    def deserialize(self,crew=dict()):
         self.Error = ''
         if crew:
             for key,member in crew:
