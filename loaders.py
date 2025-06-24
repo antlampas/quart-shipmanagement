@@ -16,150 +16,173 @@ from keycloakAdmin import saveToKeycloak
 from keycloakAdmin import editKeycloak
 
 def load(what='',pattern=''):
+    data = None
     if what:
         if what == 'person' or what == 'people':
             if 'keycloak' in Providers.People:
-                loadFromKeycloak(what,pattern)
+                data = loadFromKeycloak(what,pattern)
             if 'database' in Providers.People:
-                loadFromDB(what,pattern)
+                data = loadFromDB(what,pattern)
         elif what == 'crewMember' or what == 'crew':
             if 'keycloak' in Providers.Crew:
-                loadFromKeycloak(what,pattern)
+                data = loadFromKeycloak(what,pattern)
             if 'database' in Providers.Crew:
-                loadFromDB(what,pattern)
+                data = loadFromDB(what,pattern)
         elif what == 'rank' or what == 'ranks':
             if 'keycloak' in Providers.Ranks:
-                loadFromKeycloak(what,pattern)
+                data = loadFromKeycloak(what,pattern)
             if 'database' in Providers.Ranks:
-                loadFromDB(what,pattern)
+                data = loadFromDB(what,pattern)
         elif what == 'division' or what == 'divisions':
             if 'keycloak' in Providers.Divisions:
-                loadFromKeycloak(what,pattern)
+                data = loadFromKeycloak(what,pattern)
             if 'database' in Providers.Divisions:
-                loadFromDB(what,pattern)
+                data = loadFromDB(what,pattern)
         elif what == 'duty' or what == 'duties':
             if 'keycloak' in Providers.Duties:
-                paloadFromKeycloak(what,pattern)
+                data = loadFromKeycloak(what,pattern)
             if 'database' in Providers.Duties:
-                loadFromDB(what,pattern)
+                data = loadFromDB(what,pattern)
         elif what == 'task' or what == 'tasks':
             if 'keycloak' in Providers.Tasks:
-                loadFromKeycloak(what,pattern)
+                data = loadFromKeycloak(what,pattern)
             if 'database' in Providers.Tasks:
-                loadFromDB(what,pattern)
+                data = loadFromDB(what,pattern)
         elif what == 'mission' or what == 'missions':
             if 'keycloak' in Providers.Missions:
-                loadFromKeycloak(what,pattern)
+                data = loadFromKeycloak(what,pattern)
             if 'database' in Providers.Missions:
-                loadFromDB(what,pattern)
+                data = loadFromDB(what,pattern)
+        else:
+            return None
+        return data
+    else:
+        return None
 def remove(what='',pattern=''):
+    data = None
     if what:
         if what == 'person' or what == 'people':
             if 'keycloak' in Providers.People:
-                removeFromKeycloak(what,pattern)
+                data = removeFromKeycloak(what,pattern)
             if 'database' in Providers.People:
-                removeFromDB(what,pattern)
+                data = removeFromDB(what,pattern)
         elif what == 'crewMember' or what == 'crew':
             if 'keycloak' in Providers.Crew:
-                removeFromKeycloak(what,pattern)
+                data = removeFromKeycloak(what,pattern)
             if 'database' in Providers.Crew:
-                removeFromDB(what,pattern)
+                data = removeFromDB(what,pattern)
         elif what == 'rank' or what == 'ranks':
             if 'keycloak' in Providers.Ranks:
-                removeFromKeycloak(what,pattern)
+                data = removeFromKeycloak(what,pattern)
             if 'database' in Providers.Ranks:
-                removeFromDB(what,pattern)
+                data = removeFromDB(what,pattern)
         elif what == 'division' or what == 'divisions':
             if 'keycloak' in Providers.Divisions:
-                removeFromKeycloak(what,pattern)
+                data = removeFromKeycloak(what,pattern)
             if 'database' in Providers.Divisions:
-                removeFromDB(what,pattern)
+                data = removeFromDB(what,pattern)
         elif what == 'duty' or what == 'duties':
             if 'keycloak' in Providers.Duties:
-                removeFromKeycloak(what,pattern)
+                data = removeFromKeycloak(what,pattern)
             if 'database' in Providers.Duties:
-                removeFromDB(what,pattern)
+                data = removeFromDB(what,pattern)
         elif what == 'task' or what == 'tasks':
             if 'keycloak' in Providers.Tasks:
-                removeFromKeycloak(what,pattern)
+                data = removeFromKeycloak(what,pattern)
             if 'database' in Providers.Tasks:
-                removeFromDB(what,pattern)
+                data = removeFromDB(what,pattern)
         elif what == 'mission' or what == 'missions':
             if 'keycloak' in Providers.Missions:
-                removeFromKeycloak(what,pattern)
+                data = removeFromKeycloak(what,pattern)
             if 'database' in Providers.Missions:
-                removeFromDB(what,pattern)
+                data = removeFromDB(what,pattern)
+        else:
+            return None
+        return data
+    else:
+        return None
 def save(what='',data=dict()):
     if what:
         if what == 'person' or what == 'people':
             if 'keycloak' in Providers.People:
-                saveToKeycloak(what,pattern)
+                data = saveToKeycloak(what,pattern)
             if 'database' in Providers.People:
-                saveToDB(what,pattern)
+                data = saveToDB(what,pattern)
         elif what == 'crewMember' or what == 'crew':
             if 'keycloak' in Providers.Crew:
-                saveToKeycloak(what,pattern)
+                data = saveToKeycloak(what,pattern)
             if 'database' in Providers.Crew:
-                saveToDB(what,pattern)
+                data = saveToDB(what,pattern)
         elif what == 'rank' or what == 'ranks':
             if 'keycloak' in Providers.Ranks:
-                saveToKeycloak(what,pattern)
+                data = saveToKeycloak(what,pattern)
             if 'database' in Providers.Ranks:
-                saveToDB(what,pattern)
+                data = saveToDB(what,pattern)
         elif what == 'division' or what == 'divisions':
             if 'keycloak' in Providers.Divisions:
-                saveToKeycloak(what,pattern)
+                data = saveToKeycloak(what,pattern)
             if 'database' in Providers.Divisions:
-                saveToDB(what,pattern)
+                data = saveToDB(what,pattern)
         elif what == 'duty' or what == 'duties':
             if 'keycloak' in Providers.Duties:
-                saveToKeycloak(what,pattern)
+                data = saveToKeycloak(what,pattern)
             if 'database' in Providers.Duties:
-                saveToDB(what,pattern)
+                data = saveToDB(what,pattern)
         elif what == 'task' or what == 'tasks':
             if 'keycloak' in Providers.Tasks:
-                saveToKeycloak(what,pattern)
+                data = saveToKeycloak(what,pattern)
             if 'database' in Providers.Tasks:
-                saveToDB(what,pattern)
+                data = saveToDB(what,pattern)
         elif what == 'mission' or what == 'missions':
             if 'keycloak' in Providers.Missions:
-                saveToKeycloak(what,pattern)
+                data = saveToKeycloak(what,pattern)
             if 'database' in Providers.Missions:
-                saveToDB(what,pattern)
+                data = saveToDB(what,pattern)
+        else:
+            return None
+        return data
+    else:
+        return None
 def edit(what='',data=dict()):
+    data = None
     if what:
         if what == 'person' or what == 'people':
             if 'keycloak' in Providers.People:
-                editKeycloak(what,pattern)
+                data = editKeycloak(what,pattern)
             if 'database' in Providers.People:
-                editDB(what,pattern)
+                data = editDB(what,pattern)
         elif what == 'crewMember' or what == 'crew':
             if 'keycloak' in Providers.Crew:
-                editKeycloak(what,pattern)
+                data = editKeycloak(what,pattern)
             if 'database' in Providers.Crew:
-                editDB(what,pattern)
+                data = editDB(what,pattern)
         elif what == 'rank' or what == 'ranks':
             if 'keycloak' in Providers.Ranks:
-                editKeycloak(what,pattern)
+                data = editKeycloak(what,pattern)
             if 'database' in Providers.Ranks:
-                editDB(what,pattern)
+                data = editDB(what,pattern)
         elif what == 'division' or what == 'divisions':
             if 'keycloak' in Providers.Divisions:
-                editKeycloak(what,pattern)
+                data = editKeycloak(what,pattern)
             if 'database' in Providers.Divisions:
-                editDB(what,pattern)
+                data = editDB(what,pattern)
         elif what == 'duty' or what == 'duties':
             if 'keycloak' in Providers.Duties:
-                editKeycloak(what,pattern)
+                data = editKeycloak(what,pattern)
             if 'database' in Providers.Duties:
-                editDB(what,pattern)
+                data = editDB(what,pattern)
         elif what == 'task' or what == 'tasks':
             if 'keycloak' in Providers.Tasks:
-                editKeycloak(what,pattern)
+                data = editKeycloak(what,pattern)
             if 'database' in Providers.Tasks:
-                editDB(what,pattern)
+                data = editDB(what,pattern)
         elif what == 'mission' or what == 'missions':
             if 'keycloak' in Providers.Missions:
-                editKeycloak(what,pattern)
+                data = editKeycloak(what,pattern)
             if 'database' in Providers.Missions:
-                editDB(what,pattern)
+                data = editDB(what,pattern)
+        else:
+            return None
+        return data
+    else:
+        return None

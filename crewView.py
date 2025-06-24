@@ -45,11 +45,11 @@ sectionName    = "Crew"
 @crew_blueprint.route("/",methods=["GET"])
 async def crew():
     global sectionName
-    crewDB = loadFromDB('crew')
-    if crewDB:
+    crew = load('crew')
+    if crew:
         return await standardReturn("crew.html",
                                     sectionName,
-                                    CREW=crewDB.Crew
+                                    CREW=crew
                                    )
     else:
         return await standardReturn("error.html",
