@@ -5,7 +5,7 @@
 
 import re
 
-from config                     import BaseConfig as Config
+from config                     import DbConfig
 from sqlalchemy                 import ForeignKey
 from sqlalchemy                 import select
 from sqlalchemy                 import text
@@ -23,7 +23,7 @@ db = QuartSQLAlchemy(
         binds=dict(
             default=dict(
                 engine=dict(
-                    url=Config.DATABASEURL,
+                    url=DbConfig.DATABASEURL,
                     echo=False,
                     connect_args=dict(check_same_thread=False),
                 ),

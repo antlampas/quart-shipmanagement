@@ -5,23 +5,25 @@
 
 import requests
 
+from config import KeycloakConfig
+
 token = ''
 
-command_prefix = f'{current_app.config["KEYCLOAK_URL"]}' + \
+command_prefix = f'{KeycloakConfig.KEYCLOAK_URL}' + \
                  f'/admin/realms/' + \
-                 f'{current_app.config["KEYCLOAK_REALM"]}'
+                 f'{KeycloakConfig.KEYCLOAK_REALM}'
 
 def getAdminAccessToken():
     headers = {
                 'content-type' : 'application/x-www-form-urlencoded'
               }
     data = {
-             'client_id'  : current_app.config['KEYCLOAK_ADMIN']['client_id'],
-             'grant_type' : current_app.config['KEYCLOAK_ADMIN']['grant_type'],
-             'username'   : current_app.config['KEYCLOAK_ADMIN']['username'],
-             'password'   : current_app.config['KEYCLOAK_ADMIN']['password']
+             'client_id'  : KeycloakConfig.KEYCLOAK_ADMIN['client_id'],
+             'grant_type' : KeycloakConfig.KEYCLOAK_ADMIN['grant_type'],
+             'username'   : KeycloakConfig.KEYCLOAK_ADMIN['username'],
+             'password'   : KeycloakConfig.KEYCLOAK_ADMIN['password']
            }
-    response = requests.post(current_app.config['KEYCLOAK_ADMIN']['url'],
+    response = requests.post(KeycloakConfig.KEYCLOAK_ADMIN['url'],
                              headers=headers,
                              data=data
                             )
