@@ -95,7 +95,9 @@ async def add():
             form.Duties.choices   = [(d.Name,d.Name) for d in duties]
         if divisions:
             form.Division.choices = [(d.Name,d.Name) for d in divisions]
-        return await standardReturn("crewMemberAdd.html",f'Add {sectionName}',FORM=form)
+        return await standardReturn("crewMemberAdd.html",
+                                    f'Add {sectionName}',
+                                    FORM=form)
     elif request.method == 'POST':
         if await form.validate_on_submit():
             crewMember = CrewMember(

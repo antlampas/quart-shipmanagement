@@ -5,6 +5,8 @@
 
 import requests
 
+token = ''
+
 command_prefix = f'{current_app.config["KEYCLOAK_URL"]}' + \
                  f'/admin/realms/' + \
                  f'{current_app.config["KEYCLOAK_REALM"]}'
@@ -27,146 +29,367 @@ def getAdminAccessToken():
     return response.json()['access_token']
 
 def adminAction(action,params=dict()):
-    token = getAdminToken()
+    global token
+    if not token:
+        token = getAdminToken()
     response = None
     headers  = {'authorization' : token}
     if action == 'getUser':
-        if 'username' in params:
+        if params:
             response = getUser(headers,params['username'])
         else:
             response = getUser()
     elif action == 'addUser':
-        if 'username'  in params and \
-           'firstName' in params and \
-           'lastName'  in params:
+        if params:
             response = addUser(headers,params)
-    responseContent = None
+    elif action == 'saveUser':
+        pass
+    elif action == 'editUser':
+        pass
+    elif action == 'removeUser':
+        pass
+    elif action == 'getRank':
+        pass
+    elif action == 'saveRank':
+        pass
+    elif action == 'editRank':
+        pass
+    elif action == 'removeRank':
+        pass
+    elif action == 'getDivision':
+        pass
+    elif action == 'saveDivision':
+        pass
+    elif action == 'editDivision':
+        pass
+    elif action == 'removeDivision':
+        pass
+    elif action == 'getDuty':
+        pass
+    elif action == 'saveDuty':
+        pass
+    elif action == 'editDuty':
+        pass
+    elif action == 'removeDuty':
+        pass
+    elif action == 'getTask':
+        pass
+    elif action == 'saveTask':
+        pass
+    elif action == 'editTask':
+        pass
+    elif action == 'removeTask':
+        pass
+    elif action == 'getMission':
+        pass
+    elif action == 'saveMission':
+        pass
+    elif action == 'editMission':
+        pass
+    elif action == 'removeMission':
+        pass
+
     if response:
         if response.code == 200:
             responseContent = response.content.json()
+        if response.code == 403:
+            pass
     requests.get(command_prefix + '/protocol/openid−connect/logout')
     return responseContent
 
 #TODO:implement
 def loadFromKeycloak(what='',pattern=''):
+    data = None
     if what == 'person':
         if pattern:
-            pass
+            data = adminAction('getUser',pattern)
+        else:
+            data = None
     elif what == 'people':
         if not pattern:
-            pass
+            data = adminAction('getUser')
+        else:
+            data = adminAction('getUser',pattern)
     elif what == 'crewMember':
-        pass
+        if pattern:
+            data = adminAction('getUser',pattern)
+        else:
+            data = None
     elif what == 'crew':
-        pass
+        if not pattern:
+            data = adminAction('getUser')
+        else:
+            data = adminAction('getUser',pattern)
     elif what == 'rank':
-        pass
+        if pattern:
+            data = adminAction('getGroup',pattern)
+        else:
+            data = None
     elif what == 'ranks':
-        pass
+        if not pattern:
+            data = adminAction('getGroup')
+        else:
+            data = adminAction('getGroup',pattern)
     elif what == 'division':
-        pass
+        if pattern:
+            data = adminAction('getGroup',pattern)
+        else:
+            data = None
     elif what == 'divisions':
-        pass
+        if not pattern:
+            data = adminAction('getGroup')
+        else:
+            data = adminAction('getGroup',pattern)
     elif what == 'duty':
-        pass
+        if pattern:
+            data = adminAction('getGroup',pattern)
+        else:
+            data = None
     elif what == 'duties':
-        pass
+        if not pattern:
+            data = adminAction('getGroup')
+        else:
+            data = adminAction('getGroup',pattern)
     elif what == 'task':
-        pass
+        if pattern:
+            data = adminAction('getGroup',pattern)
+        else:
+            data = None
     elif what == 'tasks':
-        pass
+        if not pattern:
+            data = adminAction('getGroup')
+        else:
+            data = adminAction('getGroup',pattern)
     elif what == 'mission':
-        pass
+        if pattern:
+            data = adminAction('getGroup',pattern)
+        else:
+            data = None
     elif what == 'missions':
-        pass
+        if not pattern:
+            data = adminAction('getGroup')
+        else:
+            data = adminAction('getGroup',pattern)
+    return data
 def removeFromKeycloak(what='',pattern=''):
+    data = None
     if what == 'person':
-        pass
+        if pattern:
+            data = adminAction('removeUser',pattern)
+        else:
+            data = None
     elif what == 'people':
-        pass
+        if not pattern:
+            data = adminAction('removeUser')
+        else:
+            data = adminAction('removeUser',pattern)
     elif what == 'crewMember':
-        pass
+        if pattern:
+            data = adminAction('removeUser',pattern)
+        else:
+            data = None
     elif what == 'crew':
-        pass
+        if not pattern:
+            data = adminAction('removeUser')
+        else:
+            data = adminAction('removeUser',pattern)
     elif what == 'rank':
-        pass
+        if pattern:
+            data = adminAction('removeGroup',pattern)
+        else:
+            data = None
     elif what == 'ranks':
-        pass
+        if not pattern:
+            data = adminAction('removeGroup')
+        else:
+            data = adminAction('removeGroup',pattern)
     elif what == 'division':
-        pass
+        if pattern:
+            data = adminAction('removeGroup',pattern)
+        else:
+            data = None
     elif what == 'divisions':
-        pass
+        if not pattern:
+            data = adminAction('removeGroup')
+        else:
+            data = adminAction('removeGroup',pattern)
     elif what == 'duty':
-        pass
+        if pattern:
+            data = adminAction('removeGroup',pattern)
+        else:
+            data = None
     elif what == 'duties':
-        pass
+        if not pattern:
+            data = adminAction('removeGroup')
+        else:
+            data = adminAction('removeGroup',pattern)
     elif what == 'task':
-        pass
+        if pattern:
+            data = adminAction('removeGroup',pattern)
+        else:
+            data = None
     elif what == 'tasks':
-        pass
+        if not pattern:
+            data = adminAction('removeGroup')
+        else:
+            data = adminAction('removeGroup',pattern)
     elif what == 'mission':
-        pass
+        if pattern:
+            data = adminAction('removeGroup',pattern)
+        else:
+            data = None
     elif what == 'missions':
-        pass
+        if not pattern:
+            data = adminAction('removeGroup')
+        else:
+            data = adminAction('removeGroup',pattern)
+    return data
 def saveToKeycloak(what='',data=dict()):
+    data = None
     if what == 'person':
-        pass
+        if pattern:
+            data = adminAction('saveUser',pattern)
+        else:
+            data = None
     elif what == 'people':
-        pass
+        if not pattern:
+            data = adminAction('saveUser')
+        else:
+            data = adminAction('saveUser',pattern)
     elif what == 'crewMember':
-        pass
+        if pattern:
+            data = adminAction('saveUser',pattern)
+        else:
+            data = None
     elif what == 'crew':
-        pass
+        if not pattern:
+            data = adminAction('saveUser')
+        else:
+            data = adminAction('saveUser',pattern)
     elif what == 'rank':
-        pass
+        if pattern:
+            data = adminAction('saveRank',pattern)
+        else:
+            data = None
     elif what == 'ranks':
-        pass
+        if not pattern:
+            data = adminAction('saveRank')
+        else:
+            data = adminAction('saveRank',pattern)
     elif what == 'division':
-        pass
+        if pattern:
+            data = adminAction('saveDivision',pattern)
+        else:
+            data = None
     elif what == 'divisions':
-        pass
+        if not pattern:
+            data = adminAction('saveDivision')
+        else:
+            data = adminAction('saveDivision',pattern)
     elif what == 'duty':
-        pass
+        if pattern:
+            data = adminAction('saveDuty',pattern)
+        else:
+            data = None
     elif what == 'duties':
-        pass
+        if not pattern:
+            data = adminAction('saveDuty')
+        else:
+            data = adminAction('saveDuty',pattern)
     elif what == 'task':
-        pass
+        if pattern:
+            data = adminAction('saveTask',pattern)
+        else:
+            data = None
     elif what == 'tasks':
-        pass
+        if not pattern:
+            data = adminAction('saveTask')
+        else:
+            data = adminAction('saveTask',pattern)
     elif what == 'mission':
-        pass
+        if pattern:
+            data = adminAction('saveMission',pattern)
+        else:
+            data = None
     elif what == 'missions':
-        pass
+        if not pattern:
+            data = adminAction('saveMission')
+        else:
+            data = adminAction('saveMission',pattern)
+    return data
 def editKeycloak(what='',pattern=dict()):
+    data = None
     if what == 'person':
-        pass
+        if pattern:
+            data = adminAction('editUser',pattern)
+        else:
+            data = None
     elif what == 'people':
-        pass
+        if not pattern:
+            data = adminAction('editUser')
+        else:
+            data = adminAction('editUser',pattern)
     elif what == 'crewMember':
-        pass
+        if pattern:
+            data = adminAction('editUser',pattern)
+        else:
+            data = None
     elif what == 'crew':
-        pass
+        if not pattern:
+            data = adminAction('editUser')
+        else:
+            data = adminAction('editUser',pattern)
     elif what == 'rank':
-        pass
+        if pattern:
+            data = adminAction('editGroup',pattern)
+        else:
+            data = None
     elif what == 'ranks':
-        pass
+        if not pattern:
+            data = adminAction('editGroup')
+        else:
+            data = adminAction('editGroup',pattern)
     elif what == 'division':
-        pass
+        if pattern:
+            data = adminAction('editGroup',pattern)
+        else:
+            data = None
     elif what == 'divisions':
-        pass
+        if not pattern:
+            data = adminAction('editGroup')
+        else:
+            data = adminAction('editGroup',pattern)
     elif what == 'duty':
-        pass
+        if pattern:
+            data = adminAction('editGroup',pattern)
+        else:
+            data = None
     elif what == 'duties':
-        pass
+        if not pattern:
+            data = adminAction('editGroup')
+        else:
+            data = adminAction('editGroup',pattern)
     elif what == 'task':
-        pass
+        if pattern:
+            data = adminAction('editGroup',pattern)
+        else:
+            data = None
     elif what == 'tasks':
-        pass
+        if not pattern:
+            data = adminAction('editGroup')
+        else:
+            data = adminAction('editGroup',pattern)
     elif what == 'mission':
-        pass
+        if pattern:
+            data = adminAction('editGroup',pattern)
+        else:
+            data = None
     elif what == 'missions':
-        pass
-
+        if not pattern:
+            data = adminAction('editGroup')
+        else:
+            data = adminAction('editGroup',pattern)
+    return data
 
 def getUser(headers,user=''):
     global command_prefix
