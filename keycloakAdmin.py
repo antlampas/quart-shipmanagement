@@ -44,17 +44,26 @@ def adminAction(action,params=dict()):
             response = getUser(headers)
     elif action == 'addUser':
         if params:
-            response = addUser(headers,params['username'],params)
+            if 'username' in params:
+                response = addUser(headers,params['username'],params)
+            else:
+                response = None
         else:
             response = None
     elif action == 'saveUser':
         if params:
-            response = saveUser(headers,params['username'],params)
+            if 'username' in params:
+                response = saveUser(headers,params['username'],params)
+            else:
+                response = None
         else:
             response = None
     elif action == 'editUser':
         if params:
-            response = editUser(headers,params['username'],params)
+            if 'username' in params:
+                response = editUser(headers,params['username'],params)
+            else:
+                response = None
         else:
             response = None
     elif action == 'removeUser':
@@ -70,20 +79,32 @@ def adminAction(action,params=dict()):
             if 'name' in params:
                 if 'rank' in params['name']:
                     response = getGroup(headers,params['name'])
+                else:
+                    response = None
             else:
                 response = None
         else:
             response = None
     elif action == 'saveRank':
         if params:
-            if 'rank' in params['name']:
-                response = saveGroup(headers,params['name'],params)
+            if 'name' in params:
+                if 'rank' in params['name']:
+                    response = saveGroup(headers,params['name'],params)
+                else:
+                    response = None
+            else:
+                response = None
         else:
             response = None
     elif action == 'editRank':
         if params:
-            if 'rank' in params['name']:
-                response = editGroup(headers,params['name'],params)
+            if 'name' in params:
+                if 'rank' in params['name']:
+                    response = editGroup(headers,params['name'],params)
+                else:
+                    response = None
+            else:
+                response = None
         else:
             response = None
     elif action == 'removeRank':
@@ -106,14 +127,24 @@ def adminAction(action,params=dict()):
             response = None
     elif action == 'saveDivision':
         if params:
-            if 'division' in params['name']:
-                response = saveGroup(headers,params['name'],params)
+            if 'name' in params:
+                if 'division' in params['name']:
+                    response = saveGroup(headers,params['name'],params)
+                else:
+                    response = None
+            else:
+                response = None
         else:
             response = None
     elif action == 'editDivision':
         if params:
-            if 'division' in params['name']:
-                response = editGroup(headers,params['name'],params)
+            if 'name' in params:
+                if 'division' in params['name']:
+                    response = editGroup(headers,params['name'],params)
+                else:
+                    response = None
+            else:
+                response = None
         else:
             response = None
     elif action == 'removeDivision':
@@ -136,14 +167,24 @@ def adminAction(action,params=dict()):
             response = None
     elif action == 'saveDuty':
         if params:
-            if 'duty' in params['name']:
-                response = saveGroup(headers,params['name'],params)
+            if 'name' in params:
+                if 'duty' in params['name']:
+                    response = saveGroup(headers,params['name'],params)
+                else:
+                    response = None
+            else:
+                response = None
         else:
             response = None
     elif action == 'editDuty':
         if params:
-            if 'duty' in params['name']:
-                response = editGroup(headers,params['name'],params)
+            if 'name' in params:
+                if 'duty' in params['name']:
+                    response = editGroup(headers,params['name'],params)
+                else:
+                    response = None
+            else:
+                response = None
         else:
             response = None
     elif action == 'removeDuty':
@@ -213,6 +254,8 @@ def adminAction(action,params=dict()):
             responseContent = response.content.json()
         if response.code == 403:
             pass
+    else:
+        return None
     requests.get(command_prefix + '/protocol/openid−connect/logout')
     return responseContent
 
