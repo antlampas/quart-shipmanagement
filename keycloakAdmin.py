@@ -36,58 +36,177 @@ def adminAction(action,params=dict()):
     headers  = {'authorization' : token}
     if action == 'getUser':
         if params:
-            response = getUser(headers,params['username'])
+            if 'username' in params:
+                response = getUser(headers,params['username'])
+            else:
+                response = None
         else:
-            response = getUser()
+            response = getUser(headers)
     elif action == 'addUser':
         if params:
-            response = addUser(headers,params)
+            response = addUser(headers,params['username'],params)
+        else:
+            response = None
     elif action == 'saveUser':
-        pass
+        if params:
+            response = saveUser(headers,params['username'],params)
+        else:
+            response = None
     elif action == 'editUser':
-        pass
+        if params:
+            response = editUser(headers,params['username'],params)
+        else:
+            response = None
     elif action == 'removeUser':
-        pass
+        if params:
+            if 'username' in params:
+                response = removeUser(headers,params['username'])
+            else:
+                response = None
+        else:
+            response = None
     elif action == 'getRank':
-        pass
+        if params:
+            if 'name' in params:
+                if 'rank' in params['name']:
+                    response = getGroup(headers,params['name'])
+            else:
+                response = None
+        else:
+            response = None
     elif action == 'saveRank':
-        pass
+        if params:
+            if 'rank' in params['name']:
+                response = saveGroup(headers,params['name'],params)
+        else:
+            response = None
     elif action == 'editRank':
-        pass
+        if params:
+            if 'rank' in params['name']:
+                response = editGroup(headers,params['name'],params)
+        else:
+            response = None
     elif action == 'removeRank':
-        pass
+        if params:
+            if 'name' in params:
+                if 'rank' in params['name']:
+                    response = removeGroup(headers,params['name'])
+            else:
+                response = None
+        else:
+            response = None
     elif action == 'getDivision':
-        pass
+        if params:
+            if 'name' in params:
+                if 'division' in params['name']:
+                    response = getGroup(headers,params['name'])
+            else:
+                response = None
+        else:
+            response = None
     elif action == 'saveDivision':
-        pass
+        if params:
+            if 'division' in params['name']:
+                response = saveGroup(headers,params['name'],params)
+        else:
+            response = None
     elif action == 'editDivision':
-        pass
+        if params:
+            if 'division' in params['name']:
+                response = editGroup(headers,params['name'],params)
+        else:
+            response = None
     elif action == 'removeDivision':
-        pass
+        if params:
+            if 'name' in params:
+                if 'division' in params['name']:
+                    response = removeGroup(headers,params['name'])
+            else:
+                response = None
+        else:
+            response = None
     elif action == 'getDuty':
-        pass
+        if params:
+            if 'name' in params:
+                if 'duty' in params['name']:
+                    response = getGroup(headers,params['name'])
+            else:
+                response = None
+        else:
+            response = None
     elif action == 'saveDuty':
-        pass
+        if params:
+            if 'duty' in params['name']:
+                response = saveGroup(headers,params['name'],params)
+        else:
+            response = None
     elif action == 'editDuty':
-        pass
+        if params:
+            if 'duty' in params['name']:
+                response = editGroup(headers,params['name'],params)
+        else:
+            response = None
     elif action == 'removeDuty':
-        pass
+        if params:
+            if 'name' in params:
+                if 'duty' in params['name']:
+                    response = removeGroup(headers,params['name'])
+            else:
+                response = None
+        else:
+            response = None
     elif action == 'getTask':
-        pass
+        if params:
+            if 'name' in params:
+                response = None
+            else:
+                response = None
+        else:
+            response = None
     elif action == 'saveTask':
-        pass
+        if params:
+            response = None
+        else:
+            response = None
     elif action == 'editTask':
-        pass
+        if params:
+            response = None
+        else:
+            response = None
     elif action == 'removeTask':
-        pass
+        if params:
+            if 'name' in params:
+                response = None
+            else:
+                response = None
+        else:
+            response = None
     elif action == 'getMission':
-        pass
+        if params:
+            if 'name' in params:
+                response = None
+            else:
+                response = None
+        else:
+            response = None
     elif action == 'saveMission':
-        pass
+        if params:
+            response = None
+        else:
+            response = None
     elif action == 'editMission':
-        pass
+        if params:
+            response = None
+        else:
+            response = None
     elif action == 'removeMission':
-        pass
+        if params:
+            if 'name' in params:
+                response = None
+            else:
+                response = None
+        else:
+            response = None
 
     if response:
         if response.code == 200:
