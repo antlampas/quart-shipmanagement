@@ -131,7 +131,7 @@ class Ranks(Addable):
         self.Error = ''
         ranks = dict()
         for rank in self.Ranks:
-            ranks[rank.Name] = rank.serilize()
+            ranks[rank.Name] = rank.serialize()
         return ranks
     def deserialize(self,ranks=dict()):
         self.Error = ''

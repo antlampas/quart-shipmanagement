@@ -31,41 +31,30 @@ class CrewMember(Editable):
         self.Rank      = ''
         self.Division  = ''
         self.Duties    = list()
-        if re.match(isAlpha,FirstName):
+        if re.match(isAlpha,FirstName) and \
+           re.match(isAlpha,LastName)  and \
+           re.match(isAlpha,Nickname)  and \
+           re.match(isNumber,Serial)   and \
+           re.match(isNumber,Stic)     and \
+           re.match(isAlpha,Rank)      and \
+           re.match(isAlpha,Division):
             self.FirstName = FirstName
-            if re.match(isAlpha,LastName):
-                self.LastName  = LastName
-                if re.match(isAlpha,Nickname):
-                    self.Nickname  = Nickname
-                    if re.match(isNumber,Serial):
-                        self.Serial    = Serial
-                        if re.match(isNumber,Stic):
-                            self.Stic      = Stic
-                            if re.match(isAlpha,Rank):
-                                self.Rank      = Rank
-                                if re.match(isAlpha,Division):
-                                    self.Division  = Division
-                                    for Duty in Duties:
-                                        if re.match(isAlpha,Duty.Name) and re.match(isText,Duty.Description):
-                                            self.Duties.append(Duty)
-                                        else:
-                                            self.Error = "Invalid duties"
-                                            self.Duties = list()
-                                            break
-                                else:
-                                    self.Error = 'Invalid division'
-                            else:
-                                self.Error = 'Invalid Rank'
-                        else:
-                            self.Error = 'Invalid STIC number'
-                    else:
-                        self.Error = 'Invalid serial number'
+            self.LastName  = LastName
+            self.Nickname  = Nickname
+            self.Serial    = Serial
+            self.Stic      = Stic
+            self.Rank      = Rank
+            self.Division  = Division
+            for Duty in Duties:
+                if re.match(isAlpha,Duty.Name) and \
+                    re.match(isText,Duty.Description):
+                    self.Duties.append(Duty)
                 else:
-                    self.Error = 'Invalid Nickname'
-            else:
-                self.Error = 'Invalid last name'
+                    self.Error = "Invalid duty"
+                    self.Duties = list()
+                    break
         else:
-            self.Error = 'Invalid first name'
+            self.Error = 'Invalid data'
     def edit(self,attributes=dict()):
         self.Error = ""
         crewMember = None
@@ -93,21 +82,21 @@ class CrewMember(Editable):
     def deserialize(self,crewMember=dict()):
         self.Error = ''
         for key,value in crewMember:
-            if key == 'FirstName':
+            if key.upper() == 'FirstName'.upper():
                 self.FirstName = value
-            elif key == 'LastName':
+            elif key.upper() == 'LastName'.upper():
                 self.LastName = value
-            elif key == 'Nickname':
+            elif key.upper() == 'Nickname'.upper():
                 self.Nickname = value
-            elif key == 'Rank':
+            elif key.upper() == 'Rank'.upper():
                 self.Rank = value
-            elif key == 'Division':
+            elif key.upper() == 'Division'.upper():
                 self.Division = value
-            elif key == 'Duties':
+            elif key.upper() == 'Duties'.upper():
                 self.Duties = value
-            elif key == 'Serial':
+            elif key.upper() == 'Serial'.upper():
                 self.Serial = value
-            elif key == 'Stic':
+            elif key.upper() == 'Stic'.upper():
                 self.Stic = value
             else:
                 self.Error = "Attribute not valid"
@@ -150,7 +139,7 @@ class Crew(Addable):
         self.Error = ''
         crew = dict()
         for member in self.Crew:
-            crew[member.Nickname] = member.serilize()
+            crew[member.Nickname] = member.serialize()
         return crew
     def deserialize(self,crew=dict()):
         self.Error = ''
@@ -158,36 +147,42 @@ class Crew(Addable):
             for key,member in crew:
                 if re.match(isAlpha,key):
                     if member is dict():
-                        if 'FirstName' in member and re.match(isAlpha,member['FirstName']):
-                            if 'LastName' in member and re.match(isAlpha,member['LastName']):
-                                if 'Nickname' in member and re.match(isAlpha,member['Nickname']):
-                                    if 'Rank' in member and re.match(isAlpha,member['Rank']):
-                                        if 'Division' in member and re.match(isAlpha,member['Division']):
-                                            if 'Serial' in member and re.match(isNumber,member['Serial']):
-                                                if 'Stic' in member and re.match(isNumber,member['Stic']):
-                                                    duties = list()
-                                                    for duty in member['Duties']:
-                                                        if re.match(isAlpha,duty['Name']) and re.match(isText,duty['Description']):
-                                                            d = Duty()
-                                                            duties.append(Duty(duty['Name'],duty['Description']))
-                                                        else:
-                                                            duties = list()
-                                                            self.Error = 'Invalid duty'
-                                                            break
-                                                    if duties:
-                                                        self.Crew.append(CrewMember(member['FirstName'],member['LastName'],member['Nickname'],member['Rank'],member['Division'],member['Serial'],member['Stic'],duties))
-                                                else:
-                                                    self.Error = 'Invalid stic number'
-                                            else:
-                                                self.Error = 'Invalid serial member'
-                                        else:
-                                            self.Error = 'Invalid division'
-                                    else:
-                                        self.Error = 'Invalid rank'
+                        if ('FirstName'.upper() in member.upper() and \
+                            re.match(isAlpha,member['FirstName'])) and \
+                           ('LastName' in member and \
+                            re.match(isAlpha,member['LastName'])) and \
+                           ('Nickname' in member and \
+                            re.match(isAlpha,member['Nickname'])) and \
+                           ('Rank' in member and \
+                            re.match(isAlpha,member['Rank'])) and \
+                           ('Division' in member and \
+                            re.match(isAlpha,member['Division'])) and \
+                           ('Serial' in member and \
+                            re.match(isNumber,member['Serial'])) and \
+                           ('Stic' in member and \
+                            re.match(isNumber,member['Stic'])):
+                            duties = list()
+                            for duty in member['Duties']:
+                                if re.match(isAlpha,duty['Name']) and \
+                                   re.match(isText,duty['Description']):
+                                    d = Duty()
+                                    duties.append(Duty(duty['Name'],
+                                                  duty['Description'])
+                                                 )
                                 else:
-                                    self.Error = 'Invalid nickname'
-                            else:
-                                self.Error = "Invalid last name"
+                                    duties = list()
+                                    self.Error = 'Invalid duty'
+                                    break
+                            if duties:
+                                self.Crew.append(CrewMember(member['FirstName'],
+                                                 member['LastName'],
+                                                 member['Nickname'],
+                                                 member['Rank'],
+                                                 member['Division'],
+                                                 member['Serial'],
+                                                 member['Stic'],
+                                                 duties)
+                                                )
                         else:
                             self.Error = "Invalid first name"
                     else:

@@ -122,7 +122,7 @@ class Tasks(Addable):
         self.Error = ''
         tasks = dict()
         for task in self.Tasks:
-            tasks[tasks.Name] = task.serilize()
+            tasks[tasks.Name] = task.serialize()
         return tasks
     def deserialize(self,tasks=dict()):
         self.Error = ''

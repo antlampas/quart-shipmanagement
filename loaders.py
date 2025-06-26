@@ -3,19 +3,19 @@
 #Author:     antlampas
 #Created on: 2025-06-24
 
-from config import Providers
+from config        import Providers
 
-from model import loadFromDB
-from model import RemoveFromDB
-from model import saveToDB
-from model import editDB
+from model         import loadFromDB
+from model         import RemoveFromDB
+from model         import saveToDB
+from model         import editDB
 
 from keycloakAdmin import loadFromKeycloak
 from keycloakAdmin import removeFromKeycloak
 from keycloakAdmin import saveToKeycloak
 from keycloakAdmin import editKeycloak
 
-def load(what='',pattern=''):
+def get(what='',pattern=''):
     data = None
     if what:
         if what == 'person' or what == 'people':
@@ -101,7 +101,7 @@ def remove(what='',pattern=''):
         return data
     else:
         return None
-def save(what='',data=dict()):
+def add(what='',data=dict()):
     if what:
         if what == 'person' or what == 'people':
             if 'keycloak' in Providers.People:

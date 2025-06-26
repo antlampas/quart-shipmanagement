@@ -11,12 +11,6 @@ from quart          import request
 from quart          import redirect
 from quart          import url_for
 
-from config         import KeycloakConfig
-
-from model          import db
-from model          import loadFromDB
-from model          import saveToDB
-
 from forms          import AddCrewMemberForm
 from forms          import RemoveCrewMemberForm
 from forms          import EditCrewMemberForm
@@ -30,6 +24,11 @@ from permissions    import CrewPermissions
 
 from crewClasses    import CrewMember
 from crewClasses    import Crew
+
+from loaders import get
+from loaders import remove
+from loaders import add
+from loaders import edit
 
 from standardReturn import standardReturn
 
@@ -45,50 +44,40 @@ sectionName    = "Crew"
 @crew_blueprint.route("/",methods=["GET"])
 async def crew():
     global sectionName
-    crew = load('crew')
+    crew = Crew()
+    crewLoaded = get('crew')
+    crew.deserialize(crewLoaded)
     if crew:
-        return await standardReturn("crew.html",
-                                    sectionName,
-                                    CREW=crew
-                                   )
+        return await standardReturn("crew.html",sectionName,CREW=crew)
     else:
-        return await standardReturn("error.html",
-                                    sectionName,
-                                    ERROR="No crew member found"
-                                   )
+        errorMessage = "No crew member found"
+        return await standardReturn("error.html",sectionName,ERROR=errorMessage)
 
-@require_user(groups=['Equipaggio'])
+@require_role(CrewPermissions.view)
 @refreshToken
-@crew_blueprint.route("/member/<member>",methods=["GET"])
-async def member(member):
+@crew_blueprint.route("/member/<nickname>",methods=["GET"])
+async def member(nickname):
     global sectionName
-    crewMember = loadFromDB('crewMember',member)
-    if crewMember:
-        for cm in crewMember.Crew:
-            if cm.Nickname == member:
-                crewMember = cm
-                break
-    if crewMember:
-        return await standardReturn("crewMember.html",
-                                    sectionName,
-                                    CREWMEMBER=crewMember
-                                   )
+    member = CrewMember()
+    memberLoaded = get('crewMember',nickname)
+    member.deserialize(memberLoaded)
+    if member:
+        return await standardReturn("crewMember.html",sectionName,MEMBER=member)
     else:
-        return await standardReturn("error.html",
-                                    sectionName,
-                                    ERROR="Crew member not found"
-                                   )
+        errorMessage = "Crew member not found"
+        return await standardReturn("error.html",sectionName,ERROR=errorMessage)
 
-@require_role(CrewPermissions.addMemberRole)
+@require_role(CrewPermissions.add)
 @refreshToken
 @crew_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     global sectionName
+    member = CrewMember()
     form   = AddCrewMemberForm()
     if request.method == 'GET':
-        ranks     = loadFromDB('ranks')
-        duties    = loadFromDB('duties')
-        divisions = loadFromDB('divisions')
+        ranks     = get('ranks')
+        duties    = get('duties')
+        divisions = get('divisions')
         if ranks:
             form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
         if duties:
@@ -97,40 +86,40 @@ async def add():
             form.Division.choices = [(d.Name,d.Name) for d in divisions]
         return await standardReturn("crewMemberAdd.html",
                                     f'Add {sectionName}',
-                                    FORM=form)
+                                    FORM=form
+                                   )
     elif request.method == 'POST':
         if await form.validate_on_submit():
-            crewMember = CrewMember(
-                                  FirstName = (await request.form)['FirstName'],
-                                  LastName  = (await request.form)['LastName'],
-                                  Nickname  = (await request.form)['Nickname'],
-                                  Rank      = (await request.form)['Rank'],
-                                  Division  = (await request.form)['Division'],
-                                  Duties    = (await request.form)\
-                                                              .getlist('Duties')
+            member = CrewMember(
+                              FirstName = (await request.form)['FirstName'],
+                              LastName  = (await request.form)['LastName'],
+                              Nickname  = (await request.form)['Nickname'],
+                              Rank      = (await request.form)['Rank'],
+                              Division  = (await request.form)['Division'],
+                              Duties    = (await request.form).getlist('Duties')
                                    )
             form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
             form.Duties.choices   = [(d.Name,d.Name) for d in duties]
             form.Division.choices = [(d.Name,d.Name) for d in divisions]
 
-            if not saveToDB('crewMember',crewMember.__dict__):
-                return await standardReturn(
-                                         "error.html",
-                                         sectionName,
-                                         ERROR="Unable to save crew member data"
-                                         )
+            if not add('crewMember',member.serialize()):
+                error = "Unable to save crew member data"
+                return await standardReturn("error.html",
+                                            sectionName,
+                                            ERROR=error
+                                           )
+            message = 'Success'
             return await standardReturn("crewMemberAdd.html",
                                          sectionName,
                                          FORM=form,
                                          DUTIES=duties,
-                                         MESSAGE='Success')
+                                         MESSAGE=message
+                                       )
     else:
-        return await standardReturn("error.html",
-                                    sectionName,
-                                    ERROR="Invalid method"
-                                   )
+        error = "Invalid method"
+        return await standardReturn("error.html",sectionName,ERROR=error)
 
-@require_role(CrewPermissions.removeMemberRole)
+@require_role(CrewPermissions.remove)
 @refreshToken
 @crew_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
@@ -138,7 +127,7 @@ async def remove():
     form = RemoveCrewMemberForm()
     crew = list()
     if request.method == 'GET':
-        crew = loadFromDB('crew')
+        crew = get('crew')
         if crew:
             form.Nickname.choices = [(c.Nickname,c.Nickname) for c in crew]
         return await standardReturn("crewMemberRemove.html",
@@ -149,7 +138,7 @@ async def remove():
         members = (await request.form).getlist('Nickname')
         if form.validate_on_submit():
             for member in members:
-                removeFromDB('person',{'nickname':member})
+                remove('crewMember',member)
         return redirect(url_for('crew.remove'))
     else:
         return await standardReturn("error.html",
@@ -172,8 +161,6 @@ async def edit():
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 async def editMember(member):
     global sectionName
-    #TODO: Make it work with keycloack too, make db managenet code
-    #      more clear and check
     sectionName = 'Edit ' + sectionName
     form         = EditCrewMemberForm()
     ranks        = []

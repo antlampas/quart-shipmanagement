@@ -125,7 +125,7 @@ class Duties(Addable):
         self.Error = ''
         divisions = dict()
         for duty in self.Duties:
-            duties[duty.Name] = duty.serilize()
+            duties[duty.Name] = duty.serialize()
         return duties
     def deserialize(self,duties=dict()):
         self.Error = ''
