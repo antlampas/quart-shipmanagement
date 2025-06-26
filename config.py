@@ -8,6 +8,7 @@ from json   import loads
 
 class BaseConfig:
     SESSION_TYPE                = "redis"
+    EDITING_TIME                = 300    #In seconds
 class ShipConfig:
     SHIPNAME                    = ''
     REGISTRYNUMBER              = ''
