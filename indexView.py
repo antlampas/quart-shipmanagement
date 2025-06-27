@@ -11,7 +11,10 @@ from quart import session
 from authorization  import refreshToken
 from standardReturn import standardReturn
 
-index_blueprint = Blueprint("index",__name__,template_folder='templates/default')
+index_blueprint = Blueprint("index",
+                            __name__,
+                            template_folder='templates/default'
+                           )
 
 sectionName = "Home Page"
 
