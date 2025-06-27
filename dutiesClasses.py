@@ -3,6 +3,8 @@
 #Author:     antlampas
 #Created on: 2025-05-15
 
+import re
+
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
@@ -56,10 +58,10 @@ class Duty(Editable):
         return self.Error
     def serialize(self):
         self.Error = ''
-        duty = {
-                        "Name"        : self.Name,
-                        "Description" : self.Description
-                   }
+        duty =  {
+                    "Name"        : self.Name,
+                    "Description" : self.Description
+                }
         return duty
     def deserialize(self,division=dict()):
         self.Error = ''

@@ -11,7 +11,7 @@ Created on: 2025-05-15
 
 {% block content %}
 <form method="POST" action="/crew/remove">
-    {{ FORM.csrf_token }}
+    {{ FORM.csrf_token() }}
     {{ FORM.Nickname.label }} {{ FORM.Nickname() }}<br />
     <input type="submit" value="Remove">
 </form>

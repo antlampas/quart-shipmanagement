@@ -142,7 +142,7 @@ async def remove():
                                    )
     elif request.method == 'POST':
         members = (await request.form).getlist('Nickname')
-        if form.validate_on_submit():
+        if await form.validate_on_submit():
             for member in members:
                 remove('crewMember',member)
         return redirect(url_for('crew.remove'))
@@ -205,7 +205,7 @@ async def editMember(member):
                                        )
     elif request.method == 'POST':
         if 'memberEdit' in session:
-            if form.validate_on_submit():
+            if await form.validate_on_submit():
                 firstname      = (await request.form)['FirstName']
                 lastname       = (await request.form)['LastName']
                 nickname       = (await request.form)['Nickname']

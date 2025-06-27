@@ -40,8 +40,8 @@ divisions_blueprint = Blueprint("divisions",__name__,url_prefix='/divisions',tem
 
 sectionName = "Divisions"
 
-@refreshToken
 @require_role(DivisionsPermissions.View)
+@refreshToken
 @divisions_blueprint.route("/",methods=["GET"])
 async def divisions():
     global sectionName
@@ -58,8 +58,8 @@ async def divisions():
                                     DIVISIONS=errorMessage
                                    )
 
-@refreshToken
 @require_role(DivisionsPermissions.View)
+@refreshToken
 @divisions_blueprint.route("/division/<name>",methods=["GET"])
 async def view(name):
     global sectionName
@@ -75,8 +75,8 @@ async def view(name):
                                     ERROR="Crew member not found"
                                    )
 
-@refreshToken
 @require_role(DivisionsPermissions.Add)
+@refreshToken
 @divisions_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     global sectionName
@@ -86,17 +86,24 @@ async def add():
     elif request.method == 'POST':
         name        = (await request.form)['Name']
         description = (await request.form)['Description']
-        division = DivisionTable(Name=name,Description=description)
-        if form.validate_on_submit():
-            add('division',{'Name' : name,'Description' : description})
-            return await standardReturn("divisionsAdd.html",sectionName,FORM=form,MESSAGE="Success")
+        division = Division(name,description)
+        if await form.validate_on_submit():
+            message = ""
+            s = add('division',division.serialize())
+            if s:
+                print(s)
+                message = "Success"
+            else:
+                print(s)
+                message = "Unseccessful"
+            return await standardReturn("divisionsAdd.html",sectionName,FORM=form,MESSAGE=message)
         else:
             return await standardReturn("error.html",sectionName,ERROR="Invalid data")
     else:
         return await renderstandardReturn_template("error.html",sectionName,ERROR="Invalid method")
 
-@refreshToken
 @require_role(DivisionsPermissions.Remove)
+@refreshToken
 @divisions_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     global sectionName
@@ -108,7 +115,7 @@ async def remove():
             form.Name.choices = [(d['Name'],d['Name']) for d in divisions]
         return await standardReturn("divisionsRemove.html",sectionName,FORM=form)
     elif request.method == 'POST':
-        if form.validate_on_submit():
+        if await form.validate_on_submit():
             division = (await request.form).getlist('Name')
             for i in division:
                 remove('division',i)
@@ -122,14 +129,14 @@ async def remove():
     else:
         return await standardReturn("error.html",sectionName,ERROR="Invalid method")
 
-@refreshToken
 @require_role(DivisionsPermissions.Edit)
+@refreshToken
 @divisions_blueprint.route("/edit/",methods=["GET","POST"])
 async def edit():
     return await standardReturn("error.html",sectionName,ERROR="No division provided")
 
-@refreshToken
 @require_role(DivisionsPermissions.Edit)
+@refreshToken
 @divisions_blueprint.route("/edit/<name>",methods=["GET","POST"])
 async def editDivision(name):
     global sectionName
@@ -145,7 +152,7 @@ async def editDivision(name):
         elif request.method == 'POST':
             name        = (await request.form)['Name']
             description = (await request.form)['Description']
-            if form.validate_on_submit():
+            if await form.validate_on_submit():
                 edit('division',{'Name' : name,'Division' : division})
             form.Name.data     = name
             form.Division.data = division

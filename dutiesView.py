@@ -63,7 +63,7 @@ async def add():
         name         = (await request.form)['Name']
         description  = (await request.form)['Description']
         duty         = DutyTable(Name=name,Description=description)
-        if form.validate_on_submit():
+        if await form.validate_on_submit():
             try:
                 with db.bind.Session() as s:
                     with s.begin():
