@@ -101,7 +101,7 @@ def remove(what='',pattern=''):
         return data
     else:
         return None
-def add(what='',data=dict()):
+def add(what='',pattern=dict()):
     if what:
         if what == 'person' or what == 'people':
             if 'keycloak' in Providers.People:
@@ -143,7 +143,7 @@ def add(what='',data=dict()):
         return data
     else:
         return None
-def edit(what='',data=dict()):
+def edit(what='',pattern=dict()):
     data = None
     if what:
         if what == 'person' or what == 'people':

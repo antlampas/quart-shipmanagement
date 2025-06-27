@@ -42,7 +42,7 @@ crew_blueprint = Blueprint("crew",
                           )
 sectionName    = "Crew"
 
-@refreshToken
+
 @require_login
 @crew_blueprint.route("/",methods=["GET"])
 async def crewView():
@@ -59,7 +59,7 @@ async def crewView():
         errorMessage = "No crew member found"
         return await standardReturn("crew.html",sectionName,CREW=errorMessage)
 
-@refreshToken
+
 @require_role(CrewPermissions.View)
 @crew_blueprint.route("/member/<nickname>",methods=["GET"])
 async def memberView(nickname):
@@ -73,7 +73,7 @@ async def memberView(nickname):
         errorMessage = "Crew member not found"
         return await standardReturn("error.html",sectionName,ERROR=errorMessage)
 
-@refreshToken
+
 @require_role(CrewPermissions.Add)
 @crew_blueprint.route("/add",methods=["GET","POST"])
 async def add():
@@ -125,7 +125,7 @@ async def add():
         error = "Invalid method"
         return await standardReturn("error.html",sectionName,ERROR=error)
 
-@refreshToken
+
 @require_role(CrewPermissions.Remove)
 @crew_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
@@ -152,7 +152,7 @@ async def remove():
                                     ERROR="Invalid method"
                                    )
 
-@refreshToken
+
 @require_role(CrewPermissions.Edit)
 @crew_blueprint.route("/edit/",methods=["GET","POST"])
 async def edit():
@@ -162,7 +162,7 @@ async def edit():
                                 ERROR='No member specified'
                                )
 
-@refreshToken
+
 @require_role(CrewPermissions.Edit)
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 async def editMember(member):

@@ -10,7 +10,8 @@ from quart           import url_for
 from quart           import jsonify
 from quart           import session
 from quart           import redirect
-
+from quart           import request
+from quart_wtf       import CSRFProtect
 from quart_session   import Session
 
 from quart_keycloak  import Keycloak
@@ -29,6 +30,7 @@ def create_app(mode='Development'):
     app.config.from_object(f"config.{mode}")
 
     Session(app)
+    csrf = CSRFProtect(app)
     keycloak = Keycloak(app, **(app.config["OPENID_KEYCLOAK_CONFIG"]))
 
     from authorization import require_role,isTokenExpired
@@ -54,10 +56,10 @@ def create_app(mode='Development'):
     app.register_blueprint(missions_blueprint)
     app.register_blueprint(crewOnboardLog_blueprint)
 
-    """ @app.before_request
+    @app.before_request
     async def before_request_callback():
-        if isTokenExpired():
-            return redirect(url_for('relogin')) """
+        if isTokenExpired() and (request.path != url_for('relogin')):
+            return redirect(url_for('relogin'))
 
     @app.route("/login")
     async def login():

@@ -404,7 +404,7 @@ def removeFromKeycloak(what='',pattern=''):
         else:
             data = adminAction('removeMissions',pattern)
     return data
-def addToKeycloak(what='',data=dict()):
+def addToKeycloak(what='',pattern=dict()):
     data = None
     if what == 'person':
         if pattern:

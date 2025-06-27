@@ -38,19 +38,19 @@ sectionName = "Duties"
 
 duties_blueprint = Blueprint("duties",__name__,url_prefix='/duties',template_folder='templates/default')
 
-@refreshToken
+
 @require_role(DutiesPermissions.View)
 @duties_blueprint.route("/",methods=["GET"])
 async def duties():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@refreshToken
+
 @require_role(DutiesPermissions.View)
 @duties_blueprint.route("/duty/<duty>",methods=["GET"])
 async def view(duty):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@refreshToken
+
 @require_role(DutiesPermissions.Add)
 @duties_blueprint.route("/add",methods=["GET","POST"])
 async def add():
@@ -75,14 +75,14 @@ async def add():
     else:
         return await render_template("error.html",sectionName,ERROR="Invalid method")
 
-@refreshToken
+
 @require_role(DutiesPermissions.Remove)
 @duties_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
 
-@refreshToken
+
 @require_role(DutiesPermissions.Edit)
 @duties_blueprint.route("/edit",methods=["GET","POST"])
 async def edit():

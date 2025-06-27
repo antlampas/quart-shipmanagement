@@ -11,10 +11,13 @@ Created on: 2025-05-15
 
 {% block content %}
 <FORM method="POST" action="/divisions/add">
-    {{ FORM.csrf_token() }}
+    {{ FORM.hidden_tag() }}
     {{ FORM.Name.label        }} {{ FORM.Name()        }}<br />
     {{ FORM.Description.label }} {{ FORM.Description() }}<br />
     <input type="submit" value="Add">
 </FORM>
 <p>{{ MESSAGE }}</p>
+{% if FORM.errors %}
+<p>{{ FORM.errors }}</p>
+{% endif %}
 {% endblock%}

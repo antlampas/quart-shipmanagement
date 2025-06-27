@@ -11,7 +11,7 @@ Created on: 2025-05-15
 
 {% block content %}
 <FORM method="POST" action="/tasks/add">
-    {{ FORM.csrf_token() }}
+    {{ FORM.hidden_tag() }}
     {{ FORM.Name.label             }} {{ FORM.Name()             }}<br />
     {{ FORM.Description.label      }} {{ FORM.Description()      }}<br />
     {{ FORM.Objective.label        }} {{ FORM.Objective()        }}<br />

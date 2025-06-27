@@ -4,7 +4,6 @@
 #Created on: 2025-05-15
 
 from quart_wtf          import QuartForm
-from quart_wtf          import CSRFProtect
 from wtforms            import StringField
 from wtforms            import PasswordField
 from wtforms            import SelectField
@@ -76,34 +75,34 @@ class EditMissionForm(QuartForm):
     Status           = StringField('Status')
 
 class AddRankForm(QuartForm):
-    Name        = StringField('Rank')
+    Name        = StringField('Name')
     Description = StringField('Description')
 
 class EditRankForm(QuartForm):
-    Name        = StringField('Rank')
+    Name        = StringField('Name')
     Description = StringField('Description')
 
 class RemoveRankForm(QuartForm):
-    Name = SelectMultipleField('Rank')
+    Name = SelectMultipleField('Name')
 
 class AddDutyForm(QuartForm):
-    Name        = StringField('Duty')
+    Name        = StringField('Name')
     Description = StringField('Description')
 
 class EditDutyForm(QuartForm):
-    Name        = StringField('Duty')
+    Name        = StringField('Name')
     Description = StringField('Description')
 
 class RemoveDutyForm(QuartForm):
-    Name = SelectMultipleField('Duty')
+    Name = SelectMultipleField('Name')
 
 class AddDivisionForm(QuartForm):
-    Name        = StringField('Division')
+    Name        = StringField('Name')
     Description = StringField('Description')
 
 class EditDivisionForm(QuartForm):
-    Name        = StringField('Division')
+    Name        = StringField('Name')
     Description = StringField('Description')
 
 class RemoveDivisionForm(QuartForm):
-    Name = SelectMultipleField('Division')
+    Name = SelectMultipleField('Name')

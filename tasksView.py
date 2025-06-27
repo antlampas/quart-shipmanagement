@@ -30,31 +30,31 @@ tasks_blueprint = Blueprint("tasks",__name__,url_prefix='/tasks',template_folder
 
 sectionName = "Tasks"
 
-@refreshToken
+
 @require_role(TasksPermissions.View)
 @tasks_blueprint.route("/")
 async def tasks():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@refreshToken
+
 @require_role(TasksPermissions.View)
 @tasks_blueprint.route("/task/<task>")
 async def view(task):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@refreshToken
+
 @require_role(TasksPermissions.Add)
 @tasks_blueprint.route("/add")
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@refreshToken
+
 @require_role(TasksPermissions.Remove)
 @tasks_blueprint.route("/remove")
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@refreshToken
+
 @require_role(TasksPermissions.Edit)
 @tasks_blueprint.route("/edit")
 async def edit():

@@ -11,7 +11,7 @@ Created on: 2025-05-15
 
 {% block content %}
 <form method="POST" action="/divisions/edit/{{ FORM.Name.data }}">
-    {{ FORM.csrf_token() }}
+    {{ FORM.hidden_tag() }}
     {{ FORM.Name.label        }} {{ FORM.Name()        }}<br />
     {{ FORM.Description.label }} {{ FORM.Description() }}<br />
     <input type="submit" value="Edit">

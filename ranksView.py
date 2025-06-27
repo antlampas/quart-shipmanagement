@@ -38,31 +38,31 @@ ranks_blueprint = Blueprint("ranks",__name__,url_prefix='/ranks',template_folder
 
 sectionName = "Ranks"
 
-@refreshToken
+
 @require_role(RanksPermissions.View)
 @ranks_blueprint.route("/",methods=["GET"])
 async def ranks():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@refreshToken
+
 @require_role(RanksPermissions.View)
 @ranks_blueprint.route("/rank/<rank>",methods=["GET"])
 async def view(rank):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@refreshToken
+
 @require_role(RanksPermissions.Add)
 @ranks_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@refreshToken
+
 @require_role(RanksPermissions.Remove)
 @ranks_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
-@refreshToken
+
 @require_role(RanksPermissions.Edit)
 @ranks_blueprint.route("/edit",methods=["GET","POST"])
 async def edit():

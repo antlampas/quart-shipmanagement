@@ -11,7 +11,7 @@ Created on: 2025-05-15
 
 {% block content %}
 <form method="POST" action="/ranks/remove">
-    {{ FORM.csrf_token() }}
+    {{ FORM.hidden_tag() }}
     {{ FORM.Name.label }} {{ FORM.Name() }}<br />
     <input type="submit" value="Remove">
 </form>

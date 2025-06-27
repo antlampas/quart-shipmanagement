@@ -11,7 +11,7 @@ Created on: 2025-05-15
 
 {% block content %}
 <FORM method="POST" action="/crew/add">
-    {{ FORM.csrf_token() }}
+    {{ FORM.hidden_tag() }}
     {{ FORM.FirstName.label }} {{ FORM.FirstName() }}<br />
     {{ FORM.LastName.label  }} {{ FORM.LastName()  }}<br />
     {{ FORM.Nickname.label  }} {{ FORM.Nickname()  }}<br />

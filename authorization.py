@@ -63,16 +63,16 @@ def refreshToken(identityProvider="keycloak"):
                             return await func(*args, **kwargs)
                         elif token.status_code == 404:
                             return await standardReturn('error.html',
-                                                        sectionName='Error',
-                                                        ERROR='Identity ' + \
-                                                        'provider not found'
-                                                       )
+                                                  sectionName='Error',
+                                                  ERROR='Identity ' + \
+                                                  'provider not found'
+                                                 )
                         elif token.status_code == 400:
                             return await redirect(request.scheme + '://' + \
-                                                  request.host + \
-                                                '/relogin?redirect_url=' + \
-                                                request.path
-                                                )
+                                            request.host + \
+                                            '/relogin?redirect_url=' + \
+                                            request.path
+                                           )
                     else:
                         return await func(*args, **kwargs)
                 else:
@@ -89,9 +89,9 @@ def require_login(func):
             return await func(*args, **kwargs)
         else:
             return await standardReturn("error.html",
-                                        sectionName="Error",
-                                        ERROR="Unauthenticated"
-                                       )
+                                  sectionName="Error",
+                                  ERROR="Unauthenticated"
+                                 )
     return wrapper
 
 def require_role(*requiredRoles):
@@ -110,14 +110,14 @@ def require_role(*requiredRoles):
                     return await func(*args, **kwargs)
                 else:
                     return await standardReturn("error.html",
-                                                sectionName="Error",
-                                                ERROR="Unauthorized"
-                                               )
+                                          sectionName="Error",
+                                          ERROR="Unauthorized"
+                                         )
             else:
                 return await standardReturn("error.html",
-                                            sectionName="Error",
-                                            ERROR="Unauthenticated"
-                                           )
+                                      sectionName="Error",
+                                      ERROR="Unauthenticated"
+                                     )
         return wrapper
     return decorator
 
@@ -138,14 +138,14 @@ def require_user(users=[],groups=[]):
                     return await func(*args, **kwargs)
                 else:
                     return await standardReturn("error.html",
-                                                sectionName="Error",
-                                                ERROR="Unauthorized"
-                                               )
+                                          sectionName="Error",
+                                          ERROR="Unauthorized"
+                                         )
             else:
                 return await standardReturn("error.html",
-                                            sectionName="Error",
-                                            ERROR="Unauthenticated"
-                                           )
+                                      sectionName="Error",
+                                      ERROR="Unauthenticated"
+                                     )
         return wrapper
     return decorator
 
@@ -160,8 +160,8 @@ def authorize_action(action):
                 pass
             else:
                 return await standardReturn("error.html",
-                                            sectionName="Error",
-                                            ERROR="Unauthenticated"
-                                           )
+                                      sectionName="Error",
+                                      ERROR="Unauthenticated"
+                                     )
         return wrapper
     return decorator
