@@ -6,13 +6,13 @@
 from config        import Providers
 
 from model         import loadFromDB
-from model         import RemoveFromDB
+from model         import removeFromDB
 from model         import saveToDB
 from model         import editDB
 
 from keycloakAdmin import loadFromKeycloak
 from keycloakAdmin import removeFromKeycloak
-from keycloakAdmin import saveToKeycloak
+from keycloakAdmin import addToKeycloak
 from keycloakAdmin import editKeycloak
 
 def get(what='',pattern=''):
@@ -105,37 +105,37 @@ def add(what='',data=dict()):
     if what:
         if what == 'person' or what == 'people':
             if 'keycloak' in Providers.People:
-                data = saveToKeycloak(what,pattern)
+                data = addToKeycloak(what,pattern)
             if 'database' in Providers.People:
                 data = saveToDB(what,pattern)
         elif what == 'crewMember' or what == 'crew':
             if 'keycloak' in Providers.Crew:
-                data = saveToKeycloak(what,pattern)
+                data = addToKeycloak(what,pattern)
             if 'database' in Providers.Crew:
                 data = saveToDB(what,pattern)
         elif what == 'rank' or what == 'ranks':
             if 'keycloak' in Providers.Ranks:
-                data = saveToKeycloak(what,pattern)
+                data = addToKeycloak(what,pattern)
             if 'database' in Providers.Ranks:
                 data = saveToDB(what,pattern)
         elif what == 'division' or what == 'divisions':
             if 'keycloak' in Providers.Divisions:
-                data = saveToKeycloak(what,pattern)
+                data = addToKeycloak(what,pattern)
             if 'database' in Providers.Divisions:
                 data = saveToDB(what,pattern)
         elif what == 'duty' or what == 'duties':
             if 'keycloak' in Providers.Duties:
-                data = saveToKeycloak(what,pattern)
+                data = addToKeycloak(what,pattern)
             if 'database' in Providers.Duties:
                 data = saveToDB(what,pattern)
         elif what == 'task' or what == 'tasks':
             if 'keycloak' in Providers.Tasks:
-                data = saveToKeycloak(what,pattern)
+                data = addToKeycloak(what,pattern)
             if 'database' in Providers.Tasks:
                 data = saveToDB(what,pattern)
         elif what == 'mission' or what == 'missions':
             if 'keycloak' in Providers.Missions:
-                data = saveToKeycloak(what,pattern)
+                data = addToKeycloak(what,pattern)
             if 'database' in Providers.Missions:
                 data = saveToDB(what,pattern)
         else:

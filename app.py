@@ -54,10 +54,10 @@ def create_app(mode='Development'):
     app.register_blueprint(missions_blueprint)
     app.register_blueprint(crewOnboardLog_blueprint)
 
-    @app.before_request
+    """ @app.before_request
     async def before_request_callback():
         if isTokenExpired():
-            return redirect(url_for('relogin'))
+            return redirect(url_for('relogin')) """
 
     @app.route("/login")
     async def login():
@@ -77,8 +77,8 @@ def create_app(mode='Development'):
 
     @app.route("/relogin")
     async def relogin():
-        relogin_url = url_for(keycloak.endpoint_name_logout, redirect_uri=url_for("after_relogin", _external=True))
-        return redirect(relogin_url)
+        relogin_url_keycloak = url_for(keycloak.endpoint_name_logout, redirect_uri=url_for("after_relogin", _external=True))
+        return redirect(relogin_url_keycloak)
 
     @app.route("/after_logout")
     async def after_logout():

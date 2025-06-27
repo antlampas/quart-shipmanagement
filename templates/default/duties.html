@@ -10,6 +10,11 @@ Created on: 2025-05-15
 {% extends "base.html" %}
 
 {% block content %}
+<nav>
+    <a href="/duties/add">Nuovo membro</a>
+    <a href="/duties/remove">Rimuovi membro</a>
+    <a href="/duties/edit">Modifica membro</a>
+</nav>
 {% if duties is defined %}
 {% if (duties is iterable) and (duties is not string) and (duties is not mapping) %}
 <li>

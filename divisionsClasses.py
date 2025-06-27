@@ -104,10 +104,8 @@ class Divisions(Addable):
                        self.Divisions.append(division)
                     else:
                         self.Error = "Description not text"
-                        break
                 else:
                     self.Error = "Name not alpha"
-                    break
             else:
                 self.Error = "Division not valid"
         else:

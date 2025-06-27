@@ -42,24 +42,27 @@ crew_blueprint = Blueprint("crew",
                           )
 sectionName    = "Crew"
 
-@require_login
 @refreshToken
+@require_login
 @crew_blueprint.route("/",methods=["GET"])
-async def crew():
+async def crewView():
     global sectionName
-    crew = Crew()
+    crew = None
     crewLoaded = get('crew')
-    crew.deserialize(crewLoaded)
+    if crewLoaded:
+        crew.deserialize(crewLoaded)
+    else:
+        crew = None
     if crew:
         return await standardReturn("crew.html",sectionName,CREW=crew)
     else:
         errorMessage = "No crew member found"
-        return await standardReturn("error.html",sectionName,ERROR=errorMessage)
+        return await standardReturn("crew.html",sectionName,CREW=errorMessage)
 
-@require_role(CrewPermissions.view)
 @refreshToken
+@require_role(CrewPermissions.View)
 @crew_blueprint.route("/member/<nickname>",methods=["GET"])
-async def member(nickname):
+async def memberView(nickname):
     global sectionName
     member = CrewMember()
     memberLoaded = get('crewMember',nickname)
@@ -70,8 +73,8 @@ async def member(nickname):
         errorMessage = "Crew member not found"
         return await standardReturn("error.html",sectionName,ERROR=errorMessage)
 
-@require_role(CrewPermissions.add)
 @refreshToken
+@require_role(CrewPermissions.Add)
 @crew_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     global sectionName
@@ -122,8 +125,8 @@ async def add():
         error = "Invalid method"
         return await standardReturn("error.html",sectionName,ERROR=error)
 
-@require_role(CrewPermissions.remove)
 @refreshToken
+@require_role(CrewPermissions.Remove)
 @crew_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     global sectionName
@@ -149,8 +152,8 @@ async def remove():
                                     ERROR="Invalid method"
                                    )
 
-@require_role(CrewPermissions.editMemberRole)
 @refreshToken
+@require_role(CrewPermissions.Edit)
 @crew_blueprint.route("/edit/",methods=["GET","POST"])
 async def edit():
     global sectionName
@@ -159,8 +162,8 @@ async def edit():
                                 ERROR='No member specified'
                                )
 
-@require_role(CrewPermissions.editMemberRole)
 @refreshToken
+@require_role(CrewPermissions.Edit)
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 async def editMember(member):
     global sectionName

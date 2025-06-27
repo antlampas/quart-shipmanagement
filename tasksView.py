@@ -3,7 +3,12 @@
 #Author:     antlampas
 #Created on: 2025-05-15
 
-from quart import current_app,Blueprint
+import re
+
+from threading      import Timer
+
+from quart          import current_app
+from quart          import Blueprint
 
 from model          import db
 from model          import CrewMemberTable
@@ -26,25 +31,31 @@ tasks_blueprint = Blueprint("tasks",__name__,url_prefix='/tasks',template_folder
 sectionName = "Tasks"
 
 @refreshToken
-@require_login
+@require_role(TasksPermissions.View)
+@tasks_blueprint.route("/")
+async def tasks():
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
+
+@refreshToken
+@require_role(TasksPermissions.View)
 @tasks_blueprint.route("/task/<task>")
 async def view(task):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @refreshToken
-@require_role(TasksPermissions.addTaskRole)
+@require_role(TasksPermissions.Add)
 @tasks_blueprint.route("/add")
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @refreshToken
-@require_role(TasksPermissions.removeTaskRole)
+@require_role(TasksPermissions.Remove)
 @tasks_blueprint.route("/remove")
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @refreshToken
-@require_role(TasksPermissions.editTaskRole)
+@require_role(TasksPermissions.Edit)
 @tasks_blueprint.route("/edit")
 async def edit():
     return await standardReturn("implement.html",sectionName,implement="Implement!")

@@ -3,6 +3,10 @@
 #Author:     antlampas
 #Created on: 2025-05-15
 
+import re
+
+from threading      import Timer
+
 from quart import Blueprint
 from quart import current_app
 from quart import render_template
@@ -29,25 +33,25 @@ async def missions():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @refreshToken
-@require_login
+@require_role(MissionsPermissions.View)
 @missions_blueprint.route("/mission/<mission>",methods=["GET"])
 async def view(mission):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @refreshToken
-@require_role(MissionsPermissions.addMissionRole)
+@require_role(MissionsPermissions.Add)
 @missions_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @refreshToken
-@require_role(MissionsPermissions.removeMissionRole)
+@require_role(MissionsPermissions.Remove)
 @missions_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @refreshToken
-@require_role(MissionsPermissions.editMissionRole)
+@require_role(MissionsPermissions.Edit)
 @missions_blueprint.route("/edit",methods=["GET","POST"])
 async def edit():
     return await standardReturn("implement.html",sectionName,implement="Implement!")

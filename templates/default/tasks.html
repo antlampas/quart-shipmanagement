@@ -10,6 +10,11 @@ Created on: 2025-05-15
 {% extends "base.html" %}
 
 {% block content %}
+<nav>
+    <a href="/tasks/add">Nuovo membro</a>
+    <a href="/tasks/remove">Rimuovi membro</a>
+    <a href="/tasks/edit">Modifica membro</a>
+</nav>
 {% if tasks is defined %}
 {% if (tasks is iterable) and (tasks is not string) and (tasks is not mapping) %}
 <li>

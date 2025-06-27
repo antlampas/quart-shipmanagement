@@ -33,6 +33,7 @@ def refreshToken(identityProvider="keycloak"):
         async def wrapper(*args, **kwargs):
             cId = current_app.config['OPENID_KEYCLOAK_CONFIG']['client_id']
             cs = current_app.config['OPENID_KEYCLOAK_CONFIG']['client_secret']
+            print(request.path)
             if 'auth_token' in session:
                 accessToken = session['auth_token']['access_token']
                 refreshToken = session['auth_token']['refresh_token']
@@ -67,11 +68,11 @@ def refreshToken(identityProvider="keycloak"):
                                                         'provider not found'
                                                        )
                         elif token.status_code == 400:
-                            return await redirect(request.scheme + \
-                                                  '://' + request.host + \
-                                                  '/relogin?redirect_url=' + \
-                                                  request.path
-                                                 )
+                            return await redirect(request.scheme + '://' + \
+                                                  request.host + \
+                                                '/relogin?redirect_url=' + \
+                                                request.path
+                                                )
                     else:
                         return await func(*args, **kwargs)
                 else:

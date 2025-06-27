@@ -3,6 +3,10 @@
 #Author:     antlampas
 #Created on: 2025-05-15
 
+import re
+
+from threading      import Timer
+
 from quart          import Blueprint
 from quart          import current_app
 from quart          import request
@@ -35,19 +39,19 @@ sectionName = "Duties"
 duties_blueprint = Blueprint("duties",__name__,url_prefix='/duties',template_folder='templates/default')
 
 @refreshToken
-@require_login
-@duties_blueprint.route("/duties",methods=["GET"])
+@require_role(DutiesPermissions.View)
+@duties_blueprint.route("/",methods=["GET"])
 async def duties():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @refreshToken
-@require_login
+@require_role(DutiesPermissions.View)
 @duties_blueprint.route("/duty/<duty>",methods=["GET"])
-async def duty(duty):
+async def view(duty):
     return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @refreshToken
-@require_role(DutiesPermissions.addDutyRole)
+@require_role(DutiesPermissions.Add)
 @duties_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     #return await standardReturn("implement.html",sectionName,implement="Implement!")
@@ -72,14 +76,14 @@ async def add():
         return await render_template("error.html",sectionName,ERROR="Invalid method")
 
 @refreshToken
-@require_role(DutiesPermissions.removeDutyRole)
+@require_role(DutiesPermissions.Remove)
 @duties_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
 
 @refreshToken
-@require_role(DutiesPermissions.editDutyRole)
+@require_role(DutiesPermissions.Edit)
 @duties_blueprint.route("/edit",methods=["GET","POST"])
 async def edit():
     return await standardReturn("implement.html",sectionName,implement="Implement!")

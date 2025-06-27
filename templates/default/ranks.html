@@ -10,6 +10,11 @@ Created on: 2025-05-15
 {% extends "base.html" %}
 
 {% block content %}
+<nav>
+    <a href="/ranks/add">Nuovo membro</a>
+    <a href="/ranks/remove">Rimuovi membro</a>
+    <a href="/ranks/edit">Modifica membro</a>
+</nav>
 {% if ranks is defined %}
 {% if (ranks is iterable) and (ranks is not string) and (ranks is not mapping) %}
 <li>

@@ -10,6 +10,11 @@ Created on: 2025-05-15
 {% extends "base.html" %}
 
 {% block content %}
+<nav>
+    <a href="/divisions/add">Nuovo membro</a>
+    <a href="/divisions/remove">Rimuovi membro</a>
+    <a href="/divisions/edit">Modifica membro</a>
+</nav>
 {% if divisions is defined %}
 {% if (divisions is iterable) and (divisions is not string) and (divisions is not mapping) %}
 <li>

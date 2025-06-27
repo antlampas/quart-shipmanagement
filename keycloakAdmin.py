@@ -29,7 +29,7 @@ def getAdminAccessToken():
     return response.json()['access_token']
 
 def adminAction(action,params=dict()):
-    token = getAdminToken()
+    token = getAdminAccessToken()
     response = None
     headers  = {'authorization' : token}
     if action == 'getUser':
