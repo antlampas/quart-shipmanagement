@@ -3,31 +3,35 @@
 #Author:     antlampas
 #Created on: 2025-05-15
 
-from jose            import jwt
+def create_app():
+    from jose            import jwt
 
-from quart           import Quart
-from quart           import url_for
-from quart           import jsonify
-from quart           import session
-from quart           import redirect
-from quart           import request
-from quart_wtf       import CSRFProtect
-from quart_session   import Session
+    from quart           import Quart
+    from quart           import url_for
+    from quart           import jsonify
+    from quart           import session
+    from quart           import redirect
+    from quart           import request
+    from quart_wtf       import CSRFProtect
+    from quart_session   import Session
 
-from quart_keycloak  import Keycloak
-from quart_keycloak  import KeycloakAuthToken
-from quart_keycloak  import KeycloakLogoutRequest
+    from quart_keycloak  import Keycloak
+    from quart_keycloak  import KeycloakAuthToken
+    from quart_keycloak  import KeycloakLogoutRequest
 
-from dotenv          import load_dotenv
+    from dotenv          import load_dotenv
+    from os              import getenv
 
-load_dotenv()
+    load_dotenv()
 
-def create_app(mode='Development'):
-    from config import Development
-    from config import Production
+    configMode = getenv('CONFIGMODE')
+    if configMode == 'Production':
+        from config import Production
+    elif configMode == 'Development':
+        from config import Development
 
     app = Quart(__name__)
-    app.config.from_object(f"config.{mode}")
+    app.config.from_object(f"config.{configMode}")
 
     Session(app)
     csrf = CSRFProtect(app)
