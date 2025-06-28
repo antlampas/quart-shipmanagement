@@ -18,7 +18,7 @@ from quart_keycloak  import Keycloak
 from quart_keycloak  import KeycloakAuthToken
 from quart_keycloak  import KeycloakLogoutRequest
 
-from dotenv import load_dotenv
+from dotenv          import load_dotenv
 
 load_dotenv()
 
@@ -33,8 +33,12 @@ def create_app(mode='Development'):
     csrf = CSRFProtect(app)
     keycloak = Keycloak(app, **(app.config["OPENID_KEYCLOAK_CONFIG"]))
 
-    from authorization import require_role,isTokenExpired
+    from authorization import require_role
+    from authorization import isTokenExpired
+    from authorization import refreshToken
+
     from model         import db
+    
     db.init_app(app)
     db.create_all()
 
@@ -58,8 +62,9 @@ def create_app(mode='Development'):
 
     @app.before_request
     async def before_request_callback():
-        if isTokenExpired() and (request.path != url_for('relogin')):
-            return redirect(url_for('relogin'))
+        if isTokenExpired() and ((request.path != url_for('relogin')) and (request.path != '/openid/logout') and (request.path != url_for('after_relogin'))):
+            if not refreshToken():
+                return redirect(url_for('relogin'))
 
     @app.route("/login")
     async def login():

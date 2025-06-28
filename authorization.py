@@ -5,22 +5,24 @@
 
 import requests
 
-from functools import wraps
-from datetime  import datetime
-from jose      import jwt
+from jose           import jwt
 
-from quart    import current_app
-from quart    import request
-from quart    import session
-from quart    import abort
-from quart    import redirect
-from quart    import url_for
+from functools      import wraps
+from datetime       import datetime
+from jose           import jwt
+
+from quart          import current_app
+from quart          import request
+from quart          import session
+from quart          import abort
+from quart          import redirect
+from quart          import url_for
 
 from standardReturn import standardReturn
 
 def isTokenExpired():
     if 'auth_token' in session:
-        if session['access_token']['exp'] < datetime.now().timestamp():
+        if 'access_token' in session and (session['access_token']['exp'] < datetime.now().timestamp()):
             return True
         else:
             return False
@@ -28,59 +30,37 @@ def isTokenExpired():
         return False
 
 def refreshToken(identityProvider="keycloak"):
-    def decorator(func):
-        @wraps(func)
-        async def wrapper(*args, **kwargs):
-            cId = current_app.config['OPENID_KEYCLOAK_CONFIG']['client_id']
-            cs = current_app.config['OPENID_KEYCLOAK_CONFIG']['client_secret']
-            print(request.path)
-            if 'auth_token' in session:
-                accessToken = session['auth_token']['access_token']
-                refreshToken = session['auth_token']['refresh_token']
-                if isTokenExpired():
-                    if identityProvider == 'keycloak':
-                        url = f'{current_app.config["KEYCLOAK_URL"]}' + \
-                        '/auth/realms/' + \
-                        f'{current_app.config["KEYCLOAK_REALM"]}' + \
-                        '/protocol/openid-connect/token'
-                        h = {
-                                'Authorization' : accessToken,
-                                'Body type'     : 'x-www-form-urlencoded'
-                            }
-                        d = {
-                                'client_id'     : cId,
-                                'client_secret' : cs,
-                                'refresh_token' : refreshToken,
-                                'grant_type'    : 'refresh_token'
-                            }
+    cId = current_app.config['OPENID_KEYCLOAK_CONFIG']['client_id']
+    cs = current_app.config['OPENID_KEYCLOAK_CONFIG']['client_secret']
+    if 'auth_token' in session:
+        accessToken = session['auth_token']['access_token']
+        refreshToken = session['auth_token']['refresh_token']
+        if isTokenExpired():
+            if identityProvider == 'keycloak':
+                url = f'{current_app.config["KEYCLOAK_URL"]}' + \
+                '/realms/' + \
+                f'{current_app.config["KEYCLOAK_REALM"]}' + \
+                '/protocol/openid-connect/token'
+                h = {
+                        'Authorization' : accessToken,
+                        'Body type'     : 'x-www-form-urlencoded'
+                    }
+                d = {
+                        'client_id'     : cId,
+                        'client_secret' : cs,
+                        'refresh_token' : refreshToken,
+                        'grant_type'    : 'refresh_token'
+                    }
 
-                        token = requests.post(url,headers=h,data=d)
-                        token = requests.post(url,data=d)
+                token = requests.post(url,headers=h,data=d)
+                token = requests.post(url,data=d)
 
-                        if token.status_code == 200:
-                            session['access_token'] = \
-                                                    token.json()['access_token']
-                            return await func(*args, **kwargs)
-                        elif token.status_code == 404:
-                            return await standardReturn('error.html',
-                                                  sectionName='Error',
-                                                  ERROR='Identity ' + \
-                                                  'provider not found'
-                                                 )
-                        elif token.status_code == 400:
-                            return await redirect(request.scheme + '://' + \
-                                            request.host + \
-                                            '/relogin?redirect_url=' + \
-                                            request.path
-                                           )
-                    else:
-                        return await func(*args, **kwargs)
+                if token.status_code == 200:
+                    tokenJson = token.json()
+                    session['access_token'] = jwt.get_unverified_claims(tokenJson['access_token'])
+                    return True
                 else:
-                    return await func(*args, **kwargs)
-            else:
-                return await func(*args, **kwargs)
-        return wrapper
-    return decorator
+                    return False
 
 def require_login(func):
     @wraps(func)
