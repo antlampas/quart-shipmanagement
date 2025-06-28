@@ -47,9 +47,9 @@ sectionName    = "Crew"
 @crew_blueprint.route("/",methods=["GET"])
 async def crewView():
     global sectionName
-    crew = None
+    crew = Crew()
     crewLoaded = get('crew')
-    if crewLoaded:
+    if 'Error' not in crewLoaded and 'Warning' not in crewLoaded:
         crew.deserialize(crewLoaded)
     else:
         crew = None
@@ -66,7 +66,8 @@ async def memberView(nickname):
     global sectionName
     member = CrewMember()
     memberLoaded = get('crewMember',nickname)
-    member.deserialize(memberLoaded)
+    if 'Error' not in memberLoaded and 'Warning' not in memberLoaded:
+        member.deserialize(memberLoaded)
     if member:
         return await standardReturn("crewMember.html",sectionName,MEMBER=member)
     else:
@@ -107,12 +108,14 @@ async def add():
             form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
             form.Duties.choices   = [(d.Name,d.Name) for d in duties]
             form.Division.choices = [(d.Name,d.Name) for d in divisions]
-
-            if not add('crewMember',member.serialize()):
-                error = "Unable to add crew member data"
-                return await standardReturn("error.html",
+            added = add('crewMember',member.serialize())
+            if 'Error' in added and 'Warning' in added:
+                message = added
+                return await standardReturn("crewMemberAdd.html",
                                             sectionName,
-                                            ERROR=error
+                                            FORM=form,
+                                            DUTIES=duties,
+                                            MESSAGE=message
                                            )
             message = 'Success'
             return await standardReturn("crewMemberAdd.html",
@@ -130,22 +133,44 @@ async def add():
 @crew_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     global sectionName
-    form = RemoveCrewMemberForm()
-    crew = list()
+    message = ''
+    form    = RemoveCrewMemberForm()
+    crew    = list()
     if request.method == 'GET':
         crew = get('crew')
-        if crew:
+        if 'Error' not in crew and 'Warning' not in crew:
             form.Nickname.choices = [(c.Nickname,c.Nickname) for c in crew]
         return await standardReturn("crewMemberRemove.html",
                                     f'Remove {sectionName}',
                                     FORM=form
                                    )
     elif request.method == 'POST':
-        members = (await request.form).getlist('Nickname')
         if await form.validate_on_submit():
-            for member in members:
-                remove('crewMember',member)
-        return redirect(url_for('crew.remove'))
+            crew = (await request.form).getlist('Nickname')
+            for member in crew:
+                removed = remove('crewMember',member)
+                if 'Error' not in removed and 'Warning' not in removed:
+                    message = f'Unable to remove {member}'
+                    break
+            if not message:
+                message = 'Members removed'
+            form = RemoveCrewMemberForm()
+            crew = get('crew')
+            if 'Error' not in removed and 'Warning' not in removed:
+                form.Nickname.choices = [(d['Nickname'],d['Nickname']) \
+                                         for d in crew]
+            return await standardReturn("crewMemberRemove.html",
+                                        f'Remove {sectionName}',
+                                        FORM=form,
+                                        MESSAGE=message
+                                       )
+        else:
+            message="Invalid data"
+            return await standardReturn("crewMemberRemove.html",
+                                        sectionName,
+                                        FORM=form,
+                                        MESSAGE=message
+                                       )
     else:
         return await standardReturn("error.html",
                                     sectionName,
@@ -169,7 +194,6 @@ async def editMember(member):
     global sectionName
     def f(): del session['memberEdit']
     timer = Timer(current_app.config['EDITING_TIME'],f)
-    sectionName = 'Edit ' + sectionName
     form         = EditCrewMemberForm()
     ranks        = []
     duties       = []
@@ -178,29 +202,39 @@ async def editMember(member):
     crew         = None
     if request.method == 'GET':
         if re.match(isAlpha,member):
+            message = ""
             session['memberEdit'] = member
             memberLoaded = get('crewMember',member)
-            member = CrewMember(
-                            FirstName = memberLoaded['FirstName'],
-                            LastName  = memberLoaded['LastName'],
-                            Nickname  = memberLoaded['Nickname'],
-                            Rank      = memberLoaded['Rank'],
-                            Division  = memberLoaded['Division'],
-                            Duties    = [d.DutyName for d in memberLoaded['Duties']]
-                               )
-            form.FirstName.data   = member.FirstName
-            form.LastName.data    = member.LastName
-            form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
-            form.Rank.default     = member.RankName
-            form.Division.choices = [(d.Name,d.Name) for d in divisions]
-            form.Division.default = member.DivisionName
-            form.Duties.choices   = [(d.Name,d.Name) for d in duties]
-            form.Duties.default   = [(d.DutyName,d.DutyName) for d in member.Duties]
-            return await standardReturn("crewMemberEdit.html",sectionName,FORM=form)
+            if 'Error' not in memberLoaded and 'Warning' not in memberLoaded:
+                member = CrewMember(
+                                FirstName = memberLoaded['FirstName'],
+                                LastName  = memberLoaded['LastName'],
+                                Nickname  = memberLoaded['Nickname'],
+                                Rank      = memberLoaded['Rank'],
+                                Division  = memberLoaded['Division'],
+                                Duties    = [d.DutyName \
+                                             for d in memberLoaded['Duties']]
+                                )
+                form.FirstName.data   = member.FirstName
+                form.LastName.data    = member.LastName
+                form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
+                form.Rank.default     = member.RankName
+                form.Division.choices = [(d.Name,d.Name) for d in divisions]
+                form.Division.default = member.DivisionName
+                form.Duties.choices   = [(d.Name,d.Name) for d in duties]
+                form.Duties.default   = [(d.DutyName,d.DutyName) \
+                                         for d in member.Duties]
+            else:
+                message = "Invalid member"
+            return await standardReturn("crewMemberEdit.html",
+                                        f'Edit {sectionName}',
+                                        FORM=form,
+                                        MESSAGE=message
+                                       )
         else:
             del session['memberEdit']
             return await standardReturn("error.html",
-                                        sectionName,
+                                        f'Edit {sectionName}',
                                         ERROR="Invalid member nickname"
                                        )
     elif request.method == 'POST':
@@ -220,20 +254,41 @@ async def editMember(member):
                                     Division  = division,
                                     Duties    = selectedDuties
                                 )
-                editDB('crewMember',member.__dict__)
-                del session['memberEdit']
-                return redirect(url_for('crew.edit',
-                                        member=member.Nickname
-                                    )
-                            )
+                edited = edit('crewMember',member.__dict__)
+                if 'Error' not in memberLoaded and 'Warning' not in memberLoaded:
+                    del session['memberEdit']
+                    return redirect(url_for('crew.edit',member=member.Nickname))
+                else:
+                    form.FirstName.data   = member.FirstName
+                    form.LastName.data    = member.LastName
+                    form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
+                    form.Rank.default     = member.RankName
+                    form.Division.choices = [(d.Name,d.Name) for d in divisions]
+                    form.Division.default = member.DivisionName
+                    form.Duties.choices   = [(d.Name,d.Name) for d in duties]
+                    form.Duties.default   = [(d.DutyName,d.DutyName) \
+                                             for d in member.Duties]
+                    message = "Edit went wrong"
+                    return await standardReturn("crewMemberEdit.html",
+                                                f'Edit {sectionName}',
+                                                FORM=form,
+                                                MESSAGE=message
+                                               )
+            else:
+                message = "Invalid data"
+                return await standardReturn("crewMemberEdit.html",
+                                            f'Edit {sectionName}',
+                                            FORM=form,
+                                            MESSAGE=message
+                                           )
         else:
             return await standardReturn("error.html",
-                                        sectionName,
+                                        f'Edit {sectionName}',
                                         ERROR="Session expired"
                                        )
     else:
         del session['memberEdit']
         return await standardReturn("error.html",
-                                    sectionName,
+                                    f'Edit {sectionName}',
                                     ERROR="Invalid method"
                                    )

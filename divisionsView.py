@@ -45,16 +45,16 @@ sectionName = "Divisions"
 async def divisions():
     global sectionName
     divisions = get('divisions')
-    if divisions:
+    if 'Error' not in divisions and 'Warning' not in divisions:
         return await standardReturn("divisions.html",
                                     sectionName,
                                     DIVISIONS=divisions
                                    )
     else:
-        errorMessage="No division found"
+        message="No division found"
         return await standardReturn("divisions.html",
                                     sectionName,
-                                    DIVISIONS=errorMessage
+                                    DIVISIONS=message
                                    )
 
 @require_role(DivisionsPermissions.View)
@@ -62,95 +62,152 @@ async def divisions():
 async def view(name):
     global sectionName
     division = get('division',name)
-    if division:
+    if 'Error' not in divisions and 'Warning' not in divisions:
         return await standardReturn("divisions.html",
                                     sectionName,
                                     DIVISION=division
                                    )
     else:
-        return await standardReturn("error.html",
+        message = "Division not found"
+        return await standardReturn("divisions.html",
                                     sectionName,
-                                    ERROR="Crew member not found"
+                                    DIVISION=message
                                    )
 
 @require_role(DivisionsPermissions.Add)
 @divisions_blueprint.route("/add",methods=["GET","POST"])
 async def addDivision():
     global sectionName
-    form = AddDivisionForm()
+    division = Division()
+    form     = AddDivisionForm()
     if request.method == 'GET':
-        return await standardReturn("divisionsAdd.html",sectionName,FORM=form)
+        return await standardReturn("divisionsAdd.html",
+                                    f'Add {sectionName}',
+                                    FORM=form
+                                   )
     elif request.method == 'POST':
         if await form.validate_on_submit():
             message = ""
             name        = (await request.form)['Name']
             description = (await request.form)['Description']
             division = Division(name,description)
-            s = add('division',division.serialize())
-            if s:
-                message = "Success"
+            added = add('division',division.serialize())
+            if 'Error' in added and 'Warning' in added:
+                message = added
             else:
-                message = "Unseccessful"
-            return await standardReturn("divisionsAdd.html",sectionName,FORM=form,MESSAGE=message)
+                message = "Division added"
         else:
             message = "Invalid data"
-            return await standardReturn("divisionsAdd.html",sectionName,FORM=form,MESSAGE=message)
+        return await standardReturn("divisionsAdd.html",
+                                    f'Add {sectionName}',
+                                    FORM=form,
+                                    MESSAGE=message
+                                   )
     else:
-        return await renderstandardReturn_template("error.html",sectionName,ERROR="Invalid method")
+        return await standardReturn("error.html",
+                                    f'Add {sectionName}',
+                                    ERROR="Invalid method"
+                                   )
 
 @require_role(DivisionsPermissions.Remove)
 @divisions_blueprint.route("/remove",methods=["GET","POST"])
 async def remove():
     global sectionName
-    form = RemoveDivisionForm()
+    message   = ''
+    form      = RemoveDivisionForm()
     divisions = list()
     if request.method == 'GET':
         divisions = get('divisions')
-        if divisions:
+        if 'Error' not in removed and 'Warning' not in removed:
             form.Name.choices = [(d['Name'],d['Name']) for d in divisions]
-        return await standardReturn("divisionsRemove.html",sectionName,FORM=form)
+        return await standardReturn("divisionsRemove.html",
+                                    f'Remove {sectionName}',
+                                    FORM=form,
+                                    MESSAGE=message
+                                   )
     elif request.method == 'POST':
         if await form.validate_on_submit():
-            division = (await request.form).getlist('Name')
-            for i in division:
-                remove('division',i)
+            divisions = (await request.form).getlist('Name')
+            for division in divisions:
+                removed = remove('division',i)
+                if 'Error' in removed and 'Warning' in removed:
+                    message = f'Unable to remove {division}'
+                    break
+            if not message:
+                message = "Divisions removed"
             form = RemoveDivisionForm()
             divisions = get('divisions')
-            if divisions:
+            if 'Error' not in removed and 'Warning' not in removed:
                 form.Name.choices = [(d['Name'],d['Name']) for d in divisions]
-            return await standardReturn("divisionsRemove.html",sectionName,FORM=form,MESSAGE="Success")
+            return await standardReturn("divisionsRemove.html",
+                                        f'Remove {sectionName}',
+                                        FORM=form,
+                                        MESSAGE=message
+                                       )
         else:
-            return await standardReturn("error.html",sectionName,ERROR="Invalid data")
+            message="Invalid data"
+            return await standardReturn("divisionsRemove.html",
+                                        f'Remove {sectionName}',
+                                        FORM=form,
+                                        MESSAGE=message
+                                       )
     else:
-        return await standardReturn("error.html",sectionName,ERROR="Invalid method")
+        return await standardReturn("error.html",
+                                    f'Remove {sectionName}',
+                                    ERROR="Invalid method"
+                                   )
 
 @require_role(DivisionsPermissions.Edit)
 @divisions_blueprint.route("/edit/",methods=["GET","POST"])
 async def edit():
-    return await standardReturn("error.html",sectionName,ERROR="No division provided")
+    return await standardReturn("error.html",
+                                f'Edit {sectionName}',
+                                ERROR="No division provided"
+                               )
 
 @require_role(DivisionsPermissions.Edit)
 @divisions_blueprint.route("/edit/<name>",methods=["GET","POST"])
 async def editDivision(name):
     global sectionName
+    def f(): del session['divisionEdit']
+    timer = Timer(current_app.config['EDITING_TIME'],f)
     form = EditDivisionForm()
-    division = get('division',name)
-    if division:
-        def f(): del session['divisionEdit']
-        timer = Timer(current_app.config['EDITING_TIME'],f)
-        if request.method == 'GET':
+    message = ''
+    if request.method == 'GET':
+        division = get('division',name)
+        if 'Error' not in division and 'Warning' not in division:
             form.Name.data        = division.Name
             form.Description.data = division.Description
-            return await standardReturn("divisionsEdit.html",sectionName,FORM=form)
-        elif request.method == 'POST':
-            name        = (await request.form)['Name']
-            description = (await request.form)['Description']
-            if await form.validate_on_submit():
-                edit('division',{'Name' : name,'Division' : division})
-            form.Name.data     = name
-            form.Division.data = division
-            return await standardReturn("divisionsEdit.html",sectionName,FORM=form,MESSAGE="Success")
         else:
-            return await standardReturn("error.html",sectionName,ERROR="Invalid method")
+            message = "Invalid name"
+        return await standardReturn("divisionsEdit.html",
+                                    f'Edit {sectionName}',
+                                    FORM=form,
+                                    MESSAGE=message
+                                   )
+    elif request.method == 'POST':
+        name        = (await request.form)['Name']
+        description = (await request.form)['Description']
+        if await form.validate_on_submit():
+            form.Name.data        = name
+            form.Description.data = description
+            edited = edit('division',
+                          {
+                            'Name'        : name,
+                            'Description' : description
+                          }
+                         )
+            if 'Error' not in edited and 'Warning' not in edited:
+                message=f'{name} edited'
+            else:
+                message = 'Edit went wrong'
+        return await standardReturn("divisionsEdit.html",
+                                    f'Edit {sectionName}',
+                                    FORM=form,
+                                    MESSAGE="Success"
+                                   )
     else:
-        return await standardReturn("divisionsEdit.html",sectionName,FORM=form,MESSAGE="No division found")
+        return await standardReturn("error.html",
+                                    f'Edit {sectionName}',
+                                    ERROR="Invalid method"
+                                   )

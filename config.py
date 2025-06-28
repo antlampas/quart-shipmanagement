@@ -8,15 +8,15 @@ from json   import loads
 
 class BaseConfig:
     SESSION_TYPE                = getenv('SESSION_TYPE')
-    WTF_CSRF_ENABLED            = getenv('WTF_CSRF_ENABLED')
-    WTF_CSRF_CHECK_DEFAULT      = getenv('WTF_CSRF_CHECK_DEFAULT')
+    WTF_CSRF_ENABLED            = bool((getenv('WTF_CSRF_ENABLED') == "true"))
+    WTF_CSRF_CHECK_DEFAULT      = bool((getenv('WTF_CSRF_CHECK_DEFAULT') == "true"))
     WTF_CSRF_METHODS            = getenv('WTF_CSRF_METHODS')
     WTF_CSRF_FIELD_NAME         = getenv('WTF_CSRF_FIELD_NAME')
     WTF_CSRF_HEADERS            = getenv('WTF_CSRF_HEADERS')
-    WTF_CSRF_TIME_LIMIT         = getenv('WTF_CSRF_TIME_LIMIT')
-    WTF_CSRF_SSL_STRICT         = getenv('WTF_CSRF_SSL_STRICT')
-    WTF_I18N_ENABLED            = getenv('WTF_I18N_ENABLED')
-    EDITING_TIME                = getenv('EDITING_TIME')
+    WTF_CSRF_TIME_LIMIT         = int(getenv('WTF_CSRF_TIME_LIMIT'))
+    WTF_CSRF_SSL_STRICT         = bool((getenv('WTF_CSRF_SSL_STRICT') == "true"))
+    WTF_I18N_ENABLED            = bool((getenv('WTF_I18N_ENABLED') == "true"))
+    EDITING_TIME                = int(getenv('EDITING_TIME'))
 class ShipConfig:
     SHIPNAME                    = getenv('SHIPNAME')
     REGISTRYNUMBER              = getenv('REGISTRYNUMBER')
@@ -41,9 +41,9 @@ class Providers:
 class Development(BaseConfig,DbConfig,KeycloakConfig,ShipConfig,Providers):
     DEBUG                       = True
     SECRET_KEY                  = getenv('SECRET_KEY_DEVELOPMENT')
-    WTF_CSRF_SECRET_KEY         = getenv('WTF_CSRF_SECRET_KEY')
+    WTF_CSRF_SECRET_KEY         = SECRET_KEY
 class Production(BaseConfig,DbConfig,KeycloakConfig,ShipConfig,Providers):
     DEBUG                       = False
     SECRET_KEY                  = getenv("SECRET_KEY_PRODUCTION")
-    WTF_CSRF_SECRET_KEY         = getenv('WTF_CSRF_SECRET_KEY')
+    WTF_CSRF_SECRET_KEY         = SECRET_KEY
 

@@ -59,8 +59,8 @@ class Division(Editable):
     def serialize(self):
         self.Error = ''
         division = {
-                        "Name"        : self.Name,
-                        "Description" : self.Description
+                    "name"        : self.Name,
+                    "description" : self.Description
                    }
         return division
     def deserialize(self,division=dict()):
@@ -131,7 +131,7 @@ class Divisions(Addable):
         self.Error = ''
         divisions = dict()
         for division in self.Divisions:
-            divisions[division.Name] = division.serialize()
+            divisions[division.Name.tolower()] = division.serialize()
         return divisions
     def deserialize(self,divisions=dict()):
         self.Error = ''

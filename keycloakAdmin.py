@@ -37,7 +37,7 @@ def adminAction(action,params=dict()):
             if 'username' in params:
                 response = getUser(headers,params['username'])
             else:
-                response = None
+                response = {'Error' : 'No username provided'}
         else:
             response = getUser(headers)
     elif action == 'addUser':
@@ -45,147 +45,135 @@ def adminAction(action,params=dict()):
             if 'username' in params:
                 response = addUser(headers,params['username'],params)
             else:
-                response = None
+                response = {'Error' : 'No username provided'}
         else:
-            response = None
+            response = {'Error' : 'No user attributes provided'}
     elif action == 'editUser':
         if params:
             if 'username' in params:
                 response = editUser(headers,params['username'],params)
             else:
-                response = None
+                response = {'Error' : 'No username provided'}
         else:
-            response = None
+            response = {'Error' : 'No user attributes provided'}
     elif action == 'removeUser':
         if params:
             if 'username' in params:
                 response = removeUser(headers,params['username'])
             else:
-                response = None
+                response = {'Error' : 'No username provided'}
         else:
-            response = None
+            response = {'Error' : 'No parameters provided'}
     elif action == 'getRank':
         if params:
             if 'name' in params:
-                if 'rank' in params['name']:
+                if 'ranks' in params['name']:
                     response = getGroup(headers,params['name'])
                 else:
-                    response = None
+                    response = {'Error' : 'No rank name provided'}
             else:
-                response = None
+                response = {'Error' : 'No rank attributes provided'}
         else:
             response = None
     elif action == 'addRank':
         if params:
             if 'name' in params:
-                if 'rank' in params['name']:
-                    response = addGroup(headers,params['name'],params)
-                else:
-                    response = None
+                params['name'] = '/ranks/'+params['name']
+                response = addGroup(headers,params['name'],params)
             else:
-                response = None
+                response = {'Error' : 'No rank name provided'}
         else:
-            response = None
+            response = {'Error' : 'No rank attributes provided'}
     elif action == 'editRank':
         if params:
             if 'name' in params:
-                if 'rank' in params['name']:
-                    response = editGroup(headers,params['name'],params)
-                else:
-                    response = None
+                params['name'] = '/ranks/'+params['name']
+                response = addGroup(headers,params['name'],params)
             else:
-                response = None
+                response = {'Error' : 'No rank name provided'}
         else:
-            response = None
+            response = {'Error' : 'No rank attributes provided'}
     elif action == 'removeRank':
         if params:
             if 'name' in params:
-                if 'rank' in params['name']:
-                    response = removeGroup(headers,params['name'])
+                params['name'] = '/ranks/'+params['name']
+                response = addGroup(headers,params['name'],params)
             else:
-                response = None
+                response = {'Error' : 'No rank name provided'}
         else:
-            response = None
+            response = {'Error' : 'No rank attributes provided'}
     elif action == 'getDivision':
         if params:
             if 'name' in params:
-                if 'division' in params['name']:
-                    response = getGroup(headers,params['name'])
+                params['name'] = '/divisions/'+params['name']
+                response = getGroup(headers,params['name'])
             else:
-                response = None
+                response = {'Error' : 'No division name provided'}
         else:
-            response = None
+            response = {'Error' : 'No division attributes provided'}
     elif action == 'addDivision':
         if params:
             if 'name' in params:
-                if 'division' in params['name']:
-                    response = addGroup(headers,params['name'],params)
-                else:
-                    response = None
+                params['name'] = '/divisions/'+params['name']
+                response = addGroup(headers,params['name'])
             else:
-                response = None
+                response = {'Error' : 'No division name provided'}
         else:
-            response = None
+            response = {'Error' : 'No division attributes provided'}
     elif action == 'editDivision':
         if params:
             if 'name' in params:
-                if 'division' in params['name']:
-                    response = editGroup(headers,params['name'],params)
-                else:
-                    response = None
+                params['name'] = '/divisions/'+params['name']
+                response = editGroup(headers,params['name'])
             else:
-                response = None
+                response = {'Error' : 'No division name provided'}
         else:
-            response = None
+            response = {'Error' : 'No division attributes provided'}
     elif action == 'removeDivision':
         if params:
             if 'name' in params:
-                if 'division' in params['name']:
-                    response = removeGroup(headers,params['name'])
+                params['name'] = '/divisions/'+params['name']
+                response = removeGroup(headers,params['name'])
             else:
-                response = None
+                response = {'Error' : 'No division name provided'}
         else:
-            response = None
+            response = {'Error' : 'No division attributes provided'}
     elif action == 'getDuty':
         if params:
             if 'name' in params:
-                if 'duty' in params['name']:
-                    response = getGroup(headers,params['name'])
+                params['name'] = '/duties/'+params['name']
+                response = getGroup(headers,params['name'])
             else:
-                response = None
+                response = {'Error' : 'No duty name provided'}
         else:
-            response = None
+            response = {'Error' : 'No duty attributes provided'}
     elif action == 'addDuty':
         if params:
             if 'name' in params:
-                if 'duty' in params['name']:
-                    response = addGroup(headers,params['name'],params)
-                else:
-                    response = None
+                params['name'] = '/duties/'+params['name']
+                response = addGroup(headers,params['name'])
             else:
-                response = None
+                response = {'Error' : 'No duty name provided'}
         else:
-            response = None
+            response = {'Error' : 'No duty attributes provided'}
     elif action == 'editDuty':
         if params:
             if 'name' in params:
-                if 'duty' in params['name']:
-                    response = editGroup(headers,params['name'],params)
-                else:
-                    response = None
+                params['name'] = '/duties/'+params['name']
+                response = editGroup(headers,params['name'])
             else:
-                response = None
+                response = {'Error' : 'No duty name provided'}
         else:
-            response = None
+            response = {'Error' : 'No duty attributes provided'}
     elif action == 'removeDuty':
         if params:
             if 'name' in params:
-                if 'duty' in params['name']:
-                    response = removeGroup(headers,params['name'])
+                params['name'] = '/duties/'+params['name']
+                response = removeGroup(headers,params['name'])
             else:
-                response = None
+                response = {'Error' : 'No duty name provided'}
         else:
-            response = None
+            response = {'Error' : 'No duty attributes provided'}
     elif action == 'getTask':
         if params:
             if 'name' in params:
@@ -246,16 +234,18 @@ def adminAction(action,params=dict()):
            response.code == 201 or \
            response.code == 204:
             responseContent = response.content.json()
-        if response.code == 403:
+        elif response.code == 403:
             return {"Error": "Forbidden"}
-        if response.code == 400:
+        elif response.code == 400:
             return {"Error": "Bad Request"}
-        if response.code == 500:
+        elif response.code == 500:
             return {"Error": "Internal Server Error"}
+        else:
+            return {"Error": "Error code: " + response.code}
     elif isinstance(response,dict):
         responseContent = response
     else:
-        responseContent = None
+        responseContent = {"Error": "Unknown error"}
     return responseContent
 
 def loadFromKeycloak(what='',pattern=''):
@@ -609,7 +599,7 @@ def getGroup(headers,group=''):
 def removeGroup(headers,group=''):
     global command_prefix
     response = None
-    if user:
+    if group:
         response = requests.delete(command_prefix + f'/groups/{group}',
                                    headers=headers
                                   )
@@ -619,7 +609,7 @@ def removeGroup(headers,group=''):
 def addGroup(headers,group=dict()):
     global command_prefix
     response = None
-    if user:
+    if group:
         response = requests.post(command_prefix + '/groups',
                                 headers=headers,
                                 data=group
@@ -630,7 +620,7 @@ def addGroup(headers,group=dict()):
 def editGroup(headers,group='',attributes=dict()):
     global command_prefix
     response = None
-    if user and attributes:
+    if group and attributes:
         response = requests.put(command_prefix + f'/groups/{group}',
                                 headers=headers,
                                 data=attributes
