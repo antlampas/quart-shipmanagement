@@ -82,15 +82,21 @@ async def add():
     member = CrewMember()
     form   = AddCrewMemberForm()
     if request.method == 'GET':
-        ranks     = get('ranks')
-        duties    = get('duties')
-        divisions = get('divisions')
-        if ranks:
+        ranks     = get('rank')
+        duties    = get('dutie')
+        divisions = get('division')
+        if ranks and 'Error' not in ranks and 'Warning' not in ranks:
             form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
-        if duties:
+        else:
+            print(ranks)
+        if duties and 'Error' not in duties and 'Warning' not in duties:
             form.Duties.choices   = [(d.Name,d.Name) for d in duties]
-        if divisions:
+        else:
+            print(duties)
+        if divisions and 'Error' not in divisions and 'Warning' not in divisions:
             form.Division.choices = [(d.Name,d.Name) for d in divisions]
+        else:
+            print(divisions)
         return await standardReturn("crewMemberAdd.html",
                                     f'Add {sectionName}',
                                     FORM=form
@@ -138,7 +144,7 @@ async def remove():
     crew    = list()
     if request.method == 'GET':
         crew = get('crew')
-        if 'Error' not in crew and 'Warning' not in crew:
+        if crew and 'Error' not in crew and 'Warning' not in crew:
             form.Nickname.choices = [(c.Nickname,c.Nickname) for c in crew]
         return await standardReturn("crewMemberRemove.html",
                                     f'Remove {sectionName}',
@@ -192,8 +198,8 @@ async def edit():
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 async def editMember(member):
     global sectionName
-    def f(): del session['memberEdit']
-    timer = Timer(current_app.config['EDITING_TIME'],f)
+    # def f(): del session['memberEdit']
+    # timer = Timer(current_app.config['EDITING_TIME'],f)
     form         = EditCrewMemberForm()
     ranks        = []
     duties       = []
@@ -203,7 +209,6 @@ async def editMember(member):
     if request.method == 'GET':
         if re.match(isAlpha,member):
             message = ""
-            session['memberEdit'] = member
             memberLoaded = get('crewMember',member)
             if 'Error' not in memberLoaded and 'Warning' not in memberLoaded:
                 member = CrewMember(
@@ -232,7 +237,6 @@ async def editMember(member):
                                         MESSAGE=message
                                        )
         else:
-            del session['memberEdit']
             return await standardReturn("error.html",
                                         f'Edit {sectionName}',
                                         ERROR="Invalid member nickname"
@@ -287,7 +291,6 @@ async def editMember(member):
                                         ERROR="Session expired"
                                        )
     else:
-        del session['memberEdit']
         return await standardReturn("error.html",
                                     f'Edit {sectionName}',
                                     ERROR="Invalid method"

@@ -7,9 +7,7 @@ import requests
 
 from config import KeycloakConfig
 
-command_prefix = f'{KeycloakConfig.KEYCLOAK_URL}' + \
-                 f'/admin/realms/' + \
-                 f'{KeycloakConfig.KEYCLOAK_REALM}'
+command_prefix = KeycloakConfig.KEYCLOAK_ADMIN['url']
 
 def getAdminAccessToken():
     headers = {
@@ -21,47 +19,49 @@ def getAdminAccessToken():
              'username'   : KeycloakConfig.KEYCLOAK_ADMIN['username'],
              'password'   : KeycloakConfig.KEYCLOAK_ADMIN['password']
            }
-    response = requests.post(KeycloakConfig.KEYCLOAK_ADMIN['url'],
+    response = requests.post(f'{KeycloakConfig.KEYCLOAK_URL}' + \
+                             f'/realms/' + \
+                             f'{KeycloakConfig.KEYCLOAK_REALM}' + \
+                             '/protocol/openid-connect/token',
                              headers=headers,
                              data=data
                             )
-
     return response.json()['access_token']
 
 def adminAction(action,params=dict()):
     token = getAdminAccessToken()
     response = None
-    headers  = {'authorization' : token}
+    headers  = {'authorization' : 'bearer ' + token}
     if action == 'getUser':
         if params:
-            if 'username' in params:
-                response = getUser(headers,params['username'])
+            if 'nickname' in params:
+                response = getUser(headers,params['nickname'])
             else:
-                response = {'Error' : 'No username provided'}
+                response = {'Error' : 'No nickname provided'}
         else:
             response = getUser(headers)
     elif action == 'addUser':
         if params:
-            if 'username' in params:
-                response = addUser(headers,params['username'],params)
+            if 'nickname' in params:
+                response = addUser(headers,params['nickname'],params)
             else:
-                response = {'Error' : 'No username provided'}
+                response = {'Error' : 'No nickname provided'}
         else:
             response = {'Error' : 'No user attributes provided'}
     elif action == 'editUser':
         if params:
-            if 'username' in params:
-                response = editUser(headers,params['username'],params)
+            if 'nickname' in params:
+                response = editUser(headers,params['nickname'],params)
             else:
-                response = {'Error' : 'No username provided'}
+                response = {'Error' : 'No nickname provided'}
         else:
             response = {'Error' : 'No user attributes provided'}
     elif action == 'removeUser':
         if params:
-            if 'username' in params:
-                response = removeUser(headers,params['username'])
+            if 'nickname' in params:
+                response = removeUser(headers,params['nickname'])
             else:
-                response = {'Error' : 'No username provided'}
+                response = {'Error' : 'No nickname provided'}
         else:
             response = {'Error' : 'No parameters provided'}
     elif action == 'getRank':
@@ -115,7 +115,7 @@ def adminAction(action,params=dict()):
         if params:
             if 'name' in params:
                 params['name'] = '/divisions/'+params['name']
-                response = addGroup(headers,params['name'])
+                response = addGroup(headers,params)
             else:
                 response = {'Error' : 'No division name provided'}
         else:
@@ -151,7 +151,7 @@ def adminAction(action,params=dict()):
         if params:
             if 'name' in params:
                 params['name'] = '/duties/'+params['name']
-                response = addGroup(headers,params['name'])
+                response = addGroup(headers,params)
             else:
                 response = {'Error' : 'No duty name provided'}
         else:
@@ -226,9 +226,17 @@ def adminAction(action,params=dict()):
                 response = {"Warning" : "Implement"}
         else:
             response = {"Warning" : "Implement"}
+    else:
+        return {'Error' : 'Invalid request'}
 
-    requests.get(command_prefix + '/protocol/openid−connect/logout')
-
+    logout = requests.get(f'{KeycloakConfig.KEYCLOAK_URL}' + \
+                          f'/realms/' + \
+                          f'{KeycloakConfig.KEYCLOAK_REALM}' + \
+                          '/protocol/openid-connect/logout',
+                 headers=headers
+                )
+    print(logout)
+    print(response.url)
     if response and not isinstance(response,dict):
         if response.code == 200 or \
            response.code == 201 or \
@@ -238,6 +246,8 @@ def adminAction(action,params=dict()):
             return {"Error": "Forbidden"}
         elif response.code == 400:
             return {"Error": "Bad Request"}
+        elif response.code == 401:
+            return {"Error": "Unauthorized"}
         elif response.code == 500:
             return {"Error": "Internal Server Error"}
         else:
@@ -594,13 +604,15 @@ def getGroup(headers,group=''):
                                 params={'group-id' : group}
                                )
     else:
-        response = requests.get(command_prefix + '/users',headers=headers)
+        response = requests.get(command_prefix + '/groups',
+                                headers=headers)
     return response
 def removeGroup(headers,group=''):
     global command_prefix
     response = None
     if group:
-        response = requests.delete(command_prefix + f'/groups/{group}',
+        name = group['name'][group['name'].rfind('/')+1:]
+        response = requests.delete(command_prefix + f'/groups/{name}',
                                    headers=headers
                                   )
     else:
@@ -610,10 +622,14 @@ def addGroup(headers,group=dict()):
     global command_prefix
     response = None
     if group:
-        response = requests.post(command_prefix + '/groups',
-                                headers=headers,
-                                data=group
-                               )
+        name = group['name'][group['name'].rfind('/')+1:]
+        response = requests.post(command_prefix + \
+                                 '/groups/' + \
+                                 name + \
+                                 '/children',
+                                 headers=headers,
+                                 data=group
+                                )
     else:
         response = None
     return response
@@ -621,7 +637,8 @@ def editGroup(headers,group='',attributes=dict()):
     global command_prefix
     response = None
     if group and attributes:
-        response = requests.put(command_prefix + f'/groups/{group}',
+        name = group['name'][group['name'].rfind('/')+1:]
+        response = requests.put(command_prefix + f'/groups/{name}',
                                 headers=headers,
                                 data=attributes
                                )
