@@ -66,7 +66,10 @@ def adminAction(action,params=dict()):
     getAdminToken()
     accessToken  = getAdminAccessToken()
     response     = None
-    headers      = {'Authorization' : 'Bearer ' + accessToken}
+    headers      = {
+                    'Content-Type'  : 'application/json',
+                    'Authorization' : 'Bearer ' + accessToken
+                   }
     if action == 'getUser':
         if params:
             if 'nickname' in params:
@@ -620,17 +623,20 @@ def editUser(headers,user='',attributes=dict()):
         response = None
     return response
 
-def getGroup(headers,group=''):
+def getGroup(headers,name=''):
     global command_prefix
-    response = None
-    if group:
-        response = requests.get(command_prefix + '/groups',
-                                headers=headers,
-                                params={'group-id' : group}
-                               )
+    response = requests.get(command_prefix + '/groups',headers=headers)
+    if name:
+        groupFound = False
+        for group in response.json():
+            if group['name'] == group:
+                response.content = json.dumps(group).encode('utf-8')
+                groupFound = True
+                break
+        if not groupFound:
+            response = {'Error' : 'Group not found'}
     else:
-        response = requests.get(command_prefix + '/groups',
-                                headers=headers)
+        pass
     return response
 def removeGroup(headers,group=''):
     global command_prefix
@@ -647,23 +653,20 @@ def addGroup(headers,group=dict()):
     global command_prefix
     if group:
         parentId = ''
-        print(getAdminAccessToken() == adminToken['access_token'])
-        print(command_prefix + '/groups')
         response = requests.get(command_prefix + '/groups',
-                            params={'search' : 'divisions'},
+                            params={'search' : group['parent']},
                             headers=headers
                            )
+        del group['parent']
+        parentId = str(response.json()[0]['id'])
         groupName = group['name']
-        #TODO: vedi come si aggiungono gli attributi
+        group['attributes'] = {'description' : [group['description']]}
         del group['description']
-        headers = {'Content-Type' : 'application/json'} | headers
-        response = requests.post(command_prefix + \
-                                 '/groups',
+        headers = headers
+        response = requests.post(f'{command_prefix}/groups/{parentId}/children',
                                  headers=headers,
                                  data=json.dumps(group)
                                 )
-        print(response.request.headers)
-        print(response.request.body)
     else:
         response = None
     return response
