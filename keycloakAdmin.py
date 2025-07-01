@@ -4,12 +4,17 @@
 #Created on: 2025-05-31
 
 import requests
+import json
+
+from uuid import uuid4
 
 from config import KeycloakConfig
 
+adminToken   = ''
 command_prefix = KeycloakConfig.KEYCLOAK_ADMIN['url']
 
-def getAdminAccessToken():
+def getAdminToken():
+    global adminToken
     headers = {
                 'content-type' : 'application/x-www-form-urlencoded'
               }
@@ -26,12 +31,42 @@ def getAdminAccessToken():
                              headers=headers,
                              data=data
                             )
-    return response.json()['access_token']
-
+    adminToken = response.json()
+    return response.json()
+def getAdminAccessToken():
+    global adminToken
+    return adminToken['access_token']
+def getAdminRefreshToken():
+    global adminToken
+    return adminToken['refresh_token']
+def removeAdminToken():
+    global adminToken
+    adminToken = ''
+    return True
+def adminLogout(headers=''):
+    refreshToken = getAdminRefreshToken()
+    logoutInfo = {
+        'client_id'     : KeycloakConfig.KEYCLOAK_ADMIN['client_id'],
+        'username'      : KeycloakConfig.KEYCLOAK_ADMIN['username'],
+        'password'      : KeycloakConfig.KEYCLOAK_ADMIN['password'],
+        'refresh_token' : refreshToken
+        }
+    requests.post(f'{KeycloakConfig.KEYCLOAK_URL}' + \
+                           f'/realms/' + \
+                           f'{KeycloakConfig.KEYCLOAK_REALM}' + \
+                           '/protocol/openid-connect/logout',
+                           headers={
+                                    'Content-Type' : \
+                                    'application/x-www-form-urlencoded'
+                                   } | headers,
+                           data=logoutInfo
+                          )
+    removeAdminToken()
 def adminAction(action,params=dict()):
-    token = getAdminAccessToken()
-    response = None
-    headers  = {'authorization' : 'bearer ' + token}
+    getAdminToken()
+    accessToken  = getAdminAccessToken()
+    response     = None
+    headers      = {'Authorization' : 'Bearer ' + accessToken}
     if action == 'getUser':
         if params:
             if 'nickname' in params:
@@ -114,7 +149,6 @@ def adminAction(action,params=dict()):
     elif action == 'addDivision':
         if params:
             if 'name' in params:
-                params['name'] = '/divisions/'+params['name']
                 response = addGroup(headers,params)
             else:
                 response = {'Error' : 'No division name provided'}
@@ -229,33 +263,25 @@ def adminAction(action,params=dict()):
     else:
         return {'Error' : 'Invalid request'}
 
-    logout = requests.get(f'{KeycloakConfig.KEYCLOAK_URL}' + \
-                          f'/realms/' + \
-                          f'{KeycloakConfig.KEYCLOAK_REALM}' + \
-                          '/protocol/openid-connect/logout',
-                 headers=headers
-                )
-    print(logout)
-    print(response.url)
-    if response and not isinstance(response,dict):
-        if response.code == 200 or \
-           response.code == 201 or \
-           response.code == 204:
-            responseContent = response.content.json()
-        elif response.code == 403:
+    adminLogout(headers)
+    if not isinstance(response,dict):
+        if response.status_code == 200 or \
+           response.status_code == 201 or \
+           response.status_code == 204:
+            pass
+            responseContent = response.text
+        elif response.status_code == 403:
             return {"Error": "Forbidden"}
-        elif response.code == 400:
+        elif response.status_code == 400:
             return {"Error": "Bad Request"}
-        elif response.code == 401:
+        elif response.status_code == 401:
             return {"Error": "Unauthorized"}
-        elif response.code == 500:
+        elif response.status_code == 500:
             return {"Error": "Internal Server Error"}
         else:
-            return {"Error": "Error code: " + response.code}
+            return {"Error": "Error code: " + str(response.status_code)}
     elif isinstance(response,dict):
         responseContent = response
-    else:
-        responseContent = {"Error": "Unknown error"}
     return responseContent
 
 def loadFromKeycloak(what='',pattern=''):
@@ -577,8 +603,7 @@ def addUser(headers,user=dict()):
     response = None
     if user:
         response = requests.post(command_prefix + '/users',
-                                headers=headers,
-                                data=user
+                                data=headers | user
                                )
     else:
         response = None
@@ -620,16 +645,25 @@ def removeGroup(headers,group=''):
     return response
 def addGroup(headers,group=dict()):
     global command_prefix
-    response = None
     if group:
-        name = group['name'][group['name'].rfind('/')+1:]
+        parentId = ''
+        print(getAdminAccessToken() == adminToken['access_token'])
+        print(command_prefix + '/groups')
+        response = requests.get(command_prefix + '/groups',
+                            params={'search' : 'divisions'},
+                            headers=headers
+                           )
+        groupName = group['name']
+        #TODO: vedi come si aggiungono gli attributi
+        del group['description']
+        headers = {'Content-Type' : 'application/json'} | headers
         response = requests.post(command_prefix + \
-                                 '/groups/' + \
-                                 name + \
-                                 '/children',
+                                 '/groups',
                                  headers=headers,
-                                 data=group
+                                 data=json.dumps(group)
                                 )
+        print(response.request.headers)
+        print(response.request.body)
     else:
         response = None
     return response

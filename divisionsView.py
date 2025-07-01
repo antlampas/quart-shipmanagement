@@ -92,7 +92,7 @@ async def addDivision():
             description = (await request.form)['Description']
             division = Division(name,description)
             added = add('division',division.serialize())
-            if 'Error' in added and 'Warning' in added:
+            if 'Error' in added or 'Warning' in added:
                 message = added
             else:
                 message = "Division added"

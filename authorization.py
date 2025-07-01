@@ -5,8 +5,6 @@
 
 import requests
 
-from jose           import jwt
-
 from functools      import wraps
 from datetime       import datetime
 from jose           import jwt

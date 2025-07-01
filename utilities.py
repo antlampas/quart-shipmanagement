@@ -6,7 +6,7 @@
 #### Regular expressions ####
 isAlpha        = r"^[A-Za-z]+$"
 isNumber       = r"^[0-9]+$"
-isAlphanumeric = r"^[A-Za-z][0-9]+$"
-isText         = r"^[A-Za-z][0-9][,;.:-_!/(/)àèéìòù]+$"
+isAlphanumeric = r"^[A-Za-z0-9]+$"
+isText         = r"^[A-Za-z0-9,;.:-_!/(/)àèéìòù]+$"
 isPath         = r"\/[A-Za-z0-9]+"
 #### End regular expressions ####
