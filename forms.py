@@ -14,12 +14,45 @@ from wtforms.validators import Email
 from wtforms.validators import EqualTo
 from wtforms.widgets    import PasswordInput
 
+class AddRankForm(QuartForm):
+    Name        = StringField('Name')
+    Description = StringField('Description')
+
+class EditRankForm(QuartForm):
+    Name        = StringField('Name')
+    Description = StringField('Description')
+
+class RemoveRankForm(QuartForm):
+    Name = SelectMultipleField('Name')
+
+class AddDutyForm(QuartForm):
+    Name        = StringField('Name')
+    Description = StringField('Description')
+
+class EditDutyForm(QuartForm):
+    Name        = StringField('Name')
+    Description = StringField('Description')
+
+class RemoveDutyForm(QuartForm):
+    Name = SelectMultipleField('Name')
+
+class AddDivisionForm(QuartForm):
+    Name        = StringField('Name')
+    Description = StringField('Description')
+
+class EditDivisionForm(QuartForm):
+    Name        = StringField('Name')
+    Description = StringField('Description')
+
+class RemoveDivisionForm(QuartForm):
+    Name = SelectMultipleField('Name')
+
 class AddCrewMemberForm(QuartForm):
     FirstName        = StringField('First name')
     LastName         = StringField('Last Name')
     Nickname         = StringField('Nickname')
-    Rank             = SelectField('Rank')
-    Division         = SelectField('Division')
+    Rank             = SelectField('Rank',validate_choice=False)
+    Division         = SelectField('Division',validate_choice=False)
     Duties           = SelectMultipleField('Duties')
 
 class RemoveCrewMemberForm(QuartForm):
@@ -73,36 +106,3 @@ class EditMissionForm(QuartForm):
     EndedAt          = StringField('Ended At')
     Tasks            = SelectMultipleField('Tasks')
     Status           = StringField('Status')
-
-class AddRankForm(QuartForm):
-    Name        = StringField('Name')
-    Description = StringField('Description')
-
-class EditRankForm(QuartForm):
-    Name        = StringField('Name')
-    Description = StringField('Description')
-
-class RemoveRankForm(QuartForm):
-    Name = SelectMultipleField('Name')
-
-class AddDutyForm(QuartForm):
-    Name        = StringField('Name')
-    Description = StringField('Description')
-
-class EditDutyForm(QuartForm):
-    Name        = StringField('Name')
-    Description = StringField('Description')
-
-class RemoveDutyForm(QuartForm):
-    Name = SelectMultipleField('Name')
-
-class AddDivisionForm(QuartForm):
-    Name        = StringField('Name')
-    Description = StringField('Description')
-
-class EditDivisionForm(QuartForm):
-    Name        = StringField('Name')
-    Description = StringField('Description')
-
-class RemoveDivisionForm(QuartForm):
-    Name = SelectMultipleField('Name')

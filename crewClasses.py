@@ -19,8 +19,8 @@ class CrewMember(Editable):
                  Rank      = '',
                  Division  = '',
                  Duties    = list(),
-                 Serial    = 0,
-                 Stic      = 0
+                 Serial    = '0',
+                 Stic      = '0'
                 ):
         self.Error     = ''
         self.FirstName = ''
@@ -46,8 +46,7 @@ class CrewMember(Editable):
             self.Rank      = Rank
             self.Division  = Division
             for Duty in Duties:
-                if re.match(isAlpha,Duty.Name) and \
-                    re.match(isText,Duty.Description):
+                if re.match(isAlpha,Duty):
                     self.Duties.append(Duty)
                 else:
                     self.Error = "Invalid duty"
@@ -69,14 +68,14 @@ class CrewMember(Editable):
     def serialize(self):
         self.Error = ''
         member = {
-                    "FirstName" : self.FirstName,
-                    "LastName"  : self.LastName,
-                    "Nickname"  : self.Nickname,
-                    "Rank"      : self.Rank,
-                    "Division"  : self.Division,
-                    "Duties"    : self.Duties,
-                    "Serial"    : self.Serial,
-                    "Stic"      : self.Stic
+                    "firstName" : self.FirstName,
+                    "lastName"  : self.LastName,
+                    "nickname"  : self.Nickname,
+                    "rank"      : self.Rank,
+                    "division"  : self.Division,
+                    "duties"    : self.Duties,
+                    "serial"    : self.Serial,
+                    "stic"      : self.Stic
                  }
         return member
     def deserialize(self,crewMember=dict()):

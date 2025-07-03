@@ -58,10 +58,10 @@ class Duty(Editable):
         return self.Error
     def serialize(self):
         self.Error = ''
-        duty =  {
-                    "Name"        : self.Name,
-                    "Description" : self.Description
-                }
+        duty = {
+                "name"        : self.Name,
+                "description" : self.Description
+               }
         return duty
     def deserialize(self,division=dict()):
         self.Error = ''

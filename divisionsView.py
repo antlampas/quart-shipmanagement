@@ -5,36 +5,32 @@
 
 import re
 
-from threading      import Timer
+from   threading        import Timer
+from   time             import sleep
 
-from quart            import Blueprint
-from quart            import current_app
-from quart            import request
-from quart            import redirect
-from sqlalchemy       import select
-from sqlalchemy.orm   import Session
+from   quart            import Blueprint
+from   quart            import current_app
+from   quart            import request
 
-from time             import sleep
+from   authorization    import require_role
+from   authorization    import require_login
+from   authorization    import refreshToken
 
-from authorization    import require_role
-from authorization    import require_login
-from authorization    import refreshToken
+from   permissions      import DivisionsPermissions
 
-from permissions      import DivisionsPermissions
+from   loaders          import get
+from   loaders          import remove
+from   loaders          import add
+from   loaders          import edit
 
-from loaders import get
-from loaders import remove
-from loaders import add
-from loaders import edit
+from   divisionsClasses import Division
+from   divisionsClasses import Divisions
 
-from divisionsClasses import Division
-from divisionsClasses import Divisions
+from   forms            import AddDivisionForm
+from   forms            import EditDivisionForm
+from   forms            import RemoveDivisionForm
 
-from forms import AddDivisionForm
-from forms import EditDivisionForm
-from forms import RemoveDivisionForm
-
-from standardReturn import standardReturn
+from   standardReturn   import standardReturn
 
 divisions_blueprint = Blueprint("divisions",__name__,url_prefix='/divisions',template_folder='templates/default')
 
@@ -44,11 +40,11 @@ sectionName = "Divisions"
 @divisions_blueprint.route("/",methods=["GET"])
 async def divisions():
     global sectionName
-    divisions = get('divisions')
-    if 'Error' not in divisions and 'Warning' not in divisions:
+    d = get('divisions')
+    if 'Error' not in d and 'Warning' not in d:
         return await standardReturn("divisions.html",
                                     sectionName,
-                                    DIVISIONS=divisions
+                                    DIVISIONS=d
                                    )
     else:
         message="No division found"
@@ -61,15 +57,15 @@ async def divisions():
 @divisions_blueprint.route("/division/<name>",methods=["GET"])
 async def view(name):
     global sectionName
-    division = get('division',name)
-    if 'Error' not in divisions and 'Warning' not in divisions:
-        return await standardReturn("divisions.html",
+    d = get('division',{'name' : name})
+    if 'Error' not in d and 'Warning' not in d:
+        return await standardReturn("division.html",
                                     sectionName,
-                                    DIVISION=division
+                                    DIVISION=d
                                    )
     else:
         message = "Division not found"
-        return await standardReturn("divisions.html",
+        return await standardReturn("division.html",
                                     sectionName,
                                     DIVISION=message
                                    )
@@ -92,7 +88,6 @@ async def addDivision():
             description = (await request.form)['Description']
             division = Division(name,description)
             d = division.serialize()
-            d['parent'] = 'divisions'
             added = add('division',d)
             if 'Error' in added or 'Warning' in added:
                 message = added
@@ -113,14 +108,14 @@ async def addDivision():
 
 @require_role(DivisionsPermissions.Remove)
 @divisions_blueprint.route("/remove",methods=["GET","POST"])
-async def remove():
+async def removeDivision():
     global sectionName
     message   = ''
     form      = RemoveDivisionForm()
     divisions = list()
     if request.method == 'GET':
         divisions = get('divisions')
-        if 'Error' not in removed and 'Warning' not in removed:
+        if 'Error' not in divisions and 'Warning' not in divisions:
             form.Name.choices = [(d['Name'],d['Name']) for d in divisions]
         return await standardReturn("divisionsRemove.html",
                                     f'Remove {sectionName}',
@@ -131,12 +126,12 @@ async def remove():
         if await form.validate_on_submit():
             divisions = (await request.form).getlist('Name')
             for division in divisions:
-                removed = remove('division',i)
+                removed = remove('division',division)
                 if 'Error' in removed and 'Warning' in removed:
                     message = f'Unable to remove {division}'
                     break
             if not message:
-                message = "Divisions removed"
+                message = "Division removed"
             form = RemoveDivisionForm()
             divisions = get('divisions')
             if 'Error' not in removed and 'Warning' not in removed:

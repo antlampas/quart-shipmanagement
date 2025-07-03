@@ -21,4 +21,7 @@ Created on: 2025-05-15
     <input type="submit" value="Add">
 </FORM>
 <p>{{ MESSAGE }}</p>
+{% if FORM.errors %}
+<p>{{ FORM.errors }}</p>
+{% endif %}
 {% endblock%}

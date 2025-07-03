@@ -11,17 +11,15 @@ Created on: 2025-05-15
 
 {% block content %}
 <nav>
-    <a href="/ranks/add">Nuovo membro</a>
-    <a href="/ranks/remove">Rimuovi membro</a>
-    <a href="/ranks/edit">Modifica membro</a>
+    <a href="/ranks/add">Add rank</a>
+    <a href="/ranks/remove">Remove rank</a>
+    <a href="/ranks/edit">Edit rank</a>
 </nav>
-{% if ranks is defined %}
-{% if (ranks is iterable) and (ranks is not string) and (ranks is not mapping) %}
-<li>
-    {% for i in ranks %}
-    <ul><a href="/ranks/rank/{ i[0] }">{{ i[0] }}</a></ul>
-    {% endfor%}
-</li>
+{% if RANKS is defined %}
+{% if (RANKS is iterable) and (RANKS is not string) and (RANKS is not mapping) %}
+{% for i in RANKS %}
+<a href="/ranks/rank/{{ i['name'] }}">{{ i['name'] }}</a><br />
+{% endfor%}
 {% else %}
 <p>{{ ranks }}</p>
 {% endif %}

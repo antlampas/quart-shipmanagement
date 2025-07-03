@@ -15,6 +15,7 @@ from model          import selectRank
 
 from utilities      import isAlpha
 from utilities      import isNumber
+from utilities      import isText
 
 from baseClasses    import Editable
 from baseClasses    import Addable
@@ -56,9 +57,9 @@ class Rank(Editable):
     def serialize(self):
         self.Error = ''
         rank = {
-                        "Name"        : self.Name,
-                        "Description" : self.Description
-                   }
+                "name"        : self.Name,
+                "description" : self.Description
+               }
         return rank
     def deserialize(self,rank=dict()):
         self.Error = ''

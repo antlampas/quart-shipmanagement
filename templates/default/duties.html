@@ -11,19 +11,17 @@ Created on: 2025-05-15
 
 {% block content %}
 <nav>
-    <a href="/duties/add">Nuovo membro</a>
-    <a href="/duties/remove">Rimuovi membro</a>
-    <a href="/duties/edit">Modifica membro</a>
+    <a href="/duties/add">Add duty</a>
+    <a href="/duties/remove">Remove duty</a>
+    <a href="/duties/edit">Edit duty</a>
 </nav>
-{% if duties is defined %}
-{% if (duties is iterable) and (duties is not string) and (duties is not mapping) %}
-<li>
-    {% for i in duties %}
-    <ul><a href="/duties/duty/{ i[0] }">{{ i[0] }}</a></ul>
-    {% endfor%}
-</li>
+{% if DUTIES is defined %}
+{% if (DUTIES is iterable) and (DUTIES is not string) and (DUTIES is not mapping) %}
+{% for i in DUTIES %}
+<a href="/duties/duty/{{ i['name'] }}">{{ i['name'] }}</a><br />
+{% endfor%}
 {% else %}
-<p>{{ duties }}</p>
+<p>{{ DUTIES }}</p>
 {% endif %}
 {% endif %}
 {% endblock%}

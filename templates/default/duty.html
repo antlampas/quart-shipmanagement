@@ -10,8 +10,8 @@ Created on: 2025-05-15
 {% extends "base.html" %}
 
 {% block content %}
-{% if duty is defined %}
-<p><span>Duty:</span> <span>{{ duty.Name }}</span></p>
-<p><span>Description:</span> <span>{{ duty.Description }}</span></p>
+{% if DUTY is defined %}
+<p><span>Duty:</span> <span>{{ DUTY.name }}</span></p>
+<p><span>Description:</span> <span>{{ DUTY.description }}</span></p>
 {% endif %}
 {% endblock%}

@@ -10,8 +10,8 @@ Created on: 2025-05-15
 {% extends "base.html" %}
 
 {% block content %}
-{% if division is defined %}
-<p><span>Division:</span> <span>{{ division.Name }}</span></p>
-<p><span>Description:</span> <span>{{ division.Description }}</span></p>
+{% if DIVISION is defined %}
+<p><span>Division:</span> <span>{{ DIVISION.name }}</span></p>
+<p><span>Description:</span> <span>{{ DIVISION.attributes.description[0] }}</span></p>
 {% endif %}
 {% endblock%}

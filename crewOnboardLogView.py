@@ -5,7 +5,6 @@
 
 from quart          import Blueprint
 from quart          import current_app
-from quart          import render_template
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 

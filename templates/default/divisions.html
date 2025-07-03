@@ -11,19 +11,17 @@ Created on: 2025-05-15
 
 {% block content %}
 <nav>
-    <a href="/divisions/add">Nuova divisione</a>
-    <a href="/divisions/remove">Rimuovi divisione</a>
-    <a href="/divisions/edit">Modifica divisione</a>
+    <a href="/divisions/add">Add division</a>
+    <a href="/divisions/remove">Remove division</a>
+    <a href="/divisions/edit">Edit division</a>
 </nav>
-{% if divisions is defined %}
-{% if (divisions is iterable) and (divisions is not string) and (divisions is not mapping) %}
-<li>
-    {% for i in divisions %}
-    <ul><a href="/divisions/division/{ i[0] }">{{ i[0] }}</a></ul>
-    {% endfor%}
-</li>
+{% if DIVISIONS is defined %}
+{% if (DIVISIONS is iterable) and (DIVISIONS is not string) and (DIVISIONS is not mapping) %}
+{% for i in DIVISIONS %}
+<a href="/divisions/division/{{ i['name'] }}">{{ i['name'] }}</a><br />
+{% endfor%}
 {% else %}
-<p>{{ divisions }}</p>
+<p>{{ DIVISIONS }}</p>
 {% endif %}
 {% endif %}
 {% endblock%}

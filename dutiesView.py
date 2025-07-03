@@ -5,86 +5,206 @@
 
 import re
 
-from threading      import Timer
+from   threading     import Timer
+from   time          import sleep
 
-from quart          import Blueprint
-from quart          import current_app
-from quart          import request
-from quart          import render_template
+from   quart         import Blueprint
+from   quart         import current_app
+from   quart         import request
 
-from sqlalchemy     import select
-from sqlalchemy.orm import Session
+from   authorization import require_role
+from   authorization import require_login
+from   authorization import refreshToken
 
-from model          import db
-from model          import CrewMemberTable
-from model          import DutyTable
+from   permissions   import DutiesPermissions
 
-from forms          import AddDutyForm
-from forms          import RemoveDutyForm
-from forms          import EditDutyForm
+from   loaders       import get
+from   loaders       import remove
+from   loaders       import add
+from   loaders       import edit
 
-from authorization  import require_role
-from authorization  import require_login
-from authorization  import refreshToken
+from   dutiesClasses import Duty
+from   dutiesClasses import Duties
 
-from permissions    import DutiesPermissions
+from   forms         import AddDutyForm
+from   forms         import RemoveDutyForm
+from   forms         import EditDutyForm
 
-from dutiesClasses  import Duty
-from dutiesClasses  import Duties
-
-from standardReturn import standardReturn
-
-sectionName = "Duties"
+from   standardReturn import standardReturn
 
 duties_blueprint = Blueprint("duties",__name__,url_prefix='/duties',template_folder='templates/default')
 
+sectionName = "Duties"
 
 @require_role(DutiesPermissions.View)
 @duties_blueprint.route("/",methods=["GET"])
 async def duties():
-    return await standardReturn("implement.html",sectionName,implement="Implement!")
+    global sectionName
+    d = get('duties')
+    if 'Error' not in d and 'Warning' not in d:
+        return await standardReturn("duties.html",
+                                    sectionName,
+                                    DUTIES=d
+                                   )
+    else:
+        message="No duties found"
+        return await standardReturn("divisions.html",
+                                    sectionName,
+                                    DUTIES=message
+                                   )
 
 
 @require_role(DutiesPermissions.View)
-@duties_blueprint.route("/duty/<duty>",methods=["GET"])
-async def view(duty):
-    return await standardReturn("implement.html",sectionName,implement="Implement!")
+@duties_blueprint.route("/duty/<name>",methods=["GET"])
+async def view(name):
+    global sectionName
+    d = get('duties',{'name' : name})
+    if 'Error' not in d and 'Warning' not in d:
+        return await standardReturn("duty.html",
+                                    sectionName,
+                                    DUTY=d
+                                   )
+    else:
+        message = "Duty not found"
+        return await standardReturn("duty.html",
+                                    sectionName,
+                                    DUTY=message
+                                   )
 
 
 @require_role(DutiesPermissions.Add)
 @duties_blueprint.route("/add",methods=["GET","POST"])
-async def add():
-    #return await standardReturn("implement.html",sectionName,implement="Implement!")
-    #TODO: Make it work with keycloack
-    form = AddDutyForm()
+async def addDuty():
+    global sectionName
+    message = ''
+    duty    = Duty()
+    form    = AddDutyForm()
     if request.method == 'GET':
-        return await render_template("dutiesAdd.html",sectionName,FORM=form)
+        return await standardReturn("dutiesAdd.html",
+                                    sectionName,
+                                    FORM=form,
+                                    MESSAGE=message
+                                   )
     elif request.method == 'POST':
-        name         = (await request.form)['Name']
-        description  = (await request.form)['Description']
-        duty         = DutyTable(Name=name,Description=description)
         if await form.validate_on_submit():
-            try:
-                with db.bind.Session() as s:
-                    with s.begin():
-                        s.add(duty)
-                        s.commit()
-            except Exception as e:
-                return await render_template("dutiesAdd.html",sectionName,FORM=form,MESSAGE=str(e))
-            return await render_template("dutiesAdd.html",sectionName,FORM=form,MESSAGE="Success")
+            name         = (await request.form)['Name']
+            description  = (await request.form)['Description']
+            duty         = Duty(name,description)
+            d            = duty.serialize()
+            added        = add('duty',d)
+            if 'Error' in added or 'Warning' in added:
+                message = added
+            else:
+                message = "Duty added"
+        else:
+            message = "Invalid data"
+        return await standardReturn("dutiesAdd.html",
+                                    f'Add {sectionName}',
+                                    FORM=form,
+                                    MESSAGE=message
+                                   )
     else:
-        return await render_template("error.html",sectionName,ERROR="Invalid method")
-
-
+        return await standardReturn("error.html",
+                                     sectionName,
+                                     ERROR="Invalid method"
+                                    )
 @require_role(DutiesPermissions.Remove)
 @duties_blueprint.route("/remove",methods=["GET","POST"])
-async def remove():
-    return await standardReturn("implement.html",sectionName,implement="Implement!")
-    #TODO: Make it work with keycloack
-
-
+async def removeDuty():
+    global sectionName
+    message   = ''
+    form      = RemoveDivisionForm()
+    duties = list()
+    if request.method == 'GET':
+        duties = get('duties')
+        if 'Error' not in removed and 'Warning' not in removed:
+            form.Name.choices = [(d['Name'],d['Name']) for d in duties]
+        return await standardReturn("dutiesRemove.html",
+                                    f'Remove {sectionName}',
+                                    FORM=form,
+                                    MESSAGE=message
+                                   )
+    elif request.method == 'POST':
+        if await form.validate_on_submit():
+            duties = (await request.form).getlist('Name')
+            for duty in duties:
+                removed = remove('duty',i)
+                if 'Error' in removed and 'Warning' in removed:
+                    message = f'Unable to remove {duty}'
+                    break
+            if not message:
+                message = "Duty removed"
+            form = RemoveDivisionForm()
+            duties = get('duties')
+            if 'Error' not in removed and 'Warning' not in removed:
+                form.Name.choices = [(d['Name'],d['Name']) for d in duties]
+            return await standardReturn("dutiesRemove.html",
+                                        f'Remove {sectionName}',
+                                        FORM=form,
+                                        MESSAGE=message
+                                       )
+        else:
+            message="Invalid data"
+            return await standardReturn("dutiesRemove.html",
+                                        f'Remove {sectionName}',
+                                        FORM=form,
+                                        MESSAGE=message
+                                       )
+    else:
+        return await standardReturn("error.html",
+                                    f'Remove {sectionName}',
+                                    ERROR="Invalid method"
+                                   )
 @require_role(DutiesPermissions.Edit)
-@duties_blueprint.route("/edit",methods=["GET","POST"])
+@duties_blueprint.route("/edit/",methods=["GET","POST"])
 async def edit():
-    return await standardReturn("implement.html",sectionName,implement="Implement!")
-    #TODO: Make it work with keycloack
+    return await standardReturn("error.html",
+                                f'Edit {sectionName}',
+                                ERROR="No duties provided"
+                               )
+@require_role(DutiesPermissions.Edit)
+@duties_blueprint.route("/edit/<name>",methods=["GET","POST"])
+async def editDuty(name):
+    global sectionName
+    def f(): del session['dutyEdit']
+    timer = Timer(current_app.config['EDITING_TIME'],f)
+    form = EditDutyForm()
+    message = ''
+    if request.method == 'GET':
+        duty = get('duty',name)
+        if 'Error' not in duty and 'Warning' not in duty:
+            form.Name.data        = duty.Name
+            form.Description.data = duty.Description
+        else:
+            message = "Invalid name"
+        return await standardReturn("dutiesEdit.html",
+                                    f'Edit {sectionName}',
+                                    FORM=form,
+                                    MESSAGE=message
+                                   )
+    elif request.method == 'POST':
+        name        = (await request.form)['Name']
+        description = (await request.form)['Description']
+        if await form.validate_on_submit():
+            form.Name.data        = name
+            form.Description.data = description
+            edited = edit('duty',
+                          {
+                            'Name'        : name,
+                            'Description' : description
+                          }
+                         )
+            if 'Error' not in edited and 'Warning' not in edited:
+                message=f'{name} edited'
+            else:
+                message = 'Edit went wrong'
+        return await standardReturn("dutiesEdit.html",
+                                    f'Edit {sectionName}',
+                                    FORM=form,
+                                    MESSAGE="Success"
+                                   )
+    else:
+        return await standardReturn("error.html",
+                                    f'Edit {sectionName}',
+                                    ERROR="Invalid method"
+                                   )

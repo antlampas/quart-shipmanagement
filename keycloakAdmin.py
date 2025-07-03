@@ -81,7 +81,7 @@ def adminAction(action,params=dict()):
     elif action == 'addUser':
         if params:
             if 'nickname' in params:
-                response = addUser(headers,params['nickname'],params)
+                response = addUser(headers,params)
             else:
                 response = {'Error' : 'No nickname provided'}
         else:
@@ -89,7 +89,7 @@ def adminAction(action,params=dict()):
     elif action == 'editUser':
         if params:
             if 'nickname' in params:
-                response = editUser(headers,params['nickname'],params)
+                response = editUser(headers,params)
             else:
                 response = {'Error' : 'No nickname provided'}
         else:
@@ -104,6 +104,7 @@ def adminAction(action,params=dict()):
             response = {'Error' : 'No parameters provided'}
     elif action == 'getRank':
         if params:
+            params['parent'] = 'ranks'
             if 'name' in params:
                 if 'ranks' in params['name']:
                     response = getGroup(headers,params['name'])
@@ -113,44 +114,51 @@ def adminAction(action,params=dict()):
                 response = {'Error' : 'No rank attributes provided'}
         else:
             response = None
+    elif action == 'getRanks':
+        params['parent'] = 'ranks'
+        response = getGroup(headers,params)
     elif action == 'addRank':
         if params:
+            params['parent'] = 'ranks'
             if 'name' in params:
-                params['name'] = '/ranks/'+params['name']
-                response = addGroup(headers,params['name'],params)
+                response = addGroup(headers,params)
             else:
                 response = {'Error' : 'No rank name provided'}
         else:
             response = {'Error' : 'No rank attributes provided'}
     elif action == 'editRank':
         if params:
+            params['parent'] = 'ranks'
             if 'name' in params:
-                params['name'] = '/ranks/'+params['name']
-                response = addGroup(headers,params['name'],params)
+                response = addGroup(headers,params)
             else:
                 response = {'Error' : 'No rank name provided'}
         else:
             response = {'Error' : 'No rank attributes provided'}
     elif action == 'removeRank':
         if params:
+            params['parent'] = 'ranks'
             if 'name' in params:
-                params['name'] = '/ranks/'+params['name']
-                response = addGroup(headers,params['name'],params)
+                response = addGroup(headers,params)
             else:
                 response = {'Error' : 'No rank name provided'}
         else:
             response = {'Error' : 'No rank attributes provided'}
     elif action == 'getDivision':
         if params:
+            params['parent'] = 'divisions'
             if 'name' in params:
-                params['name'] = '/divisions/'+params['name']
-                response = getGroup(headers,params['name'])
+                response = getGroup(headers,params)
             else:
                 response = {'Error' : 'No division name provided'}
         else:
             response = {'Error' : 'No division attributes provided'}
+    elif action == 'getDivisions':
+        params['parent'] = 'divisions'
+        response = getGroup(headers,params)
     elif action == 'addDivision':
         if params:
+            params['parent'] = 'divisions'
             if 'name' in params:
                 response = addGroup(headers,params)
             else:
@@ -159,8 +167,8 @@ def adminAction(action,params=dict()):
             response = {'Error' : 'No division attributes provided'}
     elif action == 'editDivision':
         if params:
+            params['parent'] = 'divisions'
             if 'name' in params:
-                params['name'] = '/divisions/'+params['name']
                 response = editGroup(headers,params['name'])
             else:
                 response = {'Error' : 'No division name provided'}
@@ -168,8 +176,8 @@ def adminAction(action,params=dict()):
             response = {'Error' : 'No division attributes provided'}
     elif action == 'removeDivision':
         if params:
+            params['parent'] = 'divisions'
             if 'name' in params:
-                params['name'] = '/divisions/'+params['name']
                 response = removeGroup(headers,params['name'])
             else:
                 response = {'Error' : 'No division name provided'}
@@ -177,17 +185,20 @@ def adminAction(action,params=dict()):
             response = {'Error' : 'No division attributes provided'}
     elif action == 'getDuty':
         if params:
+            params['parent'] = 'duties'
             if 'name' in params:
-                params['name'] = '/duties/'+params['name']
                 response = getGroup(headers,params['name'])
             else:
                 response = {'Error' : 'No duty name provided'}
         else:
             response = {'Error' : 'No duty attributes provided'}
+    elif action == 'getDuties':
+        params['parent'] = 'duties'
+        response = getGroup(headers,params)
     elif action == 'addDuty':
         if params:
             if 'name' in params:
-                params['name'] = '/duties/'+params['name']
+                params['parent'] = 'duties'
                 response = addGroup(headers,params)
             else:
                 response = {'Error' : 'No duty name provided'}
@@ -195,8 +206,8 @@ def adminAction(action,params=dict()):
             response = {'Error' : 'No duty attributes provided'}
     elif action == 'editDuty':
         if params:
+            params['parent'] = 'duties'
             if 'name' in params:
-                params['name'] = '/duties/'+params['name']
                 response = editGroup(headers,params['name'])
             else:
                 response = {'Error' : 'No duty name provided'}
@@ -204,8 +215,8 @@ def adminAction(action,params=dict()):
             response = {'Error' : 'No duty attributes provided'}
     elif action == 'removeDuty':
         if params:
+            params['parent'] = 'duties'
             if 'name' in params:
-                params['name'] = '/duties/'+params['name']
                 response = removeGroup(headers,params['name'])
             else:
                 response = {'Error' : 'No duty name provided'}
@@ -213,6 +224,7 @@ def adminAction(action,params=dict()):
             response = {'Error' : 'No duty attributes provided'}
     elif action == 'getTask':
         if params:
+            params['parent'] = 'tasks'
             if 'name' in params:
                 response = {"Warning" : "Implement"}
             else:
@@ -221,16 +233,19 @@ def adminAction(action,params=dict()):
             response = {"Warning" : "Implement"}
     elif action == 'addTask':
         if params:
+            params['parent'] = 'tasks'
             response = {"Warning" : "Implement"}
         else:
             response = {"Warning" : "Implement"}
     elif action == 'editTask':
         if params:
+            params['parent'] = 'tasks'
             response = {"Warning" : "Implement"}
         else:
             response = {"Warning" : "Implement"}
     elif action == 'removeTask':
         if params:
+            params['parent'] = 'tasks'
             if 'name' in params:
                 response = {"Warning" : "Implement"}
             else:
@@ -239,6 +254,7 @@ def adminAction(action,params=dict()):
             response = {"Warning" : "Implement"}
     elif action == 'getMission':
         if params:
+            params['parent'] = 'missions'
             if 'name' in params:
                 response = {"Warning" : "Implement"}
             else:
@@ -247,16 +263,19 @@ def adminAction(action,params=dict()):
             response = {"Warning" : "Implement"}
     elif action == 'addMission':
         if params:
+            params['parent'] = 'missions'
             response = {"Warning" : "Implement"}
         else:
             response = {"Warning" : "Implement"}
     elif action == 'editMission':
         if params:
+            params['parent'] = 'missions'
             response = {"Warning" : "Implement"}
         else:
             response = {"Warning" : "Implement"}
     elif action == 'removeMission':
         if params:
+            params['parent'] = 'missions'
             if 'name' in params:
                 response = {"Warning" : "Implement"}
             else:
@@ -271,14 +290,18 @@ def adminAction(action,params=dict()):
         if response.status_code == 200 or \
            response.status_code == 201 or \
            response.status_code == 204:
-            pass
-            responseContent = response.text
+            if response.text:
+                responseContent = response.json()
+            else:
+                responseContent = {'Info' : 'OK'}
         elif response.status_code == 403:
             return {"Error": "Forbidden"}
         elif response.status_code == 400:
             return {"Error": "Bad Request"}
         elif response.status_code == 401:
             return {"Error": "Unauthorized"}
+        elif response.status_code == 409:
+            return {"Error": "Conflict"}
         elif response.status_code == 500:
             return {"Error": "Internal Server Error"}
         else:
@@ -326,7 +349,7 @@ def loadFromKeycloak(what='',pattern=''):
             data = None
     elif what == 'divisions':
         if not pattern:
-            data = adminAction('getDivisions')
+            data = adminAction('getDivisions',dict())
         else:
             data = adminAction('getDivisions',pattern)
     elif what == 'duty':
@@ -584,18 +607,18 @@ def getUser(headers,user=''):
     global command_prefix
     response = None
     if user:
-        response = requests.get(command_prefix + '/users',
+        response = requests.get(f'{command_prefix}/users',
                                 headers=headers,
                                 params={'username' : user}
                                )
     else:
-        response = requests.get(command_prefix + '/users',headers=headers)
+        response = requests.get(f'{command_prefix}/users',headers=headers)
     return response
 def removeUser(headers,user=''):
     global command_prefix
     response = None
     if user:
-        response = requests.delete(command_prefix + f'/users/{user}',
+        response = requests.delete(f'{command_prefix}/users/{user}',
                                    headers=headers
                                   )
     else:
@@ -605,9 +628,28 @@ def addUser(headers,user=dict()):
     global command_prefix
     response = None
     if user:
-        response = requests.post(command_prefix + '/users',
-                                data=headers | user
+        user['username'] = user['nickname']
+        user['attributes'] = {
+                              'Duties' : user['duties'],
+                              'Serial' : user['serial'],
+                              'STIC'   : user['stic']
+                             }
+        user['groups'] = [
+                          '/ranks/'+user['rank'],
+                          '/divisions/'+user['division']
+                          ]
+        data = {
+                'username'   : user['username'],
+                'firstName'  : user['firstName'],
+                'lastName'   : user['lastName'],
+                'attributes' : user['attributes'],
+                'groups'     : user['groups']
+               }
+        response = requests.post(f'{command_prefix}/users',
+                                headers=headers,
+                                data=json.dumps(data)
                                )
+        print(response.status_code)
     else:
         response = None
     return response
@@ -623,20 +665,21 @@ def editUser(headers,user='',attributes=dict()):
         response = None
     return response
 
-def getGroup(headers,name=''):
+def getGroup(headers,pattern=dict()):
     global command_prefix
-    response = requests.get(command_prefix + '/groups',headers=headers)
-    if name:
+    response = requests.get(command_prefix + '/groups',headers=headers,params={'search' : pattern['parent']})
+    del pattern['parent']
+    id = response.json()[0]['id']
+    response = requests.get(command_prefix + f'/groups/{id}/children',headers=headers)
+    if 'name' in pattern:
         groupFound = False
         for group in response.json():
-            if group['name'] == group:
-                response.content = json.dumps(group).encode('utf-8')
+            if group['name'] == pattern['name']:
+                response._content = json.dumps(group).encode('utf-8')
                 groupFound = True
                 break
         if not groupFound:
             response = {'Error' : 'Group not found'}
-    else:
-        pass
     return response
 def removeGroup(headers,group=''):
     global command_prefix
@@ -653,7 +696,7 @@ def addGroup(headers,group=dict()):
     global command_prefix
     if group:
         parentId = ''
-        response = requests.get(command_prefix + '/groups',
+        response = requests.get(f'{command_prefix}/groups',
                             params={'search' : group['parent']},
                             headers=headers
                            )

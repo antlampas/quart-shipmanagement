@@ -9,7 +9,6 @@ from threading      import Timer
 
 from quart import Blueprint
 from quart import current_app
-from quart import render_template
 from quart import request
 
 from authorization  import require_role

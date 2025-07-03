@@ -47,13 +47,8 @@ sectionName    = "Crew"
 @crew_blueprint.route("/",methods=["GET"])
 async def crewView():
     global sectionName
-    crew = Crew()
-    crewLoaded = get('crew')
-    if 'Error' not in crewLoaded and 'Warning' not in crewLoaded:
-        crew.deserialize(crewLoaded)
-    else:
-        crew = None
-    if crew:
+    crew = get('crew')
+    if 'Error' not in crew and 'Warning' not in crew:
         return await standardReturn("crew.html",sectionName,CREW=crew)
     else:
         errorMessage = "No crew member found"
@@ -77,30 +72,27 @@ async def memberView(nickname):
 
 @require_role(CrewPermissions.Add)
 @crew_blueprint.route("/add",methods=["GET","POST"])
-async def add():
+async def addMember():
     global sectionName
-    member = CrewMember()
-    form   = AddCrewMemberForm()
+    member    = CrewMember()
+    form      = AddCrewMemberForm()
+    ranks     = get('ranks')
+    duties    = get('duties')
+    divisions = get('divisions')
+    if ranks and 'Error' not in ranks and 'Warning' not in ranks:
+        if len(ranks):
+            form.Rank.choices     = [(r['name'],r['name']) for r in ranks]
+    if duties and 'Error' not in duties and 'Warning' not in duties:
+        if len(duties):
+            form.Duties.choices   = [(d['name'],d['name']) for d in duties]
+    if divisions and 'Error' not in divisions and 'Warning' not in divisions:
+        if len(divisions):
+            form.Division.choices = [(d['name'],d['name']) for d in divisions]
     if request.method == 'GET':
-        ranks     = get('rank')
-        duties    = get('dutie')
-        divisions = get('division')
-        if ranks and 'Error' not in ranks and 'Warning' not in ranks:
-            form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
-        else:
-            print(ranks)
-        if duties and 'Error' not in duties and 'Warning' not in duties:
-            form.Duties.choices   = [(d.Name,d.Name) for d in duties]
-        else:
-            print(duties)
-        if divisions and 'Error' not in divisions and 'Warning' not in divisions:
-            form.Division.choices = [(d.Name,d.Name) for d in divisions]
-        else:
-            print(divisions)
         return await standardReturn("crewMemberAdd.html",
                                     f'Add {sectionName}',
                                     FORM=form
-                                   )
+                                    )
     elif request.method == 'POST':
         if await form.validate_on_submit():
             member = CrewMember(
@@ -111,33 +103,43 @@ async def add():
                               Division  = (await request.form)['Division'],
                               Duties    = (await request.form).getlist('Duties')
                                    )
-            form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
-            form.Duties.choices   = [(d.Name,d.Name) for d in duties]
-            form.Division.choices = [(d.Name,d.Name) for d in divisions]
-            added = add('crewMember',member.serialize())
+            form.Rank.default     = member.Rank
+            form.Division.default = member.Division
+            form.Duties.default   = member.Duties
+            m = member.serialize()
+            added = add('crewMember',m)
             if 'Error' in added and 'Warning' in added:
                 message = added
                 return await standardReturn("crewMemberAdd.html",
-                                            sectionName,
+                                            f'Add {sectionName}',
                                             FORM=form,
                                             DUTIES=duties,
                                             MESSAGE=message
                                            )
-            message = 'Success'
+            else:
+                message = 'Success'
+                return await standardReturn("crewMemberAdd.html",
+                                             f'Add {sectionName}',
+                                             FORM=form,
+                                             DUTIES=duties,
+                                             MESSAGE=message
+                                           )
+        else:
+            message = 'Invalid data'
             return await standardReturn("crewMemberAdd.html",
-                                         sectionName,
-                                         FORM=form,
-                                         DUTIES=duties,
-                                         MESSAGE=message
-                                       )
+                                            f'Add {sectionName}',
+                                            FORM=form,
+                                            DUTIES=duties,
+                                            MESSAGE=message
+                                        )
     else:
         error = "Invalid method"
-        return await standardReturn("error.html",sectionName,ERROR=error)
+        return await standardReturn("error.html",f'Add {sectionName}',ERROR=error)
 
 
 @require_role(CrewPermissions.Remove)
 @crew_blueprint.route("/remove",methods=["GET","POST"])
-async def remove():
+async def removeMember():
     global sectionName
     message = ''
     form    = RemoveCrewMemberForm()

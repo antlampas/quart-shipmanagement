@@ -15,7 +15,7 @@ from keycloakAdmin import removeFromKeycloak
 from keycloakAdmin import addToKeycloak
 from keycloakAdmin import editKeycloak
 
-def get(what='',pattern=''):
+def get(what='',pattern=dict()):
     data = None
     if what:
         if what == 'person' or what == 'people':
@@ -58,7 +58,7 @@ def get(what='',pattern=''):
         return data
     else:
         return None
-def remove(what='',pattern=''):
+def remove(what='',pattern=dict()):
     data = None
     if what:
         if what == 'person' or what == 'people':

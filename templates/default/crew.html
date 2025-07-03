@@ -11,9 +11,9 @@ Created on: 2025-05-15
 
 {% block content %}
 <nav>
-    <a href="/crew/add">Nuovo membro</a>
-    <a href="/crew/remove">Rimuovi membro</a>
-    <a href="/crew/edit">Modifica membro</a>
+    <a href="/crew/add">Add member</a>
+    <a href="/crew/remove">Remove member</a>
+    <a href="/crew/edit">Edit member</a>
 </nav>
 {% if CREW is defined %}
 {% if (CREW is iterable) and (CREW is not string) and (CREW is not mapping) %}
