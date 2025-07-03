@@ -33,6 +33,10 @@ from loaders import remove
 from loaders import add
 from loaders import edit
 
+from utilities import isAlpha
+from utilities import isAlphanumeric
+from utilities import isNumber
+
 from standardReturn import standardReturn
 
 crew_blueprint = Blueprint("crew",
@@ -59,6 +63,7 @@ async def memberView(nickname):
     global sectionName
     member = None
     memberLoaded = get('crewMember',{'nickname' : nickname})[0]
+    print(memberLoaded)
     if 'firstName' in memberLoaded:
         memberLoaded['FirstName'] = memberLoaded['firstName']
         del memberLoaded['firstName']
