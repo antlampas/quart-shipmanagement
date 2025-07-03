@@ -18,7 +18,7 @@ Created on: 2025-05-15
 {% if CREW is defined %}
 {% if (CREW is iterable) and (CREW is not string) and (CREW is not mapping) %}
 {% for i in CREW %}
-<a href="/crew/member/{{ i.Nickname }}">{{ i.Nickname }}</a><br />
+<a href="/crew/member/{{ i['username'] }}">{{ i['username'] }}</a><br />
 {% endfor%}
 {% else %}
 <p>{{ CREW }}</p>
