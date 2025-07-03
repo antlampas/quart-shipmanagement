@@ -80,7 +80,7 @@ class CrewMember(Editable):
         return member
     def deserialize(self,crewMember=dict()):
         self.Error = ''
-        for key,value in crewMember:
+        for key,value in crewMember.items():
             if key.upper() == 'FirstName'.upper():
                 self.FirstName = value
             elif key.upper() == 'LastName'.upper():
@@ -99,7 +99,6 @@ class CrewMember(Editable):
                 self.Stic = value
             else:
                 self.Error = "Attribute not valid"
-                break
         return self.Error
 
 class Crew(Addable):

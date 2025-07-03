@@ -53,23 +53,30 @@ async def crewView():
     else:
         errorMessage = "No crew member found"
         return await standardReturn("crew.html",sectionName,CREW=errorMessage)
-
-
 @require_role(CrewPermissions.View)
 @crew_blueprint.route("/member/<nickname>",methods=["GET"])
 async def memberView(nickname):
     global sectionName
-    member = CrewMember()
-    memberLoaded = get('crewMember',nickname)
+    member = None
+    memberLoaded = get('crewMember',{'nickname' : nickname})[0]
+    if 'firstName' in memberLoaded:
+        memberLoaded['FirstName'] = memberLoaded['firstName']
+        del memberLoaded['firstName']
+    if 'lastName' in memberLoaded:
+        memberLoaded['LastName'] = memberLoaded['lastName']
+        del memberLoaded['lastName']
+    if 'username' in memberLoaded:
+        memberLoaded['Nickname'] = memberLoaded['username']
+        del memberLoaded['username']
     if 'Error' not in memberLoaded and 'Warning' not in memberLoaded:
+        member = CrewMember()
         member.deserialize(memberLoaded)
+        print(member.__dict__)
     if member:
         return await standardReturn("crewMember.html",sectionName,MEMBER=member)
     else:
         errorMessage = "Crew member not found"
-        return await standardReturn("error.html",sectionName,ERROR=errorMessage)
-
-
+        return await standardReturn("crewMember.html",sectionName,MEMBER=memberLoaded)
 @require_role(CrewPermissions.Add)
 @crew_blueprint.route("/add",methods=["GET","POST"])
 async def addMember():
@@ -135,8 +142,6 @@ async def addMember():
     else:
         error = "Invalid method"
         return await standardReturn("error.html",f'Add {sectionName}',ERROR=error)
-
-
 @require_role(CrewPermissions.Remove)
 @crew_blueprint.route("/remove",methods=["GET","POST"])
 async def removeMember():
@@ -184,8 +189,6 @@ async def removeMember():
                                     sectionName,
                                     ERROR="Invalid method"
                                    )
-
-
 @require_role(CrewPermissions.Edit)
 @crew_blueprint.route("/edit/",methods=["GET","POST"])
 async def edit():
@@ -194,33 +197,40 @@ async def edit():
                                 f'Edit {sectionName}',
                                 ERROR='No member specified'
                                )
-
-
 @require_role(CrewPermissions.Edit)
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 async def editMember(member):
     global sectionName
     # def f(): del session['memberEdit']
     # timer = Timer(current_app.config['EDITING_TIME'],f)
-    form         = EditCrewMemberForm()
-    ranks        = []
-    duties       = []
-    divisions    = []
-    crewMember   = None
-    crew         = None
+    form       = EditCrewMemberForm()
+    ranks      = get('ranks')
+    duties     = get('duties')
+    divisions  = get('divisions')
+    crewMember = None
+    crew       = None
+    if ranks and 'Error' not in ranks and 'Warning' not in ranks:
+        if len(ranks):
+            form.Rank.choices     = [(r['name'],r['name']) for r in ranks]
+    if duties and 'Error' not in duties and 'Warning' not in duties:
+        if len(duties):
+            form.Duties.choices   = [(d['name'],d['name']) for d in duties]
+    if divisions and 'Error' not in divisions and 'Warning' not in divisions:
+        if len(divisions):
+            form.Division.choices = [(d['name'],d['name']) for d in divisions]
     if request.method == 'GET':
         if re.match(isAlpha,member):
             message = ""
             memberLoaded = get('crewMember',member)
             if 'Error' not in memberLoaded and 'Warning' not in memberLoaded:
                 member = CrewMember(
-                                FirstName = memberLoaded['FirstName'],
-                                LastName  = memberLoaded['LastName'],
-                                Nickname  = memberLoaded['Nickname'],
-                                Rank      = memberLoaded['Rank'],
-                                Division  = memberLoaded['Division'],
+                                FirstName = memberLoaded['firstName'],
+                                LastName  = memberLoaded['lastName'],
+                                Nickname  = memberLoaded['username'],
+                                Rank      = memberLoaded['rank'],
+                                Division  = memberLoaded['division'],
                                 Duties    = [d.DutyName \
-                                             for d in memberLoaded['Duties']]
+                                             for d in memberLoaded['duties']]
                                 )
                 form.FirstName.data   = member.FirstName
                 form.LastName.data    = member.LastName

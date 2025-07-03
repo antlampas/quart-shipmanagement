@@ -73,7 +73,7 @@ def adminAction(action,params=dict()):
     if action == 'getUser':
         if params:
             if 'nickname' in params:
-                response = getUser(headers,params['nickname'])
+                response = getUser(headers,params)
             else:
                 response = {'Error' : 'No nickname provided'}
         else:
@@ -310,7 +310,7 @@ def adminAction(action,params=dict()):
         responseContent = response
     return responseContent
 
-def loadFromKeycloak(what='',pattern=''):
+def loadFromKeycloak(what='',pattern=dict()):
     data = None
     if what == 'person':
         if pattern:
@@ -603,24 +603,30 @@ def editKeycloak(what='',pattern=dict()):
             data = adminAction('editMission',pattern)
     return data
 
-def getUser(headers,user=''):
+def getUser(headers,user=dict()):
     global command_prefix
     response = None
     if user:
-        response = requests.get(f'{command_prefix}/users',
-                                headers=headers,
-                                params={'username' : user}
-                               )
+        if 'nickname' in user:
+            username = user['nickname']
+            response = requests.get(f'{command_prefix}/users',
+                                    headers=headers,
+                                    params={'username' : username}
+                                   )
+        else:
+            response = {'Error' : 'No nickname provided'}
     else:
         response = requests.get(f'{command_prefix}/users',headers=headers)
     return response
-def removeUser(headers,user=''):
+def removeUser(headers,user=dict()):
     global command_prefix
     response = None
     if user:
-        response = requests.delete(f'{command_prefix}/users/{user}',
-                                   headers=headers
-                                  )
+        if 'nickname' in user:
+            username = user['nickname']
+            response = requests.delete(f'{command_prefix}/users/{username}',
+                                       headers=headers
+                                      )
     else:
         response = None
     return response
@@ -630,9 +636,9 @@ def addUser(headers,user=dict()):
     if user:
         user['username'] = user['nickname']
         user['attributes'] = {
-                              'Duties' : user['duties'],
-                              'Serial' : user['serial'],
-                              'STIC'   : user['stic']
+                              'Duties' : [user['duties']],
+                              'Serial' : [user['serial']],
+                              'STIC'   : [user['stic']]
                              }
         user['groups'] = [
                           '/ranks/'+user['rank'],
@@ -643,7 +649,9 @@ def addUser(headers,user=dict()):
                 'firstName'  : user['firstName'],
                 'lastName'   : user['lastName'],
                 'attributes' : user['attributes'],
-                'groups'     : user['groups']
+                'groups'     : user['groups'],
+                'attributes' : user['attributes'],
+                'enabled'    : True
                }
         response = requests.post(f'{command_prefix}/users',
                                 headers=headers,

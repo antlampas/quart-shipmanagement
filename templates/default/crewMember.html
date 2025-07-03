@@ -11,26 +11,26 @@ Created on: 2025-05-15
 
 {% block content %}
 {% if MEMBER is defined %}
-<p><span>First Name:</span> <span>{{ MEMBER.FirstName }}</span></p>
-<p><span>Last Name:</span> <span>{{ MEMBER.LastName }}</span></p>
-<p><span>Nickname:</span> <span>{{ MEMBER.Nickname }}</span></p>
-{% if MEMBER.Serial or MEMBER.Serial != 0%}
-<p><span>Serial:</span> <span>{{ MEMBER.Serial }}</span></p>
+<p><span>First Name:</span> <span>{{ MEMBER['FirstName'] }}</span></p>
+<p><span>Last Name:</span> <span>{{ MEMBER['LastName'] }}</span></p>
+<p><span>Nickname:</span> <span>{{ MEMBER['Nickname'] }}</span></p>
+{% if MEMBER.Serial or MEMBER.Serial != 0 %}
+<p><span>Serial:</span> <span>{{ MEMBER['Serial'] }}</span></p>
 {% endif %}
 {% if MEMBER.Stic or MEMBER.Stic != 0 %}
-<p><span>STIC:</span> <span>{{ MEMBER.Stic }}</span></p>
+<p><span>STIC:</span> <span>{{ MEMBER['Stic'] }}</span></p>
 {% endif %}
-<p><span>Rank:</span> <span>{{ MEMBER.Rank }}</span></p>
-<p><span>Division:</span> <span>{{ MEMBER.Division }}</span></p>
+<p><span>Rank:</span> <span>{{ MEMBER['Rank'] }}</span></p>
+<p><span>Division:</span> <span>{{ MEMBER['Division'] }}</span></p>
 <p><span>Duties:</span><br />
     {% if MEMBER.Duties is iterable %}
-    {% for i in MEMBER.Duties %}
+    {% for i in MEMBER['Duties'] %}
     <span>{{ i }}</span><br />
     {% endfor %}
     {% else %}
-    {{ MEMBER.Duties }}
+    {{ MEMBER['Duties'] }}
     {% endif %}
 </p>
-<a href="/crew/edit/{{ MEMBER.Nickname }}">Modifica membro</a>
+<a href="/crew/edit/{{ MEMBER['Nickname'] }}">Modifica membro</a>
 {% endif %}
 {% endblock%}
