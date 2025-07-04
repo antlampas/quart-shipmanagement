@@ -63,6 +63,8 @@ async def memberView(nickname):
     global sectionName
     member = None
     memberLoaded = get('crewMember',{'nickname' : nickname})[0]
+    memberLoaded['Stic'] = memberLoaded['attributes']['STIC']
+    memberLoaded['Serial'] = memberLoaded['attributes']['Serial']
     print(memberLoaded)
     if 'firstName' in memberLoaded:
         memberLoaded['FirstName'] = memberLoaded['firstName']
@@ -76,9 +78,10 @@ async def memberView(nickname):
     if 'Error' not in memberLoaded and 'Warning' not in memberLoaded:
         member = CrewMember()
         member.deserialize(memberLoaded)
-        print(member.__dict__)
     if member:
-        return await standardReturn("crewMember.html",sectionName,MEMBER=member)
+        m = member.serialize()
+        print(m)
+        return await standardReturn("crewMember.html",sectionName,MEMBER=m)
     else:
         errorMessage = "Crew member not found"
         return await standardReturn("crewMember.html",sectionName,MEMBER=memberLoaded)

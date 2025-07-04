@@ -636,21 +636,20 @@ def addUser(headers,user=dict()):
     if user:
         user['username'] = user['nickname']
         user['attributes'] = {
-                              'Duties' : [user['duties']],
                               'Serial' : [user['serial']],
                               'STIC'   : [user['stic']]
                              }
-        user['groups'] = [
-                          '/ranks/'+user['rank'],
-                          '/divisions/'+user['division']
-                          ]
+        user['groups']     = [
+                              '/ranks/'+user['rank'],
+                              '/divisions/'+user['division']
+                             ] + ['/duties/'+d for d in user['duties']]
         data = {
                 'username'   : user['username'],
                 'firstName'  : user['firstName'],
                 'lastName'   : user['lastName'],
-                'attributes' : user['attributes'],
+                'serial'     : user['attributes']['Serial'],
+                'stic'       : user['attributes']['STIC'],
                 'groups'     : user['groups'],
-                'attributes' : user['attributes'],
                 'enabled'    : True
                }
         response = requests.post(f'{command_prefix}/users',
