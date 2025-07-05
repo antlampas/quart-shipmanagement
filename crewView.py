@@ -75,6 +75,15 @@ async def memberView(nickname):
     if 'username' in memberLoaded:
         memberLoaded['Nickname'] = memberLoaded['username']
         del memberLoaded['username']
+    if 'groups' in memberLoaded:
+        memberLoaded['Duties'] = list()
+        for group in memberLoaded['groups']:
+            if 'rank' in group['path']:
+                memberLoaded['Rank'] = group['name']
+            elif 'division' in group['path']:
+                memberLoaded['Division'] = group['name']
+            elif 'duties' in group['path']:
+                memberLoaded['Duties'].append(group['name'])
     if 'Error' not in memberLoaded and 'Warning' not in memberLoaded:
         member = CrewMember()
         member.deserialize(memberLoaded)

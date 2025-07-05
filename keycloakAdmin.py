@@ -608,11 +608,27 @@ def getUser(headers,user=dict()):
     response = None
     if user:
         if 'nickname' in user:
-            username = user['nickname']
-            response = requests.get(f'{command_prefix}/users',
+            username   = user['nickname']
+            userLoaded = requests.get(f'{command_prefix}/users',
                                     headers=headers,
                                     params={'username' : username}
                                    )
+            userTemp = userLoaded.json()[0]
+            userId = userTemp['id']
+            groupsLoaded = requests.get(f'{command_prefix}' + \
+                                        '/users/' + \
+                                        f'{userId}' + \
+                                        '/groups',
+                                        headers=headers
+                                       )
+            
+            userTemp = [userTemp | {'groups': groupsLoaded.json()}]
+            userTemp[0]['attributes']['Serial'] = \
+                                          userTemp[0]['attributes']['Serial'][0]
+            userTemp[0]['attributes']['STIC']   = \
+                                            userTemp[0]['attributes']['STIC'][0]
+            userLoaded._content   = json.dumps(userTemp).encode('utf-8')
+            response = userLoaded
         else:
             response = {'Error' : 'No nickname provided'}
     else:
