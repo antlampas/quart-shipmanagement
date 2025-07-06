@@ -672,7 +672,6 @@ def addUser(headers,user=dict()):
                                 headers=headers,
                                 data=json.dumps(data)
                                )
-        print(response.status_code)
     else:
         response = None
     return response

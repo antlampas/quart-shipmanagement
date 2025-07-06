@@ -65,7 +65,6 @@ async def memberView(nickname):
     memberLoaded = get('crewMember',{'nickname' : nickname})[0]
     memberLoaded['Stic'] = memberLoaded['attributes']['STIC']
     memberLoaded['Serial'] = memberLoaded['attributes']['Serial']
-    print(memberLoaded)
     if 'firstName' in memberLoaded:
         memberLoaded['FirstName'] = memberLoaded['firstName']
         del memberLoaded['firstName']
@@ -89,7 +88,6 @@ async def memberView(nickname):
         member.deserialize(memberLoaded)
     if member:
         m = member.serialize()
-        print(m)
         return await standardReturn("crewMember.html",sectionName,MEMBER=m)
     else:
         errorMessage = "Crew member not found"
