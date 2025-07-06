@@ -43,13 +43,11 @@ def removeAdminToken():
     global adminToken
     adminToken = ''
     return True
-def adminLogout(headers=''):
+def adminLogout():
     refreshToken = getAdminRefreshToken()
     logoutInfo = {
         'client_id'     : KeycloakConfig.KEYCLOAK_ADMIN['client_id'],
-        'username'      : KeycloakConfig.KEYCLOAK_ADMIN['username'],
-        'password'      : KeycloakConfig.KEYCLOAK_ADMIN['password'],
-        'refresh_token' : refreshToken
+        'refresh_token' : refreshToken,
         }
     requests.post(f'{KeycloakConfig.KEYCLOAK_URL}' + \
                            f'/realms/' + \
@@ -57,8 +55,9 @@ def adminLogout(headers=''):
                            '/protocol/openid-connect/logout',
                            headers={
                                     'Content-Type' : \
-                                    'application/x-www-form-urlencoded'
-                                   } | headers,
+                                    'application/x-www-form-urlencoded',
+                                    'Authorization' : 'Bearer ' + accessToken
+                                   },
                            data=logoutInfo
                           )
     removeAdminToken()
@@ -285,7 +284,7 @@ def adminAction(action,params=dict()):
     else:
         return {'Error' : 'Invalid request'}
 
-    adminLogout(headers)
+    adminLogout()
     if not isinstance(response,dict):
         if response.status_code == 200 or \
            response.status_code == 201 or \
