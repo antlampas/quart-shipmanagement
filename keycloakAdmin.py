@@ -44,6 +44,7 @@ def removeAdminToken():
     adminToken = ''
     return True
 def adminLogout():
+    accessToken  = getAdminAccessToken()
     refreshToken = getAdminRefreshToken()
     logoutInfo = {
         'client_id'     : KeycloakConfig.KEYCLOAK_ADMIN['client_id'],

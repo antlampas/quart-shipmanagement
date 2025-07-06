@@ -167,7 +167,9 @@ async def removeMember():
     if request.method == 'GET':
         crew = get('crew')
         if crew and 'Error' not in crew and 'Warning' not in crew:
-            form.Nickname.choices = [(c.Nickname,c.Nickname) for c in crew]
+            form.Nickname.choices = [(c['username'],c['username']) \
+                                     for c in crew
+                                    ]
         return await standardReturn("crewMemberRemove.html",
                                     f'Remove {sectionName}',
                                     FORM=form
